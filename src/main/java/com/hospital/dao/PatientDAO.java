@@ -44,9 +44,14 @@ public class PatientDAO {
 
     }
     public static List<Patient> getAllPatients(){
-        String query = "SELECT * FROM patients";
-        List<Patient> patients = new ArrayList<>();
 
+        String query = "SELECT * FROM patients";
+        List<String> allItems;
+        List<Patient> patients = new ArrayList<>();
+        try(Connection conn = DatabaseConnection.getConnection());
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        }
     }
     
     }
