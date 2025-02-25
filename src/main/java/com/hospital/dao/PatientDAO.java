@@ -102,8 +102,7 @@ public class PatientDAO implements BaseDAO<Patient> {
     }
     @Override
     public List<Patient> getAll() {
-
-        String query = "SELECT * FROM patient";
+        String query = "SELECT * FROM patient ORDER BY patientID";  // Added ORDER BY for consistent display
         List<Patient> patients = new ArrayList<>();
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -112,16 +111,17 @@ public class PatientDAO implements BaseDAO<Patient> {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                patients.add(new Patient(
-                        rs.getString("patientID"),
-                        rs.getString("firstname"),
-                        rs.getString("surname"),
-                        rs.getString("postcode"),
-                        rs.getString("address"),
-                        rs.getString("phone"),
-                        rs.getString("email"),
-                        rs.getString("insuranceID")
-                ));
+                Patient patient = new Patient(
+                    rs.getString("firstname"),    // First name
+                    rs.getString("surname"),      // Last name
+                    rs.getString("address"),      // Address
+                    rs.getString("email"),        // Email
+                    rs.getString("patientID"),    // Patient ID
+                    rs.getString("postcode"),     // Postcode
+                    rs.getString("phone"),        // Phone
+                    rs.getString("insuranceID")   // Insurance ID
+                );
+                patients.add(patient);
             }
         } catch (SQLException e) {
             e.printStackTrace();

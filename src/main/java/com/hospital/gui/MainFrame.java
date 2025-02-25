@@ -84,7 +84,7 @@ public class MainFrame extends JFrame {
         JMenuItem addDrugFormMenuItem = new JMenuItem("Drug Form");
         addDrugFormMenuItem.addActionListener(e -> showDrugForm());
         JMenuItem addInsuranceComFormMenuItem = new JMenuItem("Insurance Company Form");
-        addInsuranceComFormMenuItem.addActionListener(e -> showInsuranceComForm());
+        addInsuranceComFormMenuItem.addActionListener(e -> showInsuranceComForm()); // TODO Implement Options to add Prescription and Visit data to the system.
         addRecordsMenu.add(addDrugFormMenuItem);
         addRecordsMenu.add(addInsuranceComFormMenuItem);
         addRecordsMenu.add(addDoctorFormMenuItem);
@@ -97,15 +97,23 @@ public class MainFrame extends JFrame {
     }
 
     public void createTable(Object[][] data, String[] columnNames, String tableType) {
-        JTable table = new JTable(data, columnNames);
-        JScrollPane scrollPane = new JScrollPane(table);
-        mainPanel.removeAll();
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
-        mainPanel.revalidate();
-        mainPanel.repaint();
-        new TableRightClick(table, tableType);
-        
-    }
+    JTable table = new JTable(data, columnNames);
+    
+    // Add table formatting
+    table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+    table.getTableHeader().setReorderingAllowed(false);
+    table.setRowHeight(25);
+    
+    // Add a sorter
+    table.setAutoCreateRowSorter(true);
+    
+    JScrollPane scrollPane = new JScrollPane(table);
+    mainPanel.removeAll();
+    mainPanel.add(scrollPane, BorderLayout.CENTER);
+    mainPanel.revalidate();
+    mainPanel.repaint();
+    new TableRightClick(table, tableType);
+}
 
 
 
@@ -135,30 +143,38 @@ public class MainFrame extends JFrame {
     }
 
     private void viewPatientTable() {
-        // Get the DAO from the factory
-        BaseDAO<Patient> patientDAO = DAOFactory.getDAO("patient");
-        
-        // Retrieve the list of patients from the database
-        List<Patient> patients = patientDAO.getAll();
-        
-        String tableType = "patient";
-        String[] columnNames = {"Patient ID", "First Name", "Last Name", "Postcode", "Address", "Phone", "Email", "Insurance ID"};
+    BaseDAO<Patient> patientDAO = DAOFactory.getDAO("patient");
+    List<Patient> patients = patientDAO.getAll();
+    
+    String tableType = "patient";
+    // Update column order to match display requirements
+    String[] columnNames = {
+        "Patient ID", 
+        "First Name", 
+        "Last Name", 
+        "Address",
+        "Postcode", 
+        "Phone", 
+        "Email",
+        "Insurance ID"
+    };
 
-        Object[][] data = new Object[patients.size()][8];
-        for (int i = 0; i < patients.size(); i++) {
-            Patient patient = patients.get(i);
-            data[i][0] = patient.getPatientID();
-            data[i][1] = patient.getFirstName();
-            data[i][2] = patient.getLastName();
-            data[i][3] = patient.getPostcode();
-            data[i][4] = patient.getAddress();
-            data[i][5] = patient.getPhoneNumber();
-            data[i][6] = patient.getEmail();
-            data[i][7] = patient.getInsuranceID();
-        }
-
-        createTable(data, columnNames, tableType);
+    Object[][] data = new Object[patients.size()][8];
+    for (int i = 0; i < patients.size(); i++) {
+        Patient patient = patients.get(i);
+        // Update data order to match column headers
+        data[i][0] = patient.getPatientID();
+        data[i][1] = patient.getFirstName();
+        data[i][2] = patient.getLastName();
+        data[i][3] = patient.getAddress();
+        data[i][4] = patient.getPostcode();
+        data[i][5] = patient.getPhoneNumber();
+        data[i][6] = patient.getEmail();
+        data[i][7] = patient.getInsuranceID();
     }
+
+    createTable(data, columnNames, tableType);
+}
 
     private void viewDrugTable() {
         BaseDAO<Drug> drugDAO = DAOFactory.getDAO("drug");
