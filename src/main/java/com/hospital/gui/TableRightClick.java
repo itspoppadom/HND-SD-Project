@@ -61,13 +61,45 @@ public class TableRightClick extends MouseAdapter {
     }
     
     private void handleAdd() {
-        // Add your add logic here
-        System.out.println("Add clicked!");
+        
     }
     
     private void handleEdit() {
-        // Add your edit logic here
-        System.out.println("Edit clicked!");
+        // Get the selected row
+        int row = table.getSelectedRow();
+        if (row != -1) {
+            try {
+                String[] ids;
+                if (tableType.equalsIgnoreCase("visit")) {
+                    // For Visit table, we need three columns
+                    ids = new String[]{
+                        table.getValueAt(row, 0).toString(), // patientID
+                        table.getValueAt(row, 1).toString(), // doctorID
+                        table.getValueAt(row, 2).toString()  // dateOfVisit
+                    };
+                } else {
+                    // For other tables that use a single ID
+                    ids = new String[]{table.getValueAt(row, 0).toString()};
+                }
+                
+                // Get the record from the database
+                Object record = dao.get(ids);
+                
+                // Open the form for editing
+                // For example, for Doctor table
+                //DoctorForm form = new DoctorForm(parent, (Doctor) record, true);
+                //form.setVisible(true);
+                // After the form is closed, update the table
+                // table.setModel(new CustomTableModel(dao.getAll(), tableType));
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(
+                    table,
+                    "Error editing record: " + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+                );
+            }
+        }
     }
     
     private void handleDelete() {

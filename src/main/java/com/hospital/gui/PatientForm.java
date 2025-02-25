@@ -1,19 +1,11 @@
 package com.hospital.gui;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-
-import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import com.hospital.models.Patient;
 
-public class PatientForm extends JDialog {
+public class PatientForm extends BaseForm<Patient> {
     private final Patient patient;
     private boolean submitted = false;
 
@@ -26,44 +18,35 @@ public class PatientForm extends JDialog {
     private JTextField phoneNumberField;
     private JTextField insuranceIDField;
 
-    public PatientForm(JFrame parent, Patient patient, boolean modal){
-        super(parent, "Add Patient", modal);
+    public PatientForm(JFrame parent, Patient patient){
+        super(parent, patient,"Patient Form");
         this.patient = patient;
-        
-        setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        // Add form fields
-        gbc.gridx = 0; gbc.gridy = 0;
-        add(new JLabel("Patient ID:"), gbc);
-        gbc.gridx = 1;
-        patientIDField = new JTextField(20);
-        add(patientIDField, gbc);
-
-        // Add other fields similarly...
-
-        // Add buttons
-        JPanel buttonPanel = new JPanel();
-        JButton saveButton = new JButton("Save");
-        JButton cancelButton = new JButton("Cancel");
-
-        saveButton.addActionListener(e -> save());
-        cancelButton.addActionListener(e -> dispose());
-
-        buttonPanel.add(saveButton);
-        buttonPanel.add(cancelButton);
-
-        gbc.gridx = 0; gbc.gridy = 7;
-        gbc.gridwidth = 2;
-        add(buttonPanel, gbc);
-
-        pack();
-        setLocationRelativeTo(parent);
     }
 
-    private void save() {
+    @Override
+    protected void createFormFields() {
+        patientIDField = new JTextField(20);
+        firstNameField = new JTextField(20);
+        lastNameField = new JTextField(20);
+        addressField = new JTextField(20);
+        emailField = new JTextField(20);
+        postcodeField = new JTextField(20);
+        phoneNumberField = new JTextField(20);
+        insuranceIDField = new JTextField(20);
+
+        addFormField("Patient ID", patientIDField);
+        addFormField("First Name", firstNameField);
+        addFormField("Last Name", lastNameField);
+        addFormField("Address", addressField);
+        addFormField("Email", emailField);
+        addFormField("Postcode", postcodeField);
+        addFormField("Phone Number", phoneNumberField);
+        addFormField("Insurance ID", insuranceIDField);
+    }
+     
+    
+    @Override   
+    protected void saveEntity() {
         patient.setPatientID(patientIDField.getText());
         patient.setFirstName(firstNameField.getText());
         patient.setLastName(lastNameField.getText());
@@ -76,7 +59,7 @@ public class PatientForm extends JDialog {
         submitted = true;
         dispose();
     }
-
+    @Override
     public boolean isSubmitted() {
         return submitted;
     }   

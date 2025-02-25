@@ -76,19 +76,28 @@ public class MainFrame extends JFrame {
         menuBar.add(viewTableMenu);
 
         // Add Records menu
-        JMenu addRecordsMenu = new JMenu("Add Records");  // Changed from "Find Records"
+        JMenu addRecordsMenu = new JMenu("Add Records");
+
         JMenuItem addDoctorFormMenuItem = new JMenuItem("Doctor Form");
-        addDoctorFormMenuItem.addActionListener(e -> showDoctorForm());
         JMenuItem addPatientFormMenuItem = new JMenuItem("Patient Form");
-        addPatientFormMenuItem.addActionListener(e -> showPatientForm());
         JMenuItem addDrugFormMenuItem = new JMenuItem("Drug Form");
-        addDrugFormMenuItem.addActionListener(e -> showDrugForm());
         JMenuItem addInsuranceComFormMenuItem = new JMenuItem("Insurance Company Form");
-        addInsuranceComFormMenuItem.addActionListener(e -> showInsuranceComForm()); // TODO Implement Options to add Prescription and Visit data to the system.
-        addRecordsMenu.add(addDrugFormMenuItem);
-        addRecordsMenu.add(addInsuranceComFormMenuItem);
+        JMenuItem addPrescriptionFormMenuItem = new JMenuItem("Prescription Form");
+        JMenuItem addVisitFormMenuItem = new JMenuItem("Visit Form");
+
+        addDoctorFormMenuItem.addActionListener(e -> showDoctorForm());
+        addPatientFormMenuItem.addActionListener(e -> showPatientForm());
+        addDrugFormMenuItem.addActionListener(e -> showDrugForm());
+        addInsuranceComFormMenuItem.addActionListener(e -> showInsuranceComForm());
+        addPrescriptionFormMenuItem.addActionListener(e -> showPrescriptionForm());
+        addVisitFormMenuItem.addActionListener(e -> showVisitForm());
+
         addRecordsMenu.add(addDoctorFormMenuItem);
         addRecordsMenu.add(addPatientFormMenuItem);
+        addRecordsMenu.add(addDrugFormMenuItem);
+        addRecordsMenu.add(addInsuranceComFormMenuItem);
+        addRecordsMenu.add(addPrescriptionFormMenuItem);
+        addRecordsMenu.add(addVisitFormMenuItem);
         menuBar.add(addRecordsMenu);
 
         setJMenuBar(menuBar);
@@ -259,52 +268,71 @@ public class MainFrame extends JFrame {
         createTable(data, columnNames, tableType);
     }
     private void showInsuranceComForm() {
-        InsuranceCom insuranceCom = new InsuranceCom();
-        InsuranceForm form = new InsuranceForm(this, insuranceCom, true);
-        form.setVisible(true);
-        if (form.isSubmitted()) {
-            // Get the DAO from the factory
-            BaseDAO<InsuranceCom> insuranceDAO = DAOFactory.getDAO("insurance");
-            insuranceDAO.save(insuranceCom);
-            viewInsuranceComTable(); // Refresh the table
-        }
+    InsuranceCom insuranceCom = new InsuranceCom();
+    BaseForm<InsuranceCom> form = FormFactory.getForm("insurance", this, insuranceCom);
+    form.setVisible(true);
+    if (form.isSubmitted()) {
+        BaseDAO<InsuranceCom> insuranceDAO = DAOFactory.getDAO("insurance");
+        insuranceDAO.save(insuranceCom);
+        viewInsuranceComTable();
     }
+}
 
-    private void showDrugForm() {
-        Drug drug = new Drug();
-        DrugForm form = new DrugForm(this, drug, true);
-        form.setVisible(true);
-        if (form.isSubmitted()) {
-            // Get the DAO from the factory
-            BaseDAO<Drug> drugDAO = DAOFactory.getDAO("drug");
-            drugDAO.save(drug);
-            viewDrugTable(); // Refresh the table
-        }
+private void showDrugForm() {
+    Drug drug = new Drug();
+    BaseForm<Drug> form = FormFactory.getForm("drug", this, drug);
+    form.setVisible(true);
+    if (form.isSubmitted()) {
+        BaseDAO<Drug> drugDAO = DAOFactory.getDAO("drug");
+        drugDAO.save(drug);
+        viewDrugTable();
     }
+}
 
-    private void showDoctorForm() {
-        Doctor doctor = new Doctor();
-        DoctorForm form = new DoctorForm(this, doctor, true);
-        form.setVisible(true);
-        if (form.isSubmitted()) {
-            // Get the DAO from the factory
-            BaseDAO<Doctor> doctorDAO = DAOFactory.getDAO("doctor");
-            doctorDAO.save(doctor);
-            viewDoctorTable(); // Refresh the table
-        }
+private void showDoctorForm() {
+    Doctor doctor = new Doctor();
+    BaseForm<Doctor> form = FormFactory.getForm("doctor", this, doctor);
+    form.setVisible(true);
+    if (form.isSubmitted()) {
+        BaseDAO<Doctor> doctorDAO = DAOFactory.getDAO("doctor");
+        doctorDAO.save(doctor);
+        viewDoctorTable();
     }
+}
 
-    private void showPatientForm() {
-        Patient patient = new Patient();
-        PatientForm form = new PatientForm(this, patient, true);
-        form.setVisible(true);
-        if (form.isSubmitted()) {
-            // Get the DAO from the factory
-            BaseDAO<Patient> patientDAO = DAOFactory.getDAO("patient");
-            patientDAO.save(patient);
-            viewPatientTable(); // Refresh the table
-        }
+private void showPatientForm() {
+    Patient patient = new Patient();
+    BaseForm<Patient> form = FormFactory.getForm("patient", this, patient);
+    form.setVisible(true);
+    if (form.isSubmitted()) {
+        BaseDAO<Patient> patientDAO = DAOFactory.getDAO("patient");
+        patientDAO.save(patient);
+        viewPatientTable();
     }
+}
+
+// Add missing forms
+private void showPrescriptionForm() {
+    Prescription prescription = new Prescription();
+    BaseForm<Prescription> form = FormFactory.getForm("prescription", this, prescription);
+    form.setVisible(true);
+    if (form.isSubmitted()) {
+        BaseDAO<Prescription> prescriptionDAO = DAOFactory.getDAO("prescription");
+        prescriptionDAO.save(prescription);
+        viewPrescriptionTable();
+    }
+}
+
+private void showVisitForm() {
+    Visit visit = new Visit();
+    BaseForm<Visit> form = FormFactory.getForm("visit", this, visit);
+    form.setVisible(true);
+    if (form.isSubmitted()) {
+        BaseDAO<Visit> visitDAO = DAOFactory.getDAO("visit");
+        visitDAO.save(visit);
+        viewVisitTable();
+    }
+}
 
     public static void main(String[] args) {
         // Test the database connection
