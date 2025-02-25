@@ -1,11 +1,22 @@
 package com.hospital.models;
+import java.util.Scanner;
 
 public class Person {
-    private String firstName; private String lastName; private String address; private String email;
+    //Variables for Person class    
+    private String firstName; 
+    private String lastName; 
+    private String address; 
+    private String email;
 
+
+    //Constructor for Person class
     public Person(String firstName, String lastName, String address, String email) {
         this.firstName = firstName; this.lastName = lastName; this.address = address;
         this.email = email;
+    }
+    //Default Constructor
+    public Person() {
+        this.firstName = ""; this.lastName = ""; this.address = ""; this.email = "";
     }
     // Getters
     public String getFirstName() { return firstName; }
@@ -26,6 +37,17 @@ public class Person {
         System.out.println("Email: " + email);
         System.out.println("Address: " + address);
 
+    }
+    public void addNewPerson(){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter First Name: ");
+        setFirstName(scanner.nextLine());
+        System.out.println("Enter Last Name: ");
+        setLastName(scanner.nextLine());
+        System.out.println("Enter Email: ");
+        setEmail(scanner.nextLine());
+        System.out.println("Enter Address: ");
+        setAddress(scanner.nextLine());
     }
 
 }

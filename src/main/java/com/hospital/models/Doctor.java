@@ -1,4 +1,5 @@
 package com.hospital.models;
+import java.util.Scanner;
 
 public class Doctor extends Person {
 
@@ -12,7 +13,12 @@ public class Doctor extends Person {
         this.specialization = specialization;
         this.hospital = hospital;
     }
-
+    public Doctor(){
+        super();
+        this.doctorID = "";
+        this.specialization = "";
+        this.hospital = "";
+    }
 
 
     //Setters & Getters for the Doctor class
@@ -42,6 +48,17 @@ public class Doctor extends Person {
         System.out.println("Specialization: "+specialization);
         System.out.println("Hospital: "+hospital);
 
+    }
+
+    public void addNewDoctor() {
+      Scanner scanner = new Scanner(System.in);
+      super.addNewPerson();
+      System.out.println("Enter Doctor ID: "); 
+      setDoctorID(scanner.nextLine());
+      System.out.println("Enter Specialization: ");
+      setSpecialization(scanner.nextLine());
+      System.out.println("Enter Hospital: ");
+      setHospital(scanner.nextLine());
     }
 
 
