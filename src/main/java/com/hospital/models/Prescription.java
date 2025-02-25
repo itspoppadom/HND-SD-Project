@@ -1,5 +1,7 @@
 package com.hospital.models;
 
+import java.util.Scanner;
+
 import com.hospital.utils.DateValidator;
 
 public class Prescription {
@@ -13,6 +15,7 @@ public class Prescription {
     private String doctorID;  // Association by ID
     private String patientID;  // Association by ID
 
+    Scanner scanner = new Scanner(System.in);
     // Default Constructor for Prescription Class
     public Prescription() {
         this.prescriptionID = "";
@@ -50,7 +53,7 @@ public class Prescription {
     }
 
     public void setDatePrescribed(String datePrescribed) {
-        this.datePrescribed = datePrescribed;
+        this.datePrescribed = DateValidator.isValidDate(datePrescribed) ? datePrescribed : DateValidator.getCurrentDate();
     }
 
     public int getDosage() {
@@ -99,5 +102,25 @@ public class Prescription {
 
     public void setPatientID(String patientID) {
         this.patientID = patientID;
+    }
+
+    public void addNewPrescription (){
+        System.out.println("Enter Prescription ID: ");
+        prescriptionID = scanner.nextLine();
+        System.out.println("Enter Date Prescribed: ");
+        datePrescribed = scanner.nextLine();
+        datePrescribed = DateValidator.isValidDate(datePrescribed) ? datePrescribed : DateValidator.getCurrentDate();
+        System.out.println("Enter Dosage: ");
+        dosage = scanner.nextInt();
+        System.out.println("Enter Duration: ");
+        duration = scanner.nextInt();
+        System.out.println("Enter Comment: ");
+        comment = scanner.nextLine();
+        System.out.println("Enter Drug ID: ");
+        drugID = scanner.nextLine();
+        System.out.println("Enter Doctor ID: ");
+        doctorID = scanner.nextLine();
+        System.out.println("Enter Patient ID: ");
+        patientID = scanner.nextLine();
     }
 }

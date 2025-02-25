@@ -9,6 +9,9 @@ public class Person {
     private String email;
 
 
+    //Singleton scanner
+    Scanner scanner = new Scanner(System.in);
+
     //Constructor for Person class
     public Person(String firstName, String lastName, String address, String email) {
         this.firstName = firstName; this.lastName = lastName; this.address = address;
@@ -39,7 +42,6 @@ public class Person {
 
     }
     public void addNewPerson(){
-        Scanner scanner = new Scanner(System.in);
         System.out.println("Enter First Name: ");
         setFirstName(scanner.nextLine());
         System.out.println("Enter Last Name: ");

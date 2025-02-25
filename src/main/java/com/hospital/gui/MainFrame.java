@@ -17,8 +17,19 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import com.hospital.dao.DatabaseConnection;
-import com.hospital.dao.*;
-import com.hospital.models.*;
+import com.hospital.dao.DoctorDAO;
+import com.hospital.dao.DrugDAO;
+import com.hospital.dao.InsuranceComDAO;
+import com.hospital.dao.PatientDAO;
+import com.hospital.dao.PrescriptionDAO;
+import com.hospital.dao.VisitDAO;
+import com.hospital.models.Doctor;
+import com.hospital.models.Drug;
+import com.hospital.models.InsuranceCom;
+import com.hospital.models.Patient;
+import com.hospital.models.Prescription;
+import com.hospital.models.Visit;
+
 
 public class MainFrame extends JFrame {
     private JPanel mainPanel;
@@ -55,9 +66,18 @@ public class MainFrame extends JFrame {
         viewPatientTableMenuItem.addActionListener(e -> viewPatientTable());
         JMenuItem viewDrugTableMenuItem = new JMenuItem("Drug Table");
         viewDrugTableMenuItem.addActionListener(e -> viewDrugTable());
+        JMenuItem viewICTableMenuItem = new JMenuItem("Insurance Company Table");
+        viewICTableMenuItem.addActionListener(e -> viewInsuranceComTable());
+        JMenuItem viewPrescriptioMenuItem = new JMenuItem("Prescription Table");
+        viewPrescriptioMenuItem.addActionListener(e -> viewPrescriptionTable());
+        JMenuItem viewVisitMenuItem = new JMenuItem("Visit Table");
+        viewVisitMenuItem.addActionListener(e -> viewVisitTable());
+        viewTableMenu.add(viewVisitMenuItem);
+        viewTableMenu.add(viewPrescriptioMenuItem);
         viewTableMenu.add(viewDrugTableMenuItem);
         viewTableMenu.add(viewDoctorTableMenuItem);
         viewTableMenu.add(viewPatientTableMenuItem);
+        viewTableMenu.add(viewICTableMenuItem);
         menuBar.add(viewTableMenu);
 
         // Add Records menu
@@ -66,6 +86,12 @@ public class MainFrame extends JFrame {
         addDoctorFormMenuItem.addActionListener(e -> showDoctorForm());
         JMenuItem addPatientFormMenuItem = new JMenuItem("Patient Form");
         addPatientFormMenuItem.addActionListener(e -> showPatientForm());
+        JMenuItem addDrugFormMenuItem = new JMenuItem("Drug Form");
+        addDrugFormMenuItem.addActionListener(e -> showDrugForm());
+        JMenuItem addInsuranceComFormMenuItem = new JMenuItem("Insurance Company Form");
+        addInsuranceComFormMenuItem.addActionListener(e -> showInsuranceComForm());
+        addRecordsMenu.add(addDrugFormMenuItem);
+        addRecordsMenu.add(addInsuranceComFormMenuItem);
         addRecordsMenu.add(addDoctorFormMenuItem);
         addRecordsMenu.add(addPatientFormMenuItem);
         menuBar.add(addRecordsMenu);
@@ -73,6 +99,17 @@ public class MainFrame extends JFrame {
         setJMenuBar(menuBar);
 
         setVisible(true);
+    }
+
+    public void createTable(Object[][] data, String[] columnNames) {
+        JTable table = new JTable(data, columnNames);
+        JScrollPane scrollPane = new JScrollPane(table);
+        mainPanel.removeAll();
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        mainPanel.revalidate();
+        mainPanel.repaint();
+
+        
     }
 
     private void viewDoctorTable() {
@@ -96,14 +133,7 @@ public class MainFrame extends JFrame {
         }
 
         // Create JTable with the data
-        JTable table = new JTable(data, columnNames);
-        JScrollPane scrollPane = new JScrollPane(table);
-
-        // Remove all components from the main panel and add the table
-        mainPanel.removeAll();
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
-        mainPanel.revalidate();
-        mainPanel.repaint();
+        createTable(data, columnNames);
     }
 
     private void viewPatientTable() {
@@ -128,42 +158,83 @@ public class MainFrame extends JFrame {
         }
 
         // Create JTable with the data
-        JTable table = new JTable(data, columnNames);
-        JScrollPane scrollPane = new JScrollPane(table);
-
-        // Remove all components from the main panel and add the table
-        mainPanel.removeAll();
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
-        mainPanel.revalidate();
-        mainPanel.repaint();
+        createTable(data, columnNames);
     }
 
     private void viewDrugTable() {
         // Retrieve the list of drugs from the database
         List<Drug> drugs = DrugDAO.getAllDrugs();
-
         // Create column names
-        String[] columnNames = {"Drug ID", "Name", "Description", "Price"};
-
+        String[] columnNames = {"Drug ID", "Name", "SideEffects", "Benefits"};
         // Create data array
         Object[][] data = new Object[drugs.size()][4];
         for (int i = 0; i < drugs.size(); i++) {
             Drug drug = drugs.get(i);
             data[i][0] = drug.getDrugID();
-            data[i][1] = drug.getDrugName()();
-            data[i][2] = drug.get();
-            data[i][3] = drug.getPrice();
+            data[i][1] = drug.getDrugName();
+            data[i][2] = drug.getSideEffects();
+            data[i][3] = drug.getBenefits();
         }
 
         // Create JTable with the data
-        JTable table = new JTable(data, columnNames);
-        JScrollPane scrollPane = new JScrollPane(table);
+        createTable(data, columnNames);
+    }
+    public void viewInsuranceComTable(){
+        List<InsuranceCom> insuranceCompanies = InsuranceComDAO.getAllInsuranceCom(); 
+        String[] columnNames = {"Insurance ID", "Name", "Address", "Phone"};
+        Object[][] data = new Object[insuranceCompanies.size()][4];
+        for (int i = 0; i < insuranceCompanies.size(); i++) {
+            InsuranceCom insuranceCompany = insuranceCompanies.get(i);
+            data[i][0] = insuranceCompany.getInsuranceID();
+            data[i][1] = insuranceCompany.getCompanyName();
+            data[i][2] = insuranceCompany.getAddress();
+            data[i][3] = insuranceCompany.getPhone();
+        }
+        createTable(data, columnNames);
 
-        // Remove all components from the main panel and add the table
-        mainPanel.removeAll();
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
-        mainPanel.revalidate();
-        mainPanel.repaint();
+    }
+
+    public void viewPrescriptionTable(){
+        List<Prescription> prescriptions = PrescriptionDAO.getAllPrescriptions();
+        String[] columnNames = {"Prescription ID", "Date Prescribed", "Dosage", "Duration", "Comment", "Drug ID", "Doctor ID", "Patient ID"};   
+        Object[][] data = new Object[prescriptions.size()][8];
+        for (int i = 0; i < prescriptions.size(); i++) {
+            Prescription prescription = prescriptions.get(i);
+            data[i][0] = prescription.getPrescriptionID();
+            data[i][1] = prescription.getDatePrescribed();
+            data[i][2] = prescription.getDosage();
+            data[i][3] = prescription.getDuration();
+            data[i][4] = prescription.getComment();
+            data[i][5] = prescription.getDrugID();
+            data[i][6] = prescription.getDoctorID();
+            data[i][7] = prescription.getPatientID();
+        }
+        createTable(data, columnNames);
+    }
+    public void viewVisitTable(){
+        List<Visit> visits = VisitDAO.getAllVisits();
+        String[] columnNames = {"PatientID", "DoctorID", "DateOfVisit", "Symptoms", "DiagnosisID"};
+        Object[][] data = new Object[visits.size()][5];
+        for (int i = 0; i < visits.size(); i++) {
+            Visit visit = visits.get(i);
+            data[i][0] = visit.getPatientID();
+            data[i][1] = visit.getDoctorID();
+            data[i][2] = visit.getDateOfVisit();
+            data[i][3] = visit.getSymptoms();
+            data[i][4] = visit.getDiagnosisID();
+        }
+        createTable(data, columnNames);
+    }
+    private void showInsuranceComForm(){
+        // Implement the logic to display the drug form
+        JOptionPane.showMessageDialog(this, "Displaying Drug Form");
+    
+    }
+
+
+    private void showDrugForm() {
+        // Implement the logic to display the drug form
+        JOptionPane.showMessageDialog(this, "Displaying Drug Form");
     }
 
     private void showDoctorForm() {

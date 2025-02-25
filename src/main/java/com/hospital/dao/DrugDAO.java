@@ -10,9 +10,9 @@ import java.util.List;
 import com.hospital.models.Drug;
 
 public class DrugDAO {
-    public List<Drug> getAllDrugs() {
+    public static List<Drug> getAllDrugs() {
         List<Drug> drugs = new ArrayList<>();
-        String query = "SELECT * FROM drugs";
+        String query = "SELECT * FROM drug";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query);
@@ -33,7 +33,7 @@ public class DrugDAO {
         return drugs;
     }
     public Drug getDrug(String drugID) {
-        String query = "SELECT * FROM drugs WHERE drugID = ?";
+        String query = "SELECT * FROM drug WHERE drugID = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {

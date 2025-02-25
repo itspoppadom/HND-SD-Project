@@ -10,6 +10,9 @@ public class Patient extends Person {
    private String phoneNumber;
    private String insuranceID;
 
+   //Singleton scanner
+   Scanner scanner = new Scanner(System.in);
+
     //Constructor for the Patient class
     public Patient(String firstName, String lastName, String address, String email, String patientID, String postcode, String phoneNumber, String insuranceID) {
         super(firstName, lastName, address, email);
@@ -68,7 +71,6 @@ public class Patient extends Person {
 
     //Add new person operation
     public void addNewPatient(){
-        Scanner scanner = new Scanner(System.in);
         super.addNewPerson();
         System.out.println("Enter Patient ID: ");
         patientID = scanner.nextLine();

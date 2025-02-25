@@ -9,6 +9,8 @@ public class InsuranceCom {
     private String address;
     private String phone;
 
+    //Singleton scanner
+    Scanner scanner = new Scanner(System.in);
     //Constructor for Insurance Company Tables
 
     public InsuranceCom (String insuranceID, String companyName, String address, String phone){
@@ -54,9 +56,16 @@ public class InsuranceCom {
     public void setPhone(String phone) {
         this.phone = phone;
     }
-        
+    
+    public void DisplayInsuranceCom(){
+        System.out.println("Insurance ID: " + insuranceID);
+        System.out.println("Company Name: " + companyName);
+        System.out.println("Address: " + address);
+        System.out.println("Phone: " + phone);
+    }
+
     public void addNewInsuranceCom(){
-        Scanner scanner = new Scanner(System.in);
+        
         System.out.println("Enter Insurance ID: ");
         this.insuranceID = scanner.nextLine();
         System.out.println("Enter Company Name: ");

@@ -7,12 +7,18 @@ public class Doctor extends Person {
     private String specialization;
     private String hospital;
 
+    //Singleton scanner
+    Scanner scanner = new Scanner(System.in);
+
+    //Constructor for the Doctor class
+
     public Doctor(String firstName, String lastName, String address,String email, String doctorID,String specialization,String hospital ){
         super(firstName,lastName,address,email);
         this.doctorID = doctorID;
         this.specialization = specialization;
         this.hospital = hospital;
     }
+    //Default Constructor for Doctor class
     public Doctor(){
         super();
         this.doctorID = "";
@@ -49,9 +55,8 @@ public class Doctor extends Person {
         System.out.println("Hospital: "+hospital);
 
     }
-
+    //Function to add a new Doctor
     public void addNewDoctor() {
-      Scanner scanner = new Scanner(System.in);
       super.addNewPerson();
       System.out.println("Enter Doctor ID: "); 
       setDoctorID(scanner.nextLine());
