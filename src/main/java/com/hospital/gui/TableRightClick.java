@@ -3,13 +3,22 @@ package com.hospital.gui;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 
 import com.hospital.dao.BaseDAO;
 import com.hospital.dao.DAOFactory;
+import com.hospital.models.Doctor;
+import com.hospital.models.Drug;
+import com.hospital.models.InsuranceCom;
+import com.hospital.models.Patient;
+import com.hospital.models.Prescription;
+import com.hospital.models.Visit;
+
 
 public class TableRightClick extends MouseAdapter {
     private final JPopupMenu popupMenu;
@@ -65,32 +74,49 @@ public class TableRightClick extends MouseAdapter {
     }
     
     private void handleEdit() {
-        // Get the selected row
         int row = table.getSelectedRow();
         if (row != -1) {
             try {
+                // Get the ID(s) of the selected record
                 String[] ids;
                 if (tableType.equalsIgnoreCase("visit")) {
-                    // For Visit table, we need three columns
                     ids = new String[]{
                         table.getValueAt(row, 0).toString(), // patientID
                         table.getValueAt(row, 1).toString(), // doctorID
                         table.getValueAt(row, 2).toString()  // dateOfVisit
                     };
                 } else {
-                    // For other tables that use a single ID
                     ids = new String[]{table.getValueAt(row, 0).toString()};
                 }
-                
-                // Get the record from the database
-                Object record = dao.get(ids);
-                
-                // Open the form for editing
-                // For example, for Doctor table
-                //DoctorForm form = new DoctorForm(parent, (Doctor) record, true);
-                //form.setVisible(true);
-                // After the form is closed, update the table
-                // table.setModel(new CustomTableModel(dao.getAll(), tableType));
+
+                // Get the record from the database with proper type casting
+                switch (tableType.toLowerCase()) {
+                    case "patient" -> {
+                        Patient patient = (Patient) dao.get(ids);
+                        handleFormSubmission(patient);
+                    }
+                    case "doctor" -> {
+                        Doctor doctor = (Doctor) dao.get(ids);
+                        handleFormSubmission(doctor);
+                    }
+                    case "drug" -> {
+                        Drug drug = (Drug) dao.get(ids);
+                        handleFormSubmission(drug);
+                    }
+                    case "prescription" -> {
+                        Prescription prescription = (Prescription) dao.get(ids);
+                        handleFormSubmission(prescription);
+                    }
+                    case "insurance" -> {
+                        InsuranceCom insurance = (InsuranceCom) dao.get(ids);
+                        handleFormSubmission(insurance);
+                    }
+                    case "visit" -> {
+                        Visit visit = (Visit) dao.get(ids);
+                        handleFormSubmission(visit);
+                    }
+                    default -> throw new IllegalArgumentException("Unknown table type: " + tableType);
+                }
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(
                     table,
@@ -101,43 +127,110 @@ public class TableRightClick extends MouseAdapter {
             }
         }
     }
-    
-    private void handleDelete() {
-    int row = table.getSelectedRow();
-    if (row != -1) {
-        try {
-            String[] ids;
-            if (tableType.equalsIgnoreCase("visit")) {
-                // For Visit table, we need three columns
-                ids = new String[]{
-                    table.getValueAt(row, 0).toString(), // patientID
-                    table.getValueAt(row, 1).toString(), // doctorID
-                    table.getValueAt(row, 2).toString()  // dateOfVisit
-                };
-            } else {
-                // For other tables that use a single ID
-                ids = new String[]{table.getValueAt(row, 0).toString()};
-            }
 
-            int confirm = JOptionPane.showConfirmDialog(
-                table,
-                "Are you sure you want to delete this record?",
-                "Confirm Delete",
-                JOptionPane.YES_NO_OPTION
+    private <T> void handleFormSubmission(T entity) {
+        if (entity == null) {
+            throw new IllegalArgumentException("Record not found");
+        }
+
+        try {
+            // Create and show the form with proper typing
+            BaseForm<T> form = (BaseForm<T>) FormFactory.getForm(
+                tableType,
+                (JFrame) SwingUtilities.getWindowAncestor(table),
+                entity
             );
-            
-            if (confirm == JOptionPane.YES_OPTION) {
-                dao.delete(ids);
-                JOptionPane.showMessageDialog(table, "Record deleted successfully");
+            form.setVisible(true);
+
+            // Handle form submission
+            if (form.isSubmitted()) {
+                // Update the record using the DAO with proper type casting
+                switch (tableType.toLowerCase()) {
+                    case "patient" -> {
+                        BaseDAO<Patient> patientDao = DAOFactory.getDAO("patient");
+                        patientDao.update((Patient) entity);
+                    }
+                    case "doctor" -> {
+                        BaseDAO<Doctor> doctorDao = DAOFactory.getDAO("doctor");
+                        doctorDao.update((Doctor) entity);
+                    }
+                    case "drug" -> {
+                        BaseDAO<Drug> drugDao = DAOFactory.getDAO("drug");
+                        drugDao.update((Drug) entity);
+                    }
+                    case "prescription" -> {
+                        BaseDAO<Prescription> prescriptionDao = DAOFactory.getDAO("prescription");
+                        prescriptionDao.update((Prescription) entity);
+                    }
+                    case "insurance" -> {
+                        BaseDAO<InsuranceCom> insuranceDao = DAOFactory.getDAO("insurance");
+                        insuranceDao.update((InsuranceCom) entity);
+                    }
+                    case "visit" -> {
+                        BaseDAO<Visit> visitDao = DAOFactory.getDAO("visit");
+                        visitDao.update((Visit) entity);
+                    }
+                    default -> throw new IllegalArgumentException("Unknown table type: " + tableType);
+                }
+                
+                // Refresh the table
+                table.setModel(new CustomTableModel(dao.getAll(), tableType));
+                JOptionPane.showMessageDialog(table, "Record updated successfully");
             }
+        } catch (ClassCastException ex) {
+            JOptionPane.showMessageDialog(
+                table,
+                "Error: Invalid form type for " + tableType,
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+            );
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(
                 table,
-                "Error deleting record: " + ex.getMessage(),
+                "Error updating record: " + ex.getMessage(),
                 "Error",
                 JOptionPane.ERROR_MESSAGE
             );
         }
     }
+    
+    private void handleDelete() {
+        int row = table.getSelectedRow();
+        if (row != -1) {
+            try {
+                String[] ids;
+                if (tableType.equalsIgnoreCase("visit")) {
+                // For Visit table, we need three columns
+                ids = new String[]{
+                    table.getValueAt(row, 0).toString(), // patientID
+                    table.getValueAt(row, 1).toString(), // doctorID
+                    table.getValueAt(row, 2).toString()  // dateOfVisit
+                    };
+                } else {
+                    // For other tables that use a single ID
+                    ids = new String[]{table.getValueAt(row, 0).toString()};
+                }
+
+                int confirm = JOptionPane.showConfirmDialog(
+                    table,
+                    "Are you sure you want to delete this record?",
+                    "Confirm Delete",
+                    JOptionPane.YES_NO_OPTION
+                );
+                
+                if (confirm == JOptionPane.YES_OPTION) {
+                    dao.delete(ids);
+                    JOptionPane.showMessageDialog(table, "Record deleted successfully");
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(
+                    table,
+                    "Error deleting record: " + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+                );
+            }
+        }
+    }
 }
-}
+
