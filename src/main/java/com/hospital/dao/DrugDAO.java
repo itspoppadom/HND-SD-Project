@@ -9,8 +9,9 @@ import java.util.List;
 
 import com.hospital.models.Drug;
 
-public class DrugDAO {
-    public static List<Drug> getAllDrugs() {
+public class DrugDAO implements BaseDAO<Drug> {
+    @Override
+    public List<Drug> getAll() {
         List<Drug> drugs = new ArrayList<>();
         String query = "SELECT * FROM drug";
 
@@ -29,16 +30,17 @@ public class DrugDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-}
+        }
         return drugs;
     }
-    public Drug getDrug(String drugID) {
+    @Override
+    public Drug get(String... ids) {
         String query = "SELECT * FROM drug WHERE drugID = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setString(1, drugID);
+            stmt.setString(1, ids[0]);
 
             ResultSet rs = stmt.executeQuery();
 
@@ -56,6 +58,55 @@ public class DrugDAO {
         }
         return null;
 
+    }
+    @Override
+    // Delete Drug from Database
+    public void delete(String... ids) {
+        String query = "DELETE FROM drug WHERE drugID = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, ids[0]);
+
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    @Override
+    public void save(Drug drug) {
+        String query = "INSERT INTO drug (drugID, drugname, sideEffects, benefits) VALUES (?, ?, ?, ?)";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, drug.getDrugID());
+            stmt.setString(2, drug.getDrugName());
+            stmt.setString(3, drug.getSideEffects());
+            stmt.setString(4, drug.getBenefits());
+
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    @Override
+    public void update(Drug drug) {
+        String query = "UPDATE drug SET drugname = ?, sideEffects = ?, benefits = ? WHERE drugID = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, drug.getDrugName());
+            stmt.setString(2, drug.getSideEffects());
+            stmt.setString(3, drug.getBenefits());
+            stmt.setString(4, drug.getDrugID());
+
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 }

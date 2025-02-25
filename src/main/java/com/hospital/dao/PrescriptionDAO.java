@@ -9,9 +9,10 @@ import java.util.List;
 
 import com.hospital.models.Prescription;
 
-public class PrescriptionDAO {
-
-    public static void addNewPrescription( Prescription prescription) {
+public class PrescriptionDAO implements BaseDAO<Prescription> {
+    
+    @Override
+    public void save( Prescription prescription) {
     String query = "INSERT INTO Prescription (prescriptionID, datePrescribed, dosage, duration, comment, drugID, doctorID, patientID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     
     try(Connection connection = DatabaseConnection.getConnection()) {
@@ -31,8 +32,8 @@ public class PrescriptionDAO {
             e.printStackTrace();
         }
     }
-
-    public static void updatePrescription( Prescription prescription) {
+    @Override
+    public void update( Prescription prescription) {
         String query = "UPDATE Prescription SET datePrescribed = ?, dosage = ?, duration = ?, comment = ?, drugID = ?, doctorID = ?, patientID = ? WHERE prescriptionID = ?";
             
         try (Connection connection = DatabaseConnection.getConnection()) {
@@ -52,12 +53,25 @@ public class PrescriptionDAO {
         }
 
     }
-    public static Prescription getPrescription(String prescriptionID) {
+    @Override
+    public void delete(String... ids) {
+        String query = "DELETE FROM Prescription WHERE prescriptionID = ?";
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, ids[0]);
+            preparedStatement.executeUpdate();
+            System.out.println("Prescription deleted successfully");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    @Override
+    public Prescription get(String... ids) {
         String query = "SELECT * FROM Prescription WHERE prescriptionID = ?";
         Prescription prescription = new Prescription();
         try (Connection connection = DatabaseConnection.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, prescriptionID);
+            preparedStatement.setString(1, ids[0]);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 prescription.setPrescriptionID(resultSet.getString("prescriptionID"));
@@ -74,7 +88,8 @@ public class PrescriptionDAO {
         }
         return prescription;
     }
-    public static List<Prescription> getAllPrescriptions() {
+    @Override
+    public List<Prescription> getAll() {
         List<Prescription> prescriptions = new ArrayList<>();
         String query = "SELECT * FROM Prescription";
         try (Connection connection = DatabaseConnection.getConnection();
@@ -96,15 +111,4 @@ public class PrescriptionDAO {
             e.printStackTrace();
         } return prescriptions;
         }
-    public static void deletePrescription(String prescriptionID) {
-        String query = "DELETE FROM Prescription WHERE prescriptionID = ?";
-        try (Connection connection = DatabaseConnection.getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, prescriptionID);
-            preparedStatement.executeUpdate();
-            System.out.println("Prescription deleted successfully");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 }

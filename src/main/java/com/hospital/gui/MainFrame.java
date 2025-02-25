@@ -9,20 +9,15 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
+import com.hospital.dao.BaseDAO;
+import com.hospital.dao.DAOFactory;
 import com.hospital.dao.DatabaseConnection;
-import com.hospital.dao.DoctorDAO;
-import com.hospital.dao.DrugDAO;
-import com.hospital.dao.InsuranceComDAO;
-import com.hospital.dao.PatientDAO;
-import com.hospital.dao.PrescriptionDAO;
-import com.hospital.dao.VisitDAO;
 import com.hospital.models.Doctor;
 import com.hospital.models.Drug;
 import com.hospital.models.InsuranceCom;
@@ -81,7 +76,7 @@ public class MainFrame extends JFrame {
         menuBar.add(viewTableMenu);
 
         // Add Records menu
-        JMenu addRecordsMenu = new JMenu("Add Records");
+        JMenu addRecordsMenu = new JMenu("Add Records");  // Changed from "Find Records"
         JMenuItem addDoctorFormMenuItem = new JMenuItem("Doctor Form");
         addDoctorFormMenuItem.addActionListener(e -> showDoctorForm());
         JMenuItem addPatientFormMenuItem = new JMenuItem("Patient Form");
@@ -101,25 +96,29 @@ public class MainFrame extends JFrame {
         setVisible(true);
     }
 
-    public void createTable(Object[][] data, String[] columnNames) {
+    public void createTable(Object[][] data, String[] columnNames, String tableType) {
         JTable table = new JTable(data, columnNames);
         JScrollPane scrollPane = new JScrollPane(table);
         mainPanel.removeAll();
         mainPanel.add(scrollPane, BorderLayout.CENTER);
         mainPanel.revalidate();
         mainPanel.repaint();
-
+        new TableRightClick(table, tableType);
         
     }
 
-    private void viewDoctorTable() {
-        // Retrieve the list of doctors from the database
-        List<Doctor> doctors = DoctorDAO.getAllDoctors();
 
-        // Create column names
+
+    private void viewDoctorTable() {
+        // Get the DAO from the factory
+        BaseDAO<Doctor> doctorDAO = DAOFactory.getDAO("doctor");
+        
+        // Retrieve the list of doctors from the database
+        List<Doctor> doctors = doctorDAO.getAll();
+        
+        String tableType = "doctor";
         String[] columnNames = {"Doctor ID", "First Name", "Last Name", "Address", "Email", "Specialization", "Hospital"};
 
-        // Create data array
         Object[][] data = new Object[doctors.size()][7];
         for (int i = 0; i < doctors.size(); i++) {
             Doctor doctor = doctors.get(i);
@@ -132,18 +131,19 @@ public class MainFrame extends JFrame {
             data[i][6] = doctor.getHospital();
         }
 
-        // Create JTable with the data
-        createTable(data, columnNames);
+        createTable(data, columnNames, tableType);
     }
 
     private void viewPatientTable() {
+        // Get the DAO from the factory
+        BaseDAO<Patient> patientDAO = DAOFactory.getDAO("patient");
+        
         // Retrieve the list of patients from the database
-        List<Patient> patients = PatientDAO.getAllPatients();
-
-        // Create column names
+        List<Patient> patients = patientDAO.getAll();
+        
+        String tableType = "patient";
         String[] columnNames = {"Patient ID", "First Name", "Last Name", "Postcode", "Address", "Phone", "Email", "Insurance ID"};
 
-        // Create data array
         Object[][] data = new Object[patients.size()][8];
         for (int i = 0; i < patients.size(); i++) {
             Patient patient = patients.get(i);
@@ -157,13 +157,14 @@ public class MainFrame extends JFrame {
             data[i][7] = patient.getInsuranceID();
         }
 
-        // Create JTable with the data
-        createTable(data, columnNames);
+        createTable(data, columnNames, tableType);
     }
 
     private void viewDrugTable() {
-        // Retrieve the list of drugs from the database
-        List<Drug> drugs = DrugDAO.getAllDrugs();
+        BaseDAO<Drug> drugDAO = DAOFactory.getDAO("drug");
+        List<Drug> drugs = drugDAO.getAll();
+        // Table type
+        String tableType = "drug";
         // Create column names
         String[] columnNames = {"Drug ID", "Name", "SideEffects", "Benefits"};
         // Create data array
@@ -177,10 +178,17 @@ public class MainFrame extends JFrame {
         }
 
         // Create JTable with the data
-        createTable(data, columnNames);
+        createTable(data, columnNames, tableType);
+        
     }
     public void viewInsuranceComTable(){
-        List<InsuranceCom> insuranceCompanies = InsuranceComDAO.getAllInsuranceCom(); 
+         BaseDAO<InsuranceCom> insuranceDAO = DAOFactory.getDAO("insurance");
+        List<InsuranceCom> insuranceCompanies = insuranceDAO.getAll();
+        // Table type
+        String tableType = "insurance";
+
+
+        // Create column names
         String[] columnNames = {"Insurance ID", "Name", "Address", "Phone"};
         Object[][] data = new Object[insuranceCompanies.size()][4];
         for (int i = 0; i < insuranceCompanies.size(); i++) {
@@ -190,12 +198,16 @@ public class MainFrame extends JFrame {
             data[i][2] = insuranceCompany.getAddress();
             data[i][3] = insuranceCompany.getPhone();
         }
-        createTable(data, columnNames);
+        createTable(data, columnNames, tableType);
 
     }
 
     public void viewPrescriptionTable(){
-        List<Prescription> prescriptions = PrescriptionDAO.getAllPrescriptions();
+        BaseDAO<Prescription> prescriptionDAO = DAOFactory.getDAO("prescription");
+        List<Prescription> prescriptions = prescriptionDAO.getAll();
+        // Table type
+        String tableType = "prescription";
+        // Create column names
         String[] columnNames = {"Prescription ID", "Date Prescribed", "Dosage", "Duration", "Comment", "Drug ID", "Doctor ID", "Patient ID"};   
         Object[][] data = new Object[prescriptions.size()][8];
         for (int i = 0; i < prescriptions.size(); i++) {
@@ -209,11 +221,16 @@ public class MainFrame extends JFrame {
             data[i][6] = prescription.getDoctorID();
             data[i][7] = prescription.getPatientID();
         }
-        createTable(data, columnNames);
+        createTable(data, columnNames, tableType);
     }
     public void viewVisitTable(){
-        List<Visit> visits = VisitDAO.getAllVisits();
+        BaseDAO<Visit> visitDAO = DAOFactory.getDAO("visit");
+        List<Visit> visits = visitDAO.getAll();
+        // Table type
+        String tableType = "visit";
+        // Create column names
         String[] columnNames = {"PatientID", "DoctorID", "DateOfVisit", "Symptoms", "DiagnosisID"};
+        // Create data array
         Object[][] data = new Object[visits.size()][5];
         for (int i = 0; i < visits.size(); i++) {
             Visit visit = visits.get(i);
@@ -223,28 +240,54 @@ public class MainFrame extends JFrame {
             data[i][3] = visit.getSymptoms();
             data[i][4] = visit.getDiagnosisID();
         }
-        createTable(data, columnNames);
+        createTable(data, columnNames, tableType);
     }
-    private void showInsuranceComForm(){
-        // Implement the logic to display the drug form
-        JOptionPane.showMessageDialog(this, "Displaying Drug Form");
-    
+    private void showInsuranceComForm() {
+        InsuranceCom insuranceCom = new InsuranceCom();
+        InsuranceForm form = new InsuranceForm(this, insuranceCom, true);
+        form.setVisible(true);
+        if (form.isSubmitted()) {
+            // Get the DAO from the factory
+            BaseDAO<InsuranceCom> insuranceDAO = DAOFactory.getDAO("insurance");
+            insuranceDAO.save(insuranceCom);
+            viewInsuranceComTable(); // Refresh the table
+        }
     }
-
 
     private void showDrugForm() {
-        // Implement the logic to display the drug form
-        JOptionPane.showMessageDialog(this, "Displaying Drug Form");
+        Drug drug = new Drug();
+        DrugForm form = new DrugForm(this, drug, true);
+        form.setVisible(true);
+        if (form.isSubmitted()) {
+            // Get the DAO from the factory
+            BaseDAO<Drug> drugDAO = DAOFactory.getDAO("drug");
+            drugDAO.save(drug);
+            viewDrugTable(); // Refresh the table
+        }
     }
 
     private void showDoctorForm() {
-        // Implement the logic to display the doctor form
-        JOptionPane.showMessageDialog(this, "Displaying Doctor Form");
+        Doctor doctor = new Doctor();
+        DoctorForm form = new DoctorForm(this, doctor, true);
+        form.setVisible(true);
+        if (form.isSubmitted()) {
+            // Get the DAO from the factory
+            BaseDAO<Doctor> doctorDAO = DAOFactory.getDAO("doctor");
+            doctorDAO.save(doctor);
+            viewDoctorTable(); // Refresh the table
+        }
     }
 
     private void showPatientForm() {
-        // Implement the logic to display the patient form
-        JOptionPane.showMessageDialog(this, "Displaying Patient Form");
+        Patient patient = new Patient();
+        PatientForm form = new PatientForm(this, patient, true);
+        form.setVisible(true);
+        if (form.isSubmitted()) {
+            // Get the DAO from the factory
+            BaseDAO<Patient> patientDAO = DAOFactory.getDAO("patient");
+            patientDAO.save(patient);
+            viewPatientTable(); // Refresh the table
+        }
     }
 
     public static void main(String[] args) {

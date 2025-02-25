@@ -8,9 +8,9 @@ import java.util.List;
 
 import com.hospital.models.Doctor;
 
-public class DoctorDAO {
-
-    public static void addDoctor(Doctor doctor) {
+public class DoctorDAO implements BaseDAO<Doctor> {
+    @Override
+    public void save(Doctor doctor) {
         String query = "INSERT INTO doctors (doctorID, firstname, surname, address, email, specialization, hospital) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -29,8 +29,8 @@ public class DoctorDAO {
             e.printStackTrace();
         }
     }
-
-    public static void updateDoctor(Doctor doctor) {
+    @Override
+    public void update(Doctor doctor) {
         String query = "UPDATE doctor SET firstname = ?, surname = ?, address = ?, email = ?, specialization = ?, hospital = ? WHERE doctorID = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -49,28 +49,28 @@ public class DoctorDAO {
             e.printStackTrace();
         }
     }
-
-    public static void deleteDoctor(String doctorID) {
+    @Override
+    public void delete(String... ids) {
         String query = "DELETE FROM doctor WHERE doctorID = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setString(1, doctorID);
+            stmt.setString(1, ids[0]);
 
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-
-    public static Doctor getDoctor(String doctorID) {
+    @Override
+    public Doctor get(String... ids) {
         String query = "SELECT * FROM doctor WHERE doctorID = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setString(1, doctorID);
+            stmt.setString(1, ids[0]);
 
             ResultSet rs = stmt.executeQuery();
 
@@ -90,7 +90,8 @@ public class DoctorDAO {
         }
         return null;
     }
-    public static List<Doctor> getAllDoctors() {
+    @Override
+    public List<Doctor> getAll() {
         String query = "SELECT * FROM doctor";
         List<Doctor> doctors = new ArrayList<>();
 

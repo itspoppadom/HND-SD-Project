@@ -10,8 +10,10 @@ import java.util.List;
 import com.hospital.models.Patient;
 
 
-public class PatientDAO {
-    public static void addPatient(Patient patient){
+public class PatientDAO implements BaseDAO<Patient> {
+    
+    @Override
+    public void save(Patient patient){
         String query = "INSERT INTO patient (patientID, firstname, surname,postcode ,address, phone, email ,insuranceID) VALUES (?, ?, ?, ?, ? , ? , ? , ? )";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -31,7 +33,8 @@ public class PatientDAO {
             e.printStackTrace();
         }
     }
-    public static void updatePatient(Patient patient){
+    @Override
+    public void update(Patient patient){
         String query = "UPDATE patient SET firstname = ?, surname = ?, postcode = ?, address = ?, phone = ?, email = ?, insuranceID = ? WHERE patientID = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -51,13 +54,14 @@ public class PatientDAO {
             e.printStackTrace();
         }
     }
-    public static void deletePatient(int patientID){
+    @Override
+    public void delete(String... ids){
         String query = "DELETE FROM patient WHERE patientID = ?";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setInt(1, patientID);
+            stmt.setString(1, ids[0]);
 
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -67,14 +71,15 @@ public class PatientDAO {
 
 
     }
-    public static Patient getPatient(int patientID){
+    @Override
+    public Patient get(String... ids){
         String query = "SELECT * FROM patient WHERE patientID = ?";
         Patient patient = null;
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setInt(1, patientID);
+            stmt.setString(1, ids[0]);
 
             ResultSet rs = stmt.executeQuery();
 
@@ -95,7 +100,8 @@ public class PatientDAO {
         }
         return patient;
     }
-    public static List<Patient> getAllPatients() {
+    @Override
+    public List<Patient> getAll() {
 
         String query = "SELECT * FROM patient";
         List<Patient> patients = new ArrayList<>();
