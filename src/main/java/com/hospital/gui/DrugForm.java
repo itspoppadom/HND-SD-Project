@@ -34,6 +34,15 @@ public class DrugForm extends BaseForm<Drug> {
         addFormField("Benefits", benefitsField);
 
     }
+    @Override 
+    protected void populateFormFields() {
+        if (entity != null) { 
+            drugIDField.setText(entity.getDrugID());
+            drugNameField.setText(entity.getDrugName());
+            sideEffectsField.setText(entity.getSideEffects());
+            benefitsField.setText(entity.getBenefits());
+        }
+    }
 
     @Override
     protected void saveEntity() { 

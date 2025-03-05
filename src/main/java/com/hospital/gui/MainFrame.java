@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -53,7 +54,7 @@ public class MainFrame extends JFrame {
         menuBar.add(fileMenu);
 
         // View Table menu
-        JMenu viewTableMenu = new JMenu("View Table");
+        JMenu viewTableMenu = new JMenu("View / Edit");
         JMenuItem viewDoctorTableMenuItem = new JMenuItem("Doctor Table");
         viewDoctorTableMenuItem.addActionListener(e -> viewDoctorTable());
         JMenuItem viewPatientTableMenuItem = new JMenuItem("Patient Table");
@@ -152,71 +153,47 @@ public class MainFrame extends JFrame {
         createTable("visit");
     }
 
-    private void showInsuranceComForm() {
-        InsuranceCom insuranceCom = new InsuranceCom();
-        BaseForm<InsuranceCom> form = FormFactory.getForm("insurance", this, insuranceCom);
-        form.setVisible(true);
-        if (form.isSubmitted()) {
-            BaseDAO<InsuranceCom> insuranceDAO = DAOFactory.getDAO("insurance");
-            insuranceDAO.save(insuranceCom);
-            viewInsuranceComTable();
+    private <T> void showForm(String type, T entity) {
+        try {
+            BaseForm<T> form = FormFactory.getForm(type, this, entity);
+            form.setVisible(true);
+            if (form.isSubmitted()) {
+                BaseDAO<T> dao = DAOFactory.getDAO(type);
+                dao.save(entity);
+                createTable(type);
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(
+                this,
+                "Error showing form: " + ex.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+            );
         }
+    }
+
+    private void showInsuranceComForm() {
+        showForm("insurance", new InsuranceCom());
     }
 
     private void showDrugForm() {
-        Drug drug = new Drug();
-        BaseForm<Drug> form = FormFactory.getForm("drug", this, drug);
-        form.setVisible(true);
-        if (form.isSubmitted()) {
-            BaseDAO<Drug> drugDAO = DAOFactory.getDAO("drug");
-            drugDAO.save(drug);
-            viewDrugTable();
-        }
+        showForm("drug", new Drug());
     }
 
     private void showDoctorForm() {
-        Doctor doctor = new Doctor();
-        BaseForm<Doctor> form = FormFactory.getForm("doctor", this, doctor);
-        form.setVisible(true);
-        if (form.isSubmitted()) {
-            BaseDAO<Doctor> doctorDAO = DAOFactory.getDAO("doctor");
-            doctorDAO.save(doctor);
-            viewDoctorTable();
-        }
+        showForm("doctor", new Doctor());
     }
 
     private void showPatientForm() {
-        Patient patient = new Patient();
-        BaseForm<Patient> form = FormFactory.getForm("patient", this, patient);
-        form.setVisible(true);
-        if (form.isSubmitted()) {
-            BaseDAO<Patient> patientDAO = DAOFactory.getDAO("patient");
-            patientDAO.save(patient);
-            viewPatientTable();
-        }
+        showForm("patient", new Patient());
     }
 
-    // Add missing forms
     private void showPrescriptionForm() {
-        Prescription prescription = new Prescription();
-        BaseForm<Prescription> form = FormFactory.getForm("prescription", this, prescription);
-        form.setVisible(true);
-        if (form.isSubmitted()) {
-            BaseDAO<Prescription> prescriptionDAO = DAOFactory.getDAO("prescription");
-            prescriptionDAO.save(prescription);
-            viewPrescriptionTable();
-        }
+        showForm("prescription", new Prescription());
     }
 
     private void showVisitForm() {
-        Visit visit = new Visit();
-        BaseForm<Visit> form = FormFactory.getForm("visit", this, visit);
-        form.setVisible(true);
-        if (form.isSubmitted()) {
-            BaseDAO<Visit> visitDAO = DAOFactory.getDAO("visit");
-            visitDAO.save(visit);
-            viewVisitTable();
-        }
+        showForm("visit", new Visit());
     }
 
     public static void main(String[] args) {

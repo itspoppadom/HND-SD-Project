@@ -36,6 +36,18 @@ public class DoctorForm extends BaseForm<Doctor> {
         addFormField("Specialization", specializationField);
         addFormField("Hospital", hospitalField);
     }
+    @Override
+    protected void populateFormFields() {
+        if (entity != null) {
+            doctorIDField.setText(entity.getDoctorID());
+            firstNameField.setText(entity.getFirstName());
+            lastNameField.setText(entity.getLastName());
+            addressField.setText(entity.getAddress());
+            emailField.setText(entity.getEmail());
+            specializationField.setText(entity.getSpecialization());
+            hospitalField.setText(entity.getHospital());
+        }
+    }
 
     @Override
     protected void saveEntity() {

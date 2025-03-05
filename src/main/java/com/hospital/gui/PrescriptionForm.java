@@ -43,6 +43,19 @@ protected void createFormFields(){
     addFormField("Patient ID", patientIDField);
 }
 @Override
+protected void populateFormFields(){
+    if (entity != null) {
+        prescriptionIDField.setText(entity.getPrescriptionID());
+        dateOfPrescriptionField.setText(entity.getDatePrescribed());
+        dosageField.setText(String.valueOf(entity.getDosage()));
+        durationField.setText(String.valueOf(entity.getDuration()));
+        commentField.setText(entity.getComment());
+        drugIDField.setText(entity.getDrugID());
+        doctorIDField.setText(entity.getDoctorID());
+        patientIDField.setText(entity.getPatientID());
+    }
+}
+@Override
 protected void saveEntity(){
     prescription.setPrescriptionID(prescriptionIDField.getText());
     prescription.setDatePrescribed(dateOfPrescriptionField.getText());

@@ -20,11 +20,13 @@ import com.hospital.models.Prescription;
 import com.hospital.models.Visit;
 
 
+
 public class TableRightClick extends MouseAdapter {
     private final JPopupMenu popupMenu;
     private final JTable table;
     private final String tableType;
     private final BaseDAO<?> dao;
+    
 
     public TableRightClick(JTable table, String tableType) {
         this.table = table;
@@ -35,14 +37,19 @@ public class TableRightClick extends MouseAdapter {
         JMenuItem addItem = new JMenuItem("Add");
         JMenuItem editItem = new JMenuItem("Edit");
         JMenuItem deleteItem = new JMenuItem("Delete");
+        JMenuItem reloadTable = new JMenuItem("Refresh Table");
         
         addItem.addActionListener(e -> handleAdd());
         editItem.addActionListener(e -> handleEdit());
         deleteItem.addActionListener(e -> handleDelete());
-        
+        reloadTable.addActionListener(e -> {
+            table.setModel(new CustomTableModel(dao.getAll(), tableType));
+        });
+
         popupMenu.add(addItem);
         popupMenu.add(editItem);
         popupMenu.add(deleteItem);
+        popupMenu.add(reloadTable);
         
         table.addMouseListener(this);
     }
@@ -70,53 +77,82 @@ public class TableRightClick extends MouseAdapter {
     }
     
     private void handleAdd() {
-        
+        try {
+            // Create a new empty entity based on table type with proper typing
+            Object entity = switch (tableType.toLowerCase()) {
+                case "patient" -> new Patient();
+                case "doctor" -> new Doctor();
+                case "drug" -> new Drug();
+                case "prescription" -> new Prescription();
+                case "insurance" -> new InsuranceCom();
+                case "visit" -> new Visit();
+                default -> throw new IllegalArgumentException("Unknown table type: " + tableType);
+            };
+
+            // Use FormFactory consistently with proper typing
+            BaseForm<?> form = FormFactory.getForm(
+                tableType,
+                (JFrame) SwingUtilities.getWindowAncestor(table),
+                entity
+            );
+            form.setVisible(true);
+
+            if (form.isSubmitted()) {
+                // Get properly typed DAO for the entity
+                BaseDAO<?> typedDao = DAOFactory.getDAO(tableType);
+                switch (tableType.toLowerCase()) {
+                    case "patient" -> ((BaseDAO<Patient>) typedDao).save((Patient) entity);
+                    case "doctor" -> ((BaseDAO<Doctor>) typedDao).save((Doctor) entity);
+                    case "drug" -> ((BaseDAO<Drug>) typedDao).save((Drug) entity);
+                    case "prescription" -> ((BaseDAO<Prescription>) typedDao).save((Prescription) entity);
+                    case "insurance" -> ((BaseDAO<InsuranceCom>) typedDao).save((InsuranceCom) entity);
+                    case "visit" -> ((BaseDAO<Visit>) typedDao).save((Visit) entity);
+                    default -> throw new IllegalArgumentException("Unknown table type: " + tableType);
+                }
+                
+                // Refresh table
+                table.setModel(new CustomTableModel(typedDao.getAll(), tableType));
+                JOptionPane.showMessageDialog(table, "Record added successfully");
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(
+                table,
+                "Error adding record: " + ex.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+            );
+        }
     }
     
     private void handleEdit() {
         int row = table.getSelectedRow();
         if (row != -1) {
             try {
+                int modelRow = table.convertRowIndexToModel(row);
+                
                 // Get the ID(s) of the selected record
                 String[] ids;
                 if (tableType.equalsIgnoreCase("visit")) {
                     ids = new String[]{
-                        table.getValueAt(row, 0).toString(), // patientID
-                        table.getValueAt(row, 1).toString(), // doctorID
-                        table.getValueAt(row, 2).toString()  // dateOfVisit
+                        table.getModel().getValueAt(modelRow, 0).toString(),
+                        table.getModel().getValueAt(modelRow, 1).toString(),
+                        table.getModel().getValueAt(modelRow, 2).toString()
                     };
                 } else {
-                    ids = new String[]{table.getValueAt(row, 0).toString()};
+                    ids = new String[]{table.getModel().getValueAt(modelRow, 0).toString()};
                 }
 
-                // Get the record from the database with proper type casting
+                // Get record with proper typing
                 switch (tableType.toLowerCase()) {
-                    case "patient" -> {
-                        Patient patient = (Patient) dao.get(ids);
-                        handleFormSubmission(patient);
-                    }
-                    case "doctor" -> {
-                        Doctor doctor = (Doctor) dao.get(ids);
-                        handleFormSubmission(doctor);
-                    }
-                    case "drug" -> {
-                        Drug drug = (Drug) dao.get(ids);
-                        handleFormSubmission(drug);
-                    }
-                    case "prescription" -> {
-                        Prescription prescription = (Prescription) dao.get(ids);
-                        handleFormSubmission(prescription);
-                    }
-                    case "insurance" -> {
-                        InsuranceCom insurance = (InsuranceCom) dao.get(ids);
-                        handleFormSubmission(insurance);
-                    }
-                    case "visit" -> {
-                        Visit visit = (Visit) dao.get(ids);
-                        handleFormSubmission(visit);
-                    }
+                    case "patient" -> handleFormSubmission((Patient) dao.get(ids));
+                    case "doctor" -> handleFormSubmission((Doctor) dao.get(ids));
+                    case "drug" -> handleFormSubmission((Drug) dao.get(ids));
+                    case "prescription" -> handleFormSubmission((Prescription) dao.get(ids));
+                    case "insurance" -> handleFormSubmission((InsuranceCom) dao.get(ids));
+                    case "visit" -> handleFormSubmission((Visit) dao.get(ids));
                     default -> throw new IllegalArgumentException("Unknown table type: " + tableType);
                 }
+                
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(
                     table,
@@ -128,62 +164,35 @@ public class TableRightClick extends MouseAdapter {
         }
     }
 
+    
     private <T> void handleFormSubmission(T entity) {
         if (entity == null) {
             throw new IllegalArgumentException("Record not found");
         }
 
         try {
-            // Create and show the form with proper typing
+            // Get properly typed DAO for updates
+            BaseDAO<T> typedDao = (BaseDAO<T>) DAOFactory.getDAO(tableType);
+            
+            // Create and show form with the existing entity data
             BaseForm<T> form = (BaseForm<T>) FormFactory.getForm(
                 tableType,
                 (JFrame) SwingUtilities.getWindowAncestor(table),
-                entity
+                entity  // This should contain the data from dao.get(ids)
             );
+
+            // Initialize form and make visible
+            form.initializeForm();  // Add this line to ensure form fields are populated
             form.setVisible(true);
 
-            // Handle form submission
             if (form.isSubmitted()) {
-                // Update the record using the DAO with proper type casting
-                switch (tableType.toLowerCase()) {
-                    case "patient" -> {
-                        BaseDAO<Patient> patientDao = DAOFactory.getDAO("patient");
-                        patientDao.update((Patient) entity);
-                    }
-                    case "doctor" -> {
-                        BaseDAO<Doctor> doctorDao = DAOFactory.getDAO("doctor");
-                        doctorDao.update((Doctor) entity);
-                    }
-                    case "drug" -> {
-                        BaseDAO<Drug> drugDao = DAOFactory.getDAO("drug");
-                        drugDao.update((Drug) entity);
-                    }
-                    case "prescription" -> {
-                        BaseDAO<Prescription> prescriptionDao = DAOFactory.getDAO("prescription");
-                        prescriptionDao.update((Prescription) entity);
-                    }
-                    case "insurance" -> {
-                        BaseDAO<InsuranceCom> insuranceDao = DAOFactory.getDAO("insurance");
-                        insuranceDao.update((InsuranceCom) entity);
-                    }
-                    case "visit" -> {
-                        BaseDAO<Visit> visitDao = DAOFactory.getDAO("visit");
-                        visitDao.update((Visit) entity);
-                    }
-                    default -> throw new IllegalArgumentException("Unknown table type: " + tableType);
-                }
+                // Update entity in database
+                typedDao.update(entity);
                 
-                // Refresh the table
-                table.setModel(new CustomTableModel(dao.getAll(), tableType));
+                // Refresh table
+                table.setModel(new CustomTableModel(typedDao.getAll(), tableType));
                 JOptionPane.showMessageDialog(table, "Record updated successfully");
             }
-        } catch (ClassCastException ex) {
-            JOptionPane.showMessageDialog(
-                table,
-                "Error: Invalid form type for " + tableType,
-                "Error",
-                JOptionPane.ERROR_MESSAGE
-            );
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(
                 table,

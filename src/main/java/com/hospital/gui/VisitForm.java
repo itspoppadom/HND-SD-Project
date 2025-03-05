@@ -34,6 +34,16 @@ protected void createFormFields(){
     addFormField("Symptoms", symptoms);
     addFormField("Diagnosis ID", diagnosisID);
 }
+@Override
+protected void populateFormFields(){
+    if (entity != null) {
+        patiendID.setText(entity.getPatientID());
+        doctorID.setText(entity.getDoctorID());
+        dateOfVisit.setText(entity.getDateOfVisit());
+        symptoms.setText(entity.getSymptoms());
+        diagnosisID.setText(entity.getDiagnosisID());
+    }
+}
 
 @Override
 protected void saveEntity(){

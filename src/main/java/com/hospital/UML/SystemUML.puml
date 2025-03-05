@@ -1,0 +1,244 @@
+@startuml
+!theme hacker
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor WhiteSmoke
+
+package "com.hospital.gui" {
+    abstract class BaseForm<T> {
+        # T entity
+        # boolean submitted
+        # JPanel mainPanel
+        # GridBagConstraints gbc
+        + BaseForm(JFrame parent, T entity, String title)
+        # {abstract} void createFormFields()
+        # {abstract} void populateFormFields()
+        # {abstract} void saveEntity()
+        + boolean isSubmitted()
+        # void initializeForm()
+        # void addFormField(String label, JComponent field)
+        # void createButtons()
+    }
+
+    class MainFrame {
+        - JPanel mainPanel
+        + MainFrame()
+        + void createTable(String tableType)
+        - <T> void showForm(String type, T entity)
+        - void viewSpecificTables()
+        + static void main(String[] args)
+        - void showDoctorForm()
+        - void showPatientForm()
+        - void showDrugForm()
+        - void showPrescriptionForm()
+        - void showVisitForm()
+        - void showInsuranceComForm()
+    }
+
+    class TableRightClick {
+        - JTable table
+        - String tableType
+        - BaseDAO<?> dao
+        - JPopupMenu popupMenu
+        + TableRightClick(JTable table, String tableType)
+        - void handleAdd()
+        - void handleEdit()
+        - void handleDelete()
+        - <T> void handleFormSubmission(T entity)
+        + void mousePressed(MouseEvent e)
+        + void mouseReleased(MouseEvent e)
+        - void showMenu(MouseEvent e)
+    }
+
+    class CustomTableModel {
+        - Object[][] data
+        - String[] columnNames
+        - String tableType
+        + CustomTableModel(List<?> items, String tableType)
+        - String[] getColumnNamesForType(String type)
+        - Object[][] convertListToArray(List<?> items)
+        + int getRowCount()
+        + int getColumnCount()
+        + Object getValueAt(int row, int col)
+        + String getColumnName(int col)
+    }
+
+    class FormFactory {
+        + {static} <T> BaseForm<T> getForm(String type, JFrame parent, T entity)
+    }
+
+    class PatientForm extends BaseForm
+    class DoctorForm extends BaseForm
+    class DrugForm extends BaseForm
+    class VisitForm extends BaseForm
+    class PrescriptionForm extends BaseForm
+    class InsuranceComForm extends BaseForm
+}
+
+package "com.hospital.dao" {
+    interface BaseDAO<T> {
+        + void save(T entity)
+        + void update(T entity)
+        + void delete(String... ids)
+        + T get(String... ids)
+        + List<T> getAll()
+    }
+
+    class DAOFactory {
+        + {static} <T> BaseDAO<T> getDAO(String type)
+    }
+
+    class DatabaseConnection {
+        - {static} String URL
+        - {static} String USER
+        - {static} String PASSWORD
+        + {static} Connection getConnection()
+        + {static} void testConnection()
+    }
+
+    class PatientDAO implements BaseDAO
+    class DoctorDAO implements BaseDAO
+    class DrugDAO implements BaseDAO
+    class VisitDAO implements BaseDAO
+    class PrescriptionDAO implements BaseDAO
+    class InsuranceComDAO implements BaseDAO
+}
+
+package "com.hospital.models" {
+    abstract class Person {
+        - String firstName
+        - String lastName
+        - String address
+        - String email
+        + Person(String firstName, String lastName, String address, String email)
+        + Person()
+        + getters/setters()
+        + void displayInfo()
+        + void addNewPerson()
+    }
+
+    class Patient extends Person {
+        - String patientID
+        - String postcode
+        - String phoneNumber
+        - String insuranceID
+        + Patient()
+        + Patient(String firstName, String lastName, String address, String email, String patientID, String postcode, String phoneNumber, String insuranceID)
+        + getters/setters()
+        + void displayInfo()
+        + void addNewPatient()
+    }
+
+    class Doctor extends Person {
+        - String doctorID
+        - String specialization
+        - String hospital
+        + Doctor()
+        + Doctor(String firstName, String lastName, String address, String email, String doctorID, String specialization, String hospital)
+        + getters/setters()
+        + void displayInfo()
+        + void addNewDoctor()
+    }
+
+    class Drug {
+        - String drugID
+        - String drugName
+        - String sideEffects
+        - String benefits
+        + Drug()
+        + Drug(String drugID, String drugName, String sideEffects, String benefits)
+        + getters/setters()
+        + void displayInfo()
+        + void addNewDrug()
+    }
+
+    class Visit {
+        - String patientID
+        - String doctorID
+        - String dateOfVisit
+        - String symptoms
+        - String diagnosisID
+        + Visit()
+        + Visit(String patientID, String doctorID, String dateOfVisit, String symptoms, String diagnosisID)
+        + getters/setters()
+        + void displayVisit()
+        + void addNewVisit()
+    }
+
+    class Prescription {
+        - String prescriptionID
+        - String datePrescribed
+        - int dosage
+        - int duration
+        - String comment
+        - String drugID
+        - String doctorID
+        - String patientID
+        + Prescription()
+        + Prescription(String prescriptionID, String datePrescribed, int dosage, int duration, String comment, String drugID, String doctorID, String patientID)
+        + getters/setters()
+        + void addNewPrescription()
+    }
+
+    class InsuranceCom {
+        - String insuranceID
+        - String companyName
+        - String address
+        - String phone
+        + InsuranceCom()
+        + InsuranceCom(String insuranceID, String companyName, String address, String phone)
+        + getters/setters()
+        + void DisplayInsuranceCom()
+        + void addNewInsuranceCom()
+    }
+}
+
+' Relationships with cardinality
+MainFrame "1" *--> "1..*" TableRightClick : creates >
+MainFrame "1" --> "1" FormFactory : uses >
+MainFrame "1" *--> "1..*" CustomTableModel : creates >
+MainFrame "1" --> "1..*" BaseForm : uses >
+
+TableRightClick "1" --> "1" FormFactory : uses >
+TableRightClick "1" --> "1" CustomTableModel : uses >
+TableRightClick "1" --> "1" BaseDAO : uses >
+
+FormFactory ..> BaseForm : creates >
+DAOFactory ..> BaseDAO : creates >
+
+Patient "1" --> "0..1" InsuranceCom : has insurance >
+Prescription "1" --> "1" Drug : prescribes >
+Prescription "*" --> "1" Doctor : prescribed by >
+Prescription "*" --> "1" Patient : prescribed to >
+Visit "*" --> "1" Doctor : visited by >
+Visit "*" --> "1" Patient : visits >
+
+' Add DatabaseConnection relationships
+DatabaseConnection <-- PatientDAO : uses
+DatabaseConnection <-- DoctorDAO : uses
+DatabaseConnection <-- DrugDAO : uses
+DatabaseConnection <-- VisitDAO : uses
+DatabaseConnection <-- PrescriptionDAO : uses
+DatabaseConnection <-- InsuranceComDAO : uses
+
+package "com" {
+    ' Add note to explain the relationship
+    note "All DAOs use DatabaseConnection\nfor CRUD operations" as N1
+    DatabaseConnection .. N1
+    N1 .. BaseDAO
+
+
+    note "Dominic Christopher Cameron 30087241" as N2
+}
+
+
+
+' DAO relationships with models (existing)
+PatientDAO --> Patient : manages >
+DoctorDAO --> Doctor : manages >
+DrugDAO --> Drug : manages >
+VisitDAO --> Visit : manages >
+PrescriptionDAO --> Prescription : manages >
+InsuranceComDAO --> InsuranceCom : manages >
+@enduml

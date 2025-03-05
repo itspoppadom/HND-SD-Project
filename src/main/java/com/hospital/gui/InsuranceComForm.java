@@ -32,6 +32,15 @@ public class InsuranceComForm extends BaseForm<InsuranceCom> {
         addFormField("Address", addressField);
         addFormField("Phone", phoneField);
     }
+    @Override
+    protected void populateFormFields(){
+        if (entity != null) {
+            insuranceIDField.setText(entity.getInsuranceID());
+            companyNameField.setText(entity.getCompanyName());
+            addressField.setText(entity.getAddress());
+            phoneField.setText(entity.getPhone());
+        }
+    }
 
     @Override
     protected void saveEntity(){

@@ -29,14 +29,17 @@ public abstract class BaseForm<T> extends JDialog {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         
         setContentPane(mainPanel);
-        createFormFields();
-        createButtons();
+        createFormFields();      // First create the fields
+        populateFormFields();    // Then populate them with entity data
+        createButtons();         // Finally add the buttons
         
         pack();
         setLocationRelativeTo(getOwner());
     }
 
+    // Abstract methods that must be implemented by concrete forms
     protected abstract void createFormFields();
+    protected abstract void populateFormFields();
     protected abstract void saveEntity();
 
     protected void createButtons() {
