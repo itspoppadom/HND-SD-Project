@@ -72,7 +72,7 @@ public class PatientDAO implements BaseDAO<Patient> {
 
     }
     @Override
-    public Patient get(String... ids){
+    public Patient get(String... ids) {
         String query = "SELECT * FROM patient WHERE patientID = ?";
         Patient patient = null;
 
@@ -80,19 +80,18 @@ public class PatientDAO implements BaseDAO<Patient> {
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, ids[0]);
-
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
                 patient = new Patient(
-                        rs.getString("patientID"),
-                        rs.getString("firstname"),
-                        rs.getString("surname"),
-                        rs.getString("postcode"),
-                        rs.getString("address"),
-                        rs.getString("phone"),
-                        rs.getString("email"),
-                        rs.getString("insuranceID")
+                    rs.getString("firstname"),    // Match getAll() order
+                    rs.getString("surname"),
+                    rs.getString("address"),
+                    rs.getString("email"),
+                    rs.getString("patientID"),
+                    rs.getString("postcode"),
+                    rs.getString("phone"),
+                    rs.getString("insuranceID")
                 );
             }
         } catch (SQLException e) {
