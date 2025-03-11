@@ -58,8 +58,31 @@ public class PatientForm extends BaseForm<Patient> {
         }
     }
 
+    @Override
+    protected String getEntityType() {
+        return "patient";
+    }
+
+    @Override
+    protected JTextField getFieldByName(String fieldName) {
+        return switch (fieldName) {
+            case "patientID" -> patientIDField;
+            case "firstName" -> firstNameField;
+            case "lastName" -> lastNameField;
+            case "address" -> addressField;
+            case "postcode" -> postcodeField;
+            case "phone" -> phoneNumberField;
+            case "email" -> emailField;
+            case "insuranceID" -> insuranceIDField;
+            default -> throw new IllegalArgumentException("Unknown field: " + fieldName);
+        };
+    }
+
     @Override   
     protected void saveEntity() {
+        if (!validateFields()) {
+            return;
+        }
         entity.setPatientID(patientIDField.getText());  // Use entity from BaseForm
         entity.setFirstName(firstNameField.getText());
         entity.setLastName(lastNameField.getText());

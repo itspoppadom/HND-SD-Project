@@ -56,7 +56,29 @@ protected void populateFormFields(){
     }
 }
 @Override
+protected String getEntityType(){
+    return "prescription";
+}
+
+@Override
+protected JTextField getFieldByName(String fieldName){
+    return switch (fieldName) {
+        case "prescriptionID" -> prescriptionIDField;
+        case "dateOfPrescription" -> dateOfPrescriptionField;
+        case "dosage" -> dosageField;
+        case "duration" -> durationField;
+        case "comment" -> commentField;
+        case "drugID" -> drugIDField;
+        case "doctorID" -> doctorIDField;
+        case "patientID" -> patientIDField;
+        default -> throw new IllegalArgumentException("Invalid field name: " + fieldName);
+    };
+}
+@Override
 protected void saveEntity(){
+    if (entity == null) {
+        entity = new Prescription();
+    }
     prescription.setPrescriptionID(prescriptionIDField.getText());
     prescription.setDatePrescribed(dateOfPrescriptionField.getText());
     prescription.setDosage(Integer.parseInt(dosageField.getText()));

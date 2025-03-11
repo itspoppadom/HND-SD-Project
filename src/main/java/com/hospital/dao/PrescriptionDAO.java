@@ -13,7 +13,7 @@ public class PrescriptionDAO implements BaseDAO<Prescription> {
     
     @Override
     public void save( Prescription prescription) {
-    String query = "INSERT INTO Prescription (prescriptionID, datePrescribed, dosage, duration, comment, drugID, doctorID, patientID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    String query = "INSERT INTO prescription (prescriptionID, datePrescribed, dosage, duration, comment, drugID, doctorID, patientID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     
     try(Connection connection = DatabaseConnection.getConnection()) {
             
@@ -34,7 +34,7 @@ public class PrescriptionDAO implements BaseDAO<Prescription> {
     }
     @Override
     public void update( Prescription prescription) {
-        String query = "UPDATE Prescription SET datePrescribed = ?, dosage = ?, duration = ?, comment = ?, drugID = ?, doctorID = ?, patientID = ? WHERE prescriptionID = ?";
+        String query = "UPDATE prescription SET datePrescribed = ?, dosage = ?, duration = ?, comment = ?, drugID = ?, doctorID = ?, patientID = ? WHERE prescriptionID = ?";
             
         try (Connection connection = DatabaseConnection.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -55,7 +55,7 @@ public class PrescriptionDAO implements BaseDAO<Prescription> {
     }
     @Override
     public void delete(String... ids) {
-        String query = "DELETE FROM Prescription WHERE prescriptionID = ?";
+        String query = "DELETE FROM prescription WHERE prescriptionID = ?";
         try (Connection connection = DatabaseConnection.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, ids[0]);
@@ -67,7 +67,7 @@ public class PrescriptionDAO implements BaseDAO<Prescription> {
     }
     @Override
     public Prescription get(String... ids) {
-        String query = "SELECT * FROM Prescription WHERE prescriptionID = ?";
+        String query = "SELECT * FROM prescription WHERE prescriptionID = ?";
         Prescription prescription = new Prescription();
         try (Connection connection = DatabaseConnection.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -91,7 +91,7 @@ public class PrescriptionDAO implements BaseDAO<Prescription> {
     @Override
     public List<Prescription> getAll() {
         List<Prescription> prescriptions = new ArrayList<>();
-        String query = "SELECT * FROM Prescription";
+        String query = "SELECT * FROM prescription";
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {

@@ -41,6 +41,20 @@ public class InsuranceComForm extends BaseForm<InsuranceCom> {
             phoneField.setText(entity.getPhone());
         }
     }
+    @Override
+    protected String getEntityType(){
+        return "insurance";
+    }
+    @Override
+    protected JTextField getFieldByName(String fieldName){
+        return switch (fieldName) {
+            case "insuranceID" -> insuranceIDField;
+            case "companyName" -> companyNameField;
+            case "address" -> addressField;
+            case "phone" -> phoneField;
+            default -> throw new IllegalArgumentException("Invalid field name: " + fieldName);
+        };
+    }
 
     @Override
     protected void saveEntity(){

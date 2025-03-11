@@ -43,9 +43,27 @@ public class DrugForm extends BaseForm<Drug> {
             benefitsField.setText(entity.getBenefits());
         }
     }
+    @Override
+    protected String getEntityType() {
+        return "drug";
+    }
 
     @Override
-    protected void saveEntity() { 
+    protected JTextField getFieldByName(String fieldName) {
+        return switch (fieldName) {
+            case "drugID" -> drugIDField;
+            case "drugName" -> drugNameField;
+            case "sideEffects" -> sideEffectsField;
+            case "benefits" -> benefitsField;
+            default -> throw new IllegalArgumentException("Invalid field name: " + fieldName);
+        };
+    }
+
+    @Override
+    protected void saveEntity() {
+        if (entity == null) {
+            entity = new Drug();
+        } 
         drug.setDrugID(drugIDField.getText());
         drug.setDrugName(drugNameField.getText());
         drug.setSideEffects(sideEffectsField.getText());

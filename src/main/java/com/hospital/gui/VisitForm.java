@@ -44,6 +44,21 @@ protected void populateFormFields(){
         diagnosisID.setText(entity.getDiagnosisID());
     }
 }
+@Override
+protected String getEntityType(){
+    return "visit";
+}
+@Override
+protected JTextField getFieldByName(String fieldName){
+    return switch (fieldName) {
+        case "patientID" -> patiendID;
+        case "doctorID" -> doctorID;
+        case "dateOfVisit" -> dateOfVisit;
+        case "symptoms" -> symptoms;
+        case "diagnosisID" -> diagnosisID;
+        default -> throw new IllegalArgumentException("Invalid field name: " + fieldName);
+    };
+}
 
 @Override
 protected void saveEntity(){

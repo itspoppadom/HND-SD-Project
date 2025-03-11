@@ -11,7 +11,7 @@ import com.hospital.models.Doctor;
 public class DoctorDAO implements BaseDAO<Doctor> {
     @Override
     public void save(Doctor doctor) {
-        String query = "INSERT INTO doctors (doctorID, firstname, surname, address, email, specialization, hospital) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO doctor (doctorID, firstname, surname, address, email, specialization, hospital) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {

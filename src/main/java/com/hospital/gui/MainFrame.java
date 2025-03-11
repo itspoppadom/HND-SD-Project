@@ -1,3 +1,5 @@
+//Dominic Cameron - HND Software Development
+//Hospital Database System
 package com.hospital.gui;
 
 import java.awt.BorderLayout;

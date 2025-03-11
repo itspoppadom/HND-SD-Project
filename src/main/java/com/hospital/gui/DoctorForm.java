@@ -37,6 +37,24 @@ public class DoctorForm extends BaseForm<Doctor> {
         addFormField("Hospital", hospitalField);
     }
     @Override
+    protected String getEntityType() {
+        return "doctor";
+    }
+    @Override
+    protected JTextField getFieldByName(String fieldName) {
+        return switch (fieldName) {
+            case "doctorID" -> doctorIDField;
+            case "firstName" -> firstNameField;
+            case "lastName" -> lastNameField;
+            case "address" -> addressField;
+            case "email" -> emailField;
+            case "specialization" -> specializationField;
+            case "hospital" -> hospitalField;
+            default -> throw new IllegalArgumentException("Invalid field name: " + fieldName);
+        };
+    }
+
+    @Override
     protected void populateFormFields() {
         if (entity != null) {
             doctorIDField.setText(entity.getDoctorID());
@@ -51,6 +69,9 @@ public class DoctorForm extends BaseForm<Doctor> {
 
     @Override
     protected void saveEntity() {
+        if (!validateFields()) {
+            return;
+        }
         entity.setDoctorID(doctorIDField.getText());
         entity.setFirstName(firstNameField.getText());
         entity.setLastName(lastNameField.getText());
@@ -58,5 +79,13 @@ public class DoctorForm extends BaseForm<Doctor> {
         entity.setEmail(emailField.getText());
         entity.setSpecialization(specializationField.getText());
         entity.setHospital(hospitalField.getText());
+
+        submitted = true;
+        dispose();
+    }
+
+    @Override
+    public boolean isSubmitted() {
+        return submitted;
     }
 }
