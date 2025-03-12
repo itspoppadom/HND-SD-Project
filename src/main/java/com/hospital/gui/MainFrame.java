@@ -108,28 +108,37 @@ public class MainFrame extends JFrame {
     }
 
     public void createTable(String tableType) {
-        // Get the DAO from the factory
-        BaseDAO<?> dao = DAOFactory.getDAO(tableType);
-        
-        // Create table with CustomTableModel
-        JTable table = new JTable(new CustomTableModel(dao.getAll(), tableType));
-        
-        // Add table formatting
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        table.getTableHeader().setReorderingAllowed(false);
-        table.setRowHeight(25);
-        table.setAutoCreateRowSorter(true);
-        
-        // Update panel
-        JScrollPane scrollPane = new JScrollPane(table);
-        mainPanel.removeAll();
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
-        mainPanel.revalidate();
-        mainPanel.repaint();
-        
-        // Add right-click functionality
-        new TableRightClick(table, tableType);
-    }
+        try {
+            // Get the DAO from the factory
+            BaseDAO<?> dao = DAOFactory.getDAO(tableType);
+
+            // Create table with CustomTableModel
+            JTable table = new JTable(new CustomTableModel(dao.getAll(), tableType));
+
+            // Add table formatting
+            table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+            table.getTableHeader().setReorderingAllowed(false);
+            table.setRowHeight(25);
+            table.setAutoCreateRowSorter(true);
+
+            // Update panel
+            JScrollPane scrollPane = new JScrollPane(table);
+            mainPanel.removeAll();
+            mainPanel.add(scrollPane, BorderLayout.CENTER);
+            mainPanel.revalidate();
+            mainPanel.repaint();
+
+            // Add right-click functionality
+            new TableRightClick(table, tableType);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(
+                this,
+                "Error creating table: " + ex.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+            );
+        }
+        }
 
     private void viewDoctorTable() {
         createTable("doctor");

@@ -12,6 +12,7 @@ import javax.swing.SwingUtilities;
 
 import com.hospital.dao.BaseDAO;
 import com.hospital.dao.DAOFactory;
+import com.hospital.exceptions.DatabaseException;
 import com.hospital.models.Doctor;
 import com.hospital.models.Drug;
 import com.hospital.models.InsuranceCom;
@@ -29,6 +30,7 @@ public class TableRightClick extends MouseAdapter {
     
 
     public TableRightClick(JTable table, String tableType) {
+        
         this.table = table;
         this.tableType = tableType;
         this.dao = DAOFactory.getDAO(tableType);
@@ -43,7 +45,16 @@ public class TableRightClick extends MouseAdapter {
         editItem.addActionListener(e -> handleEdit());
         deleteItem.addActionListener(e -> handleDelete());
         reloadTable.addActionListener(e -> {
+            try {
             table.setModel(new CustomTableModel(dao.getAll(), tableType));
+            } catch (DatabaseException ex) {
+                JOptionPane.showMessageDialog(
+                    table,
+                    "Error refreshing table: " + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+                );
+            }
         });
 
         popupMenu.add(addItem);
@@ -99,22 +110,31 @@ public class TableRightClick extends MouseAdapter {
 
             if (form.isSubmitted()) {
                 // Get properly typed DAO for the entity
-                BaseDAO<?> typedDao = DAOFactory.getDAO(tableType);
-                switch (tableType.toLowerCase()) {
-                    case "patient" -> ((BaseDAO<Patient>) typedDao).save((Patient) entity);
-                    case "doctor" -> ((BaseDAO<Doctor>) typedDao).save((Doctor) entity);
-                    case "drug" -> ((BaseDAO<Drug>) typedDao).save((Drug) entity);
-                    case "prescription" -> ((BaseDAO<Prescription>) typedDao).save((Prescription) entity);
-                    case "insurance" -> ((BaseDAO<InsuranceCom>) typedDao).save((InsuranceCom) entity);
-                    case "visit" -> ((BaseDAO<Visit>) typedDao).save((Visit) entity);
-                    default -> throw new IllegalArgumentException("Unknown table type: " + tableType);
-                }
+                try {
+                    BaseDAO<?> typedDao = DAOFactory.getDAO(tableType);
+                    switch (tableType.toLowerCase()) {
+                        case "patient" -> ((BaseDAO<Patient>) typedDao).save((Patient) entity);
+                        case "doctor" -> ((BaseDAO<Doctor>) typedDao).save((Doctor) entity);
+                        case "drug" -> ((BaseDAO<Drug>) typedDao).save((Drug) entity);
+                        case "prescription" -> ((BaseDAO<Prescription>) typedDao).save((Prescription) entity);
+                        case "insurance" -> ((BaseDAO<InsuranceCom>) typedDao).save((InsuranceCom) entity);
+                        case "visit" -> ((BaseDAO<Visit>) typedDao).save((Visit) entity);
+                        default -> throw new IllegalArgumentException("Unknown table type: " + tableType);
+                        }
                 
-                // Refresh table
-                table.setModel(new CustomTableModel(typedDao.getAll(), tableType));
-                JOptionPane.showMessageDialog(table, "Record added successfully");
-            }
-        } catch (Exception ex) {
+                        // Refresh table
+                        table.setModel(new CustomTableModel(typedDao.getAll(), tableType));
+                        JOptionPane.showMessageDialog(table, "Record added successfully", "Success" ,
+                        JOptionPane.INFORMATION_MESSAGE);
+                    } catch (DatabaseException ex) {
+                    JOptionPane.showMessageDialog(
+                        table,
+                        "Error adding record: " + ex.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                    );}
+                    }
+            } catch (Exception ex) {
             JOptionPane.showMessageDialog(
                 table,
                 "Error adding record: " + ex.getMessage(),

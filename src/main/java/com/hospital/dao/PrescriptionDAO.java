@@ -7,12 +7,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hospital.exceptions.DatabaseException;
 import com.hospital.models.Prescription;
 
 public class PrescriptionDAO implements BaseDAO<Prescription> {
     
     @Override
-    public void save( Prescription prescription) {
+    public void save( Prescription prescription) throws DatabaseException {
     String query = "INSERT INTO prescription (prescriptionID, datePrescribed, dosage, duration, comment, drugID, doctorID, patientID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     
     try(Connection connection = DatabaseConnection.getConnection()) {
@@ -29,7 +30,11 @@ public class PrescriptionDAO implements BaseDAO<Prescription> {
             preparedStatement.executeUpdate();
             System.out.println("Prescription added successfully");
         } catch (SQLException e) {
-            e.printStackTrace();
+            if (e.getMessage().contains("Duplicate entry")) {
+                throw new DatabaseException("A prescription with ID " + prescription.getPrescriptionID() + " already exists");
+            } else {
+                throw new DatabaseException("Error saving prescription: " + e.getMessage(), e);
+            }
         }
     }
     @Override

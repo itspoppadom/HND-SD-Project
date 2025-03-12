@@ -6,11 +6,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hospital.exceptions.DatabaseException;
 import com.hospital.models.Doctor;
 
 public class DoctorDAO implements BaseDAO<Doctor> {
     @Override
-    public void save(Doctor doctor) {
+    public void save(Doctor doctor) throws DatabaseException {
         String query = "INSERT INTO doctor (doctorID, firstname, surname, address, email, specialization, hospital) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -26,7 +27,11 @@ public class DoctorDAO implements BaseDAO<Doctor> {
 
             stmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            if (e.getMessage().contains("Duplicate entry")) {
+                throw new DatabaseException("A Doctor with ID " + doctor.getDoctorID() + " already exists");
+            } else {
+                throw new DatabaseException("Error saving Doctor: " + e.getMessage(), e);
+            }
         }
     }
     @Override

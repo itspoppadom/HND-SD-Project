@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hospital.exceptions.DatabaseException;
 import com.hospital.models.InsuranceCom;
 
 public class InsuranceComDAO implements BaseDAO<InsuranceCom> {
@@ -63,7 +64,7 @@ public class InsuranceComDAO implements BaseDAO<InsuranceCom> {
     }
     // Add new Insurance com
     @Override
-    public void save(InsuranceCom insuranceCom) {
+    public void save(InsuranceCom insuranceCom) throws DatabaseException {
         String query = "INSERT INTO insurance (insuranceID, company, address, phone) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -76,7 +77,11 @@ public class InsuranceComDAO implements BaseDAO<InsuranceCom> {
 
             stmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            if (e.getMessage().contains("Duplicate entry")) {
+                throw new DatabaseException("An Insurance Company with ID " + insuranceCom.getInsuranceID() + " already exists");
+            } else {
+                throw new DatabaseException("Error saving Insurance Company: " + e.getMessage(), e);
+            }
         }
     }
     @Override
