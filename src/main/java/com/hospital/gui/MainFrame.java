@@ -26,6 +26,7 @@ import javax.swing.SwingUtilities;
 import com.hospital.dao.BaseDAO;
 import com.hospital.dao.DAOFactory;
 import com.hospital.dao.DatabaseConnection;
+import com.hospital.dao.PrescriptionDAO;
 import com.hospital.dao.VisitDAO;
 import com.hospital.models.Doctor;
 import com.hospital.models.Drug;
@@ -109,10 +110,214 @@ public class MainFrame extends JFrame {
             String id = JOptionPane.showInputDialog(this, "Enter Insurance Company ID:");
             ResultSet("insurance", id);
         });
+        
+        
         searchPrescriptionMenuItem.addActionListener(e -> {
-            String id = JOptionPane.showInputDialog(this, "Enter Prescription ID:");
-            ResultSet("prescription", id);
+            JPanel panel = new JPanel();
+            panel.setLayout(new BorderLayout(5, 5));
+
+
+            JRadioButton searchByKeys = new JRadioButton("Search by Prescription ID");
+            JRadioButton searchByPatient = new JRadioButton("Search by Patient ID");
+            JRadioButton searchByDoctor = new JRadioButton("Search by Doctor ID");
+            JRadioButton searchByDrug = new JRadioButton("Search by Drug ID");
+            JRadioButton searchByDate = new JRadioButton("Search by Prescription Date");
+            JRadioButton searchByDosage = new JRadioButton("Search by Dosage");
+            JRadioButton searchByDuration = new JRadioButton("Search by Duration");
+            
+            
+            ButtonGroup bg = new ButtonGroup();
+            bg.add(searchByKeys);
+            bg.add(searchByPatient);
+            bg.add(searchByDoctor); 
+            bg.add(searchByDrug);
+            bg.add(searchByDate);
+            bg.add(searchByDosage);
+            bg.add(searchByDuration);
+            searchByKeys.setSelected(true);
+
+            JPanel fieldsPanel = new JPanel();
+            fieldsPanel.setLayout(new GridLayout(4, 1, 5, 5));  
+            JTextField prescriptionIDField = new JTextField(10);
+            JTextField patientIDField = new JTextField(10);
+            JTextField doctorIDField = new JTextField(10);
+            JTextField drugIDField = new JTextField(10);
+            JTextField dateField = new JTextField(10);
+            JTextField dosageField = new JTextField(10);
+            JTextField durationField = new JTextField(10);
+
+            fieldsPanel.add(new JLabel("Prescription ID:"));
+            fieldsPanel.add(prescriptionIDField);
+            fieldsPanel.add(new JLabel("Patient ID:"));
+            fieldsPanel.add(patientIDField);
+            fieldsPanel.add(new JLabel("Doctor ID:"));
+            fieldsPanel.add(doctorIDField);
+            fieldsPanel.add(new JLabel("Drug ID:"));
+            fieldsPanel.add(drugIDField);
+            fieldsPanel.add(new JLabel("Date (YYYY-MM-DD):"));
+            fieldsPanel.add(dateField);
+            fieldsPanel.add(new JLabel("Dosage:"));
+            fieldsPanel.add(dosageField);
+            fieldsPanel.add(new JLabel("Duration:"));
+            fieldsPanel.add(durationField);
+
+            JPanel radioPanel = new JPanel(new GridLayout(5, 5));
+            radioPanel.add(searchByKeys);
+            radioPanel.add(searchByPatient);
+            radioPanel.add(searchByDoctor);
+            radioPanel.add(searchByDrug);
+            radioPanel.add(searchByDate);
+            radioPanel.add(searchByDosage);
+            radioPanel.add(searchByDuration);
+
+            panel.add(radioPanel, BorderLayout.NORTH);
+            panel.add(fieldsPanel, BorderLayout.CENTER);
+
+            searchByKeys.addActionListener(event -> {
+                prescriptionIDField.setEnabled(true);
+                patientIDField.setEnabled(true);
+                doctorIDField.setEnabled(true);
+                drugIDField.setEnabled(true);
+                dateField.setEnabled(true);
+                dosageField.setEnabled(true);
+                durationField.setEnabled(true);
+            });
+            searchByPatient.addActionListener(event -> {
+                prescriptionIDField.setEnabled(false);
+                patientIDField.setEnabled(true);
+                doctorIDField.setEnabled(false);
+                drugIDField.setEnabled(false);
+                dateField.setEnabled(false);
+                dosageField.setEnabled(false);
+                durationField.setEnabled(false);
+            });
+            searchByDoctor.addActionListener(event -> {
+                prescriptionIDField.setEnabled(false);
+                patientIDField.setEnabled(false);
+                doctorIDField.setEnabled(true);
+                drugIDField.setEnabled(false);
+                dateField.setEnabled(false);
+                dosageField.setEnabled(false);
+                durationField.setEnabled(false);
+            });
+            searchByDrug.addActionListener(event -> {
+                prescriptionIDField.setEnabled(false);
+                patientIDField.setEnabled(false);
+                doctorIDField.setEnabled(false);
+                drugIDField.setEnabled(true);
+                dateField.setEnabled(false);
+                dosageField.setEnabled(false);
+                durationField.setEnabled(false);
+            });
+            searchByDate.addActionListener(event -> {
+                prescriptionIDField.setEnabled(false);
+                patientIDField.setEnabled(false);
+                doctorIDField.setEnabled(false);
+                drugIDField.setEnabled(false);
+                dateField.setEnabled(true);
+                dosageField.setEnabled(false);
+                durationField.setEnabled(false);
+            });
+            searchByDosage.addActionListener(event -> {
+                prescriptionIDField.setEnabled(false);
+                patientIDField.setEnabled(false);
+                doctorIDField.setEnabled(false);
+                drugIDField.setEnabled(false);
+                dateField.setEnabled(false);
+                dosageField.setEnabled(true);
+                durationField.setEnabled(false);
+            });
+            searchByDuration.addActionListener(event -> {
+                prescriptionIDField.setEnabled(false);
+                patientIDField.setEnabled(false);
+                doctorIDField.setEnabled(false);
+                drugIDField.setEnabled(false);
+                dateField.setEnabled(false);
+                dosageField.setEnabled(false);
+                durationField.setEnabled(true);
+            });
+
+            int result = JOptionPane.showConfirmDialog(
+                this, panel, "Search Prescription",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+            );
+
+            if (result == JOptionPane.OK_OPTION) {
+                try {
+                    String searchType = "";
+                    String[] searchParams = null;
+
+                    if (searchByKeys.isSelected()) {
+                        if (prescriptionIDField.getText().isEmpty() || 
+                            patientIDField.getText().isEmpty() || 
+                            doctorIDField.getText().isEmpty() || 
+                            drugIDField.getText().isEmpty() || 
+                            dateField.getText().isEmpty() || 
+                            dosageField.getText().isEmpty() || 
+                            durationField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("All fields required for primary key search");
+                        }
+                        searchType = "keys";
+                        searchParams = new String[]{
+                            prescriptionIDField.getText(),
+                            patientIDField.getText(),
+                            doctorIDField.getText(),
+                            drugIDField.getText(),
+                            dateField.getText(),
+                            dosageField.getText(),
+                            durationField.getText()
+                        };
+                    } else if (searchByPatient.isSelected()) {
+                        if (patientIDField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Patient ID required");
+                        }
+                        searchType = "patient";
+                        searchParams = new String[]{patientIDField.getText()};
+                    } else if (searchByDoctor.isSelected()) {
+                        if (doctorIDField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Doctor ID required");
+                        }
+                        searchType = "doctor";
+                        searchParams = new String[]{doctorIDField.getText()};
+                    } else if (searchByDrug.isSelected()) {
+                        if (drugIDField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Drug ID required");
+                        }
+                        searchType = "drug";
+                        searchParams = new String[]{drugIDField.getText()};
+                    } else if (searchByDate.isSelected()) {
+                        if (dateField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Date required");
+                        }
+                        searchType = "date";
+                        searchParams = new String[]{dateField.getText()};
+                    } else if (searchByDosage.isSelected()) {
+                        if (dosageField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Dosage required");
+                        }
+                        searchType = "dosage";
+                        searchParams = new String[]{dosageField.getText()};
+                    } else if (searchByDuration.isSelected()) {
+                        if (durationField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Duration required");
+                        }
+                        searchType = "duration";
+                        searchParams = new String[]{durationField.getText()};
+                    }
+
+                    ResultSet("prescription", searchType, searchParams);
+
+                } catch (IllegalArgumentException ex) {
+                    JOptionPane.showMessageDialog(this,
+                        ex.getMessage(),
+                        "Input Error",
+                        JOptionPane.ERROR_MESSAGE);
+                }
+            }
         });
+
+
         // Update the visit search menu item action listener
         searchVisitMenuItem.addActionListener(e -> {
             JPanel panel = new JPanel();
@@ -123,20 +328,26 @@ public class MainFrame extends JFrame {
             JRadioButton searchByPatient = new JRadioButton("Search by Patient ID");
             JRadioButton searchByDoctor = new JRadioButton("Search by Doctor ID");
             JRadioButton searchByDate = new JRadioButton("Search by Date");
+            JRadioButton searchByDiagnosis = new JRadioButton("Search by Diagnosis ID");
+            JRadioButton searchBySymptoms = new JRadioButton("Search by Symptoms");
             
             ButtonGroup bg = new ButtonGroup();
             bg.add(searchByKeys);
             bg.add(searchByPatient);
             bg.add(searchByDoctor);
             bg.add(searchByDate);
+            bg.add(searchByDiagnosis);
+            bg.add(searchBySymptoms);
             searchByKeys.setSelected(true);
             
             // Create fields panel
             JPanel fieldsPanel = new JPanel();
-            fieldsPanel.setLayout(new GridLayout(3, 2, 5, 5));
+            fieldsPanel.setLayout(new GridLayout(5, 1, 5, 5));
             JTextField patientIDField = new JTextField(10);
             JTextField doctorIDField = new JTextField(10);
             JTextField dateField = new JTextField(10);
+            JTextField diagnosisField = new JTextField(10);
+            JTextField symptomsField = new JTextField(40);
             
             fieldsPanel.add(new JLabel("Patient ID:"));
             fieldsPanel.add(patientIDField);
@@ -144,6 +355,10 @@ public class MainFrame extends JFrame {
             fieldsPanel.add(doctorIDField);
             fieldsPanel.add(new JLabel("Date (YYYY-MM-DD):"));
             fieldsPanel.add(dateField);
+            fieldsPanel.add(new JLabel("Diagnosis ID:"));
+            fieldsPanel.add(diagnosisField);
+            fieldsPanel.add(new JLabel("Symptoms:"));
+            fieldsPanel.add(symptomsField);
             
             // Add components to panel
             JPanel radioPanel = new JPanel(new GridLayout(4, 1));
@@ -151,6 +366,8 @@ public class MainFrame extends JFrame {
             radioPanel.add(searchByPatient);
             radioPanel.add(searchByDoctor);
             radioPanel.add(searchByDate);
+            radioPanel.add(searchByDiagnosis);
+            radioPanel.add(searchBySymptoms);
             
             panel.add(radioPanel, BorderLayout.NORTH);
             panel.add(fieldsPanel, BorderLayout.CENTER);
@@ -160,6 +377,8 @@ public class MainFrame extends JFrame {
                 patientIDField.setEnabled(true);
                 doctorIDField.setEnabled(true);
                 dateField.setEnabled(true);
+                diagnosisField.setEnabled(false);
+                symptomsField.setEnabled(false);
             });
             searchByPatient.addActionListener(event -> {
                 patientIDField.setEnabled(true);
@@ -175,6 +394,18 @@ public class MainFrame extends JFrame {
                 patientIDField.setEnabled(false);
                 doctorIDField.setEnabled(false);
                 dateField.setEnabled(true);
+            });
+            searchByDiagnosis.addActionListener(event -> {
+                patientIDField.setEnabled(false);
+                doctorIDField.setEnabled(false);
+                dateField.setEnabled(false);
+                diagnosisField.setEnabled(true);
+            });
+            searchBySymptoms.addActionListener(event -> {
+                patientIDField.setEnabled(false);
+                doctorIDField.setEnabled(false);
+                dateField.setEnabled(false);
+                symptomsField.setEnabled(true);
             });
             
             int result = JOptionPane.showConfirmDialog(
@@ -218,6 +449,18 @@ public class MainFrame extends JFrame {
                         }
                         searchType = "date";
                         searchParams = new String[]{dateField.getText()};
+                    } else if (searchByDiagnosis.isSelected()) {
+                        if (diagnosisField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Diagnosis ID required");
+                        }
+                        searchType = "diagnosis";
+                        searchParams = new String[]{diagnosisField.getText()};
+                    } else if (searchBySymptoms.isSelected()) {
+                        if (symptomsField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Symptoms required");
+                        }
+                        searchType = "symptoms";
+                        searchParams = new String[]{symptomsField.getText()};
                     }
                     
                     ResultSet("visit", searchType, searchParams);
@@ -302,37 +545,45 @@ public class MainFrame extends JFrame {
         }
         }
 
-    // Update the ResultSet method to handle multiple IDs
     public void ResultSet(String tableType, String searchType, String... searchParams) {
         try {
             BaseDAO<?> dao = DAOFactory.getDAO(tableType);
             List<?> results;
             
-            if (tableType.equals("visit")) {
-                VisitDAO visitDao = (VisitDAO) dao;
-                results = switch (searchType) {
-                    case "keys" -> Collections.singletonList(visitDao.get(searchParams));
-                    case "patient" -> visitDao.findByPatient(searchParams[0]);
-                    case "doctor" -> visitDao.findByDoctor(searchParams[0]);
-                    case "date" -> visitDao.findByDate(searchParams[0]);
-                    default -> throw new IllegalArgumentException("Invalid search type");
-                };
-            } else {
-                results = Collections.singletonList(dao.get(searchParams));
+            switch (tableType) {
+                case "visit" -> {
+                    VisitDAO visitDao = (VisitDAO) dao;
+                    results = switch (searchType) {
+                        case "keys" -> Collections.singletonList(visitDao.get(searchParams));
+                        case "patient" -> visitDao.findByPatient(searchParams[0]);
+                        case "doctor" -> visitDao.findByDoctor(searchParams[0]);
+                        case "date" -> visitDao.findByDate(searchParams[0]);
+                        case "diagnosis" -> visitDao.findByDiagnosis(searchParams[0]);
+                        case "symptoms" -> visitDao.findBySymptoms(searchParams[0]);
+                        default -> throw new IllegalArgumentException("Invalid search type for Visit");
+                    };
+                }
+                case "prescription" -> {
+                    PrescriptionDAO prescriptionDao = (PrescriptionDAO) dao;
+                    results = switch (searchType) {
+                        case "keys" -> Collections.singletonList(prescriptionDao.get(searchParams));
+                        case "patient" -> prescriptionDao.findByPatient(searchParams[0]);
+                        case "doctor" -> prescriptionDao.findByDoctor(searchParams[0]);
+                        case "drug" -> prescriptionDao.findByDrug(searchParams[0]);
+                        case "date" -> prescriptionDao.findByDate(searchParams[0]);
+                        case "dosage" -> prescriptionDao.findByDosage(Integer.parseInt(searchParams[0]));
+                        case "duration" -> prescriptionDao.findByDuration(Integer.parseInt(searchParams[0]));
+                        default -> throw new IllegalArgumentException("Invalid search type for Prescription");
+                    };
+                }
+                default -> {
+                    // Simple single parameter search for other entities
+                    results = Collections.singletonList(dao.get(searchParams));
+                }
             }
             
             if (results != null && !results.isEmpty() && results.get(0) != null) {
-                JTable table = new JTable(new CustomTableModel(results, tableType));
-                table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-                table.getTableHeader().setReorderingAllowed(false);
-                table.setRowHeight(25);
-                table.setAutoCreateRowSorter(true);
-
-                JScrollPane scrollPane = new JScrollPane(table);
-                mainPanel.removeAll();
-                mainPanel.add(scrollPane, BorderLayout.CENTER);
-                mainPanel.revalidate();
-                mainPanel.repaint();
+                displayResults(results, tableType);
             } else {
                 JOptionPane.showMessageDialog(
                     this,
@@ -349,7 +600,21 @@ public class MainFrame extends JFrame {
                 JOptionPane.ERROR_MESSAGE
             );
         }
+    }
 
+    // Helper method to display results
+    private void displayResults(List<?> results, String tableType) {
+        JTable table = new JTable(new CustomTableModel(results, tableType));
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        table.getTableHeader().setReorderingAllowed(false);
+        table.setRowHeight(25);
+        table.setAutoCreateRowSorter(true);
+
+        JScrollPane scrollPane = new JScrollPane(table);
+        mainPanel.removeAll();
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        mainPanel.revalidate();
+        mainPanel.repaint();
     }
 
     private void viewDoctorTable() {

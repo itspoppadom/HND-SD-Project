@@ -142,6 +142,14 @@ public class VisitDAO implements BaseDAO<Visit> {
         String query = "SELECT * FROM visit WHERE dateOfVisit = ?";
         return executeSearch(query, date);
     }
+    public List<Visit> findByDiagnosis(String diagnosisID) throws DatabaseException {
+        String query = "SELECT * FROM visit WHERE diagnosisID = ?";
+        return executeSearch(query, diagnosisID);
+    }
+    public List<Visit> findBySymptoms(String symptoms) throws DatabaseException {
+        String query = "SELECT * FROM visit WHERE symptoms = ?";
+        return executeSearch(query, symptoms);
+    }
 
     private List<Visit> executeSearch(String query, String param) throws DatabaseException {
         List<Visit> visits = new ArrayList<>();

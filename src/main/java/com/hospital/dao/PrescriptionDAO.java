@@ -11,6 +11,49 @@ import com.hospital.exceptions.DatabaseException;
 import com.hospital.models.Prescription;
 
 public class PrescriptionDAO implements BaseDAO<Prescription> {
+
+    public List<Prescription> findByPatient(String patientID) throws DatabaseException {
+        return executeSearch("SELECT * FROM prescription WHERE patientID = ?", patientID);
+    }
+
+    public List<Prescription> findByDoctor(String doctorID) throws DatabaseException {
+        return executeSearch("SELECT * FROM prescription WHERE doctorID = ?", doctorID);
+    }
+    public List<Prescription> findByDrug(String drugID) throws DatabaseException {
+        return executeSearch("SELECT * FROM prescription WHERE drugID = ?", drugID);
+    }
+    public List<Prescription> findByDate(String date) throws DatabaseException {
+        return executeSearch("SELECT * FROM prescription WHERE datePrescribed = ?", date);
+    }
+    public List<Prescription> findByDuration(int duration) throws DatabaseException {
+        return executeSearch("SELECT * FROM prescription WHERE duration = ?", String.valueOf(duration));
+    }
+    public List<Prescription> findByDosage(int dosage) throws DatabaseException {
+        return executeSearch("SELECT * FROM prescription WHERE dosage = ?", String.valueOf(dosage));
+    }
+    private List<Prescription> executeSearch(String query, String value) throws DatabaseException {
+        List<Prescription> prescriptions = new ArrayList<>();
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, value);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                Prescription prescription = new Prescription();
+                prescription.setPrescriptionID(resultSet.getString("prescriptionID"));
+                prescription.setDatePrescribed(resultSet.getString("datePrescribed"));
+                prescription.setDosage(resultSet.getInt("dosage"));
+                prescription.setDuration(resultSet.getInt("duration"));
+                prescription.setComment(resultSet.getString("comment"));
+                prescription.setDrugID(resultSet.getString("drugID"));
+                prescription.setDoctorID(resultSet.getString("doctorID"));
+                prescription.setPatientID(resultSet.getString("patientID"));
+                prescriptions.add(prescription);
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Error searching for prescriptions: " + e.getMessage(), e);
+        }
+        return prescriptions;
+    }
     
     @Override
     public void save( Prescription prescription) throws DatabaseException {
@@ -116,4 +159,5 @@ public class PrescriptionDAO implements BaseDAO<Prescription> {
             e.printStackTrace();
         } return prescriptions;
         }
+    
 }
