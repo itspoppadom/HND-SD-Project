@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hospital.exceptions.DatabaseException;
 import com.hospital.models.Visit;
 
 
@@ -37,31 +38,33 @@ public class VisitDAO implements BaseDAO<Visit> {
         return visits;
     }
     @Override
-    public Visit get(String... ids) {
-        String query = "SELECT * FROM visit WHERE patientID = ? AND doctorID = ? AND dateOfVisit = ?";
-        Visit visit = null;
+    public Visit get(String... ids) throws DatabaseException {
+        if (ids.length < 3) {
+            throw new DatabaseException("Visit requires patientID, doctorID, and dateOfVisit");
+        }
 
+        String query = "SELECT * FROM visit WHERE patientID = ? AND doctorID = ? AND dateOfVisit = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setString(1, ids[0]);
-            stmt.setString(2, ids[1]);
-            stmt.setString(3, ids[2]);
-
+            
+            stmt.setString(1, ids[0]); // patientID
+            stmt.setString(2, ids[1]); // doctorID
+            stmt.setString(3, ids[2]); // dateOfVisit
+            
             ResultSet rs = stmt.executeQuery();
-
             if (rs.next()) {
-                visit = new Visit();
-                visit.setPatientID(rs.getString("patientID"));
-                visit.setDoctorID(rs.getString("doctorID"));
-                visit.setDateOfVisit(rs.getString("dateOfVisit"));
-                visit.setSymptoms(rs.getString("symptoms"));
-                visit.setDiagnosisID(rs.getString("diagnosisID"));
+                return new Visit(
+                    rs.getString("patientID"),
+                    rs.getString("doctorID"),
+                    rs.getString("dateOfVisit"),
+                    rs.getString("symptoms"),
+                    rs.getString("diagnosisID")
+                );
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("Error retrieving visit: " + e.getMessage());
         }
-        return visit;
+        return null;
     }
     @Override   
     public void save(Visit visit) {
@@ -123,6 +126,44 @@ public class VisitDAO implements BaseDAO<Visit> {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public List<Visit> findByPatient(String patientID) throws DatabaseException {
+        String query = "SELECT * FROM visit WHERE patientID = ?";
+        return executeSearch(query, patientID);
+    }
+
+    public List<Visit> findByDoctor(String doctorID) throws DatabaseException {
+        String query = "SELECT * FROM visit WHERE doctorID = ?";
+        return executeSearch(query, doctorID);
+    }
+
+    public List<Visit> findByDate(String date) throws DatabaseException {
+        String query = "SELECT * FROM visit WHERE dateOfVisit = ?";
+        return executeSearch(query, date);
+    }
+
+    private List<Visit> executeSearch(String query, String param) throws DatabaseException {
+        List<Visit> visits = new ArrayList<>();
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            
+            stmt.setString(1, param);
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                visits.add(new Visit(
+                    rs.getString("patientID"),
+                    rs.getString("doctorID"),
+                    rs.getString("dateOfVisit"),
+                    rs.getString("symptoms"),
+                    rs.getString("diagnosisID")
+                ));
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Error searching visits: " + e.getMessage());
+        }
+        return visits;
     }
 }
 

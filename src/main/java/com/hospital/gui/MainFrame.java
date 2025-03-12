@@ -4,7 +4,11 @@ package com.hospital.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
+import java.util.Collections;
+import java.util.List;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -12,14 +16,17 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import com.hospital.dao.BaseDAO;
 import com.hospital.dao.DAOFactory;
 import com.hospital.dao.DatabaseConnection;
+import com.hospital.dao.VisitDAO;
 import com.hospital.models.Doctor;
 import com.hospital.models.Drug;
 import com.hospital.models.InsuranceCom;
@@ -76,6 +83,161 @@ public class MainFrame extends JFrame {
         viewTableMenu.add(viewPatientTableMenuItem);
         viewTableMenu.add(viewICTableMenuItem);
         menuBar.add(viewTableMenu);
+
+        // Search menu
+        JMenu searchMenu = new JMenu("Search");
+        JMenuItem searchDoctorMenuItem = new JMenuItem("Doctor");
+        JMenuItem searchPatientMenuItem = new JMenuItem("Patient");
+        JMenuItem searchDrugMenuItem = new JMenuItem("Drug");
+        JMenuItem searchInsuranceComMenuItem = new JMenuItem("Insurance Company");
+        JMenuItem searchPrescriptionMenuItem = new JMenuItem("Prescription");
+        JMenuItem searchVisitMenuItem = new JMenuItem("Visit");
+
+        searchDoctorMenuItem.addActionListener(e -> {
+            String id = JOptionPane.showInputDialog(this, "Enter Doctor ID:");
+            ResultSet("doctor", id);
+        });
+        searchPatientMenuItem.addActionListener(e -> {
+            String id = JOptionPane.showInputDialog(this, "Enter Patient ID:");
+            ResultSet("patient", id);
+        });
+        searchDrugMenuItem.addActionListener(e -> {
+            String id = JOptionPane.showInputDialog(this, "Enter Drug ID:");
+            ResultSet("drug", id);
+        });
+        searchInsuranceComMenuItem.addActionListener(e -> {
+            String id = JOptionPane.showInputDialog(this, "Enter Insurance Company ID:");
+            ResultSet("insurance", id);
+        });
+        searchPrescriptionMenuItem.addActionListener(e -> {
+            String id = JOptionPane.showInputDialog(this, "Enter Prescription ID:");
+            ResultSet("prescription", id);
+        });
+        // Update the visit search menu item action listener
+        searchVisitMenuItem.addActionListener(e -> {
+            JPanel panel = new JPanel();
+            panel.setLayout(new BorderLayout(5, 5));
+            
+            // Create radio buttons for search type
+            JRadioButton searchByKeys = new JRadioButton("Search by Primary Keys");
+            JRadioButton searchByPatient = new JRadioButton("Search by Patient ID");
+            JRadioButton searchByDoctor = new JRadioButton("Search by Doctor ID");
+            JRadioButton searchByDate = new JRadioButton("Search by Date");
+            
+            ButtonGroup bg = new ButtonGroup();
+            bg.add(searchByKeys);
+            bg.add(searchByPatient);
+            bg.add(searchByDoctor);
+            bg.add(searchByDate);
+            searchByKeys.setSelected(true);
+            
+            // Create fields panel
+            JPanel fieldsPanel = new JPanel();
+            fieldsPanel.setLayout(new GridLayout(3, 2, 5, 5));
+            JTextField patientIDField = new JTextField(10);
+            JTextField doctorIDField = new JTextField(10);
+            JTextField dateField = new JTextField(10);
+            
+            fieldsPanel.add(new JLabel("Patient ID:"));
+            fieldsPanel.add(patientIDField);
+            fieldsPanel.add(new JLabel("Doctor ID:"));
+            fieldsPanel.add(doctorIDField);
+            fieldsPanel.add(new JLabel("Date (YYYY-MM-DD):"));
+            fieldsPanel.add(dateField);
+            
+            // Add components to panel
+            JPanel radioPanel = new JPanel(new GridLayout(4, 1));
+            radioPanel.add(searchByKeys);
+            radioPanel.add(searchByPatient);
+            radioPanel.add(searchByDoctor);
+            radioPanel.add(searchByDate);
+            
+            panel.add(radioPanel, BorderLayout.NORTH);
+            panel.add(fieldsPanel, BorderLayout.CENTER);
+            
+            // Enable/disable fields based on radio selection
+            searchByKeys.addActionListener(event -> {
+                patientIDField.setEnabled(true);
+                doctorIDField.setEnabled(true);
+                dateField.setEnabled(true);
+            });
+            searchByPatient.addActionListener(event -> {
+                patientIDField.setEnabled(true);
+                doctorIDField.setEnabled(false);
+                dateField.setEnabled(false);
+            });
+            searchByDoctor.addActionListener(event -> {
+                patientIDField.setEnabled(false);
+                doctorIDField.setEnabled(true);
+                dateField.setEnabled(false);
+            });
+            searchByDate.addActionListener(event -> {
+                patientIDField.setEnabled(false);
+                doctorIDField.setEnabled(false);
+                dateField.setEnabled(true);
+            });
+            
+            int result = JOptionPane.showConfirmDialog(
+                this, panel, "Search Visit",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+            );
+            
+            if (result == JOptionPane.OK_OPTION) {
+                try {
+                    String searchType = "";
+                    String[] searchParams = null;
+                    
+                    if (searchByKeys.isSelected()) {
+                        if (patientIDField.getText().isEmpty() || 
+                            doctorIDField.getText().isEmpty() || 
+                            dateField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("All fields required for primary key search");
+                        }
+                        searchType = "keys";
+                        searchParams = new String[]{
+                            patientIDField.getText(),
+                            doctorIDField.getText(),
+                            dateField.getText()
+                        };
+                    } else if (searchByPatient.isSelected()) {
+                        if (patientIDField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Patient ID required");
+                        }
+                        searchType = "patient";
+                        searchParams = new String[]{patientIDField.getText()};
+                    } else if (searchByDoctor.isSelected()) {
+                        if (doctorIDField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Doctor ID required");
+                        }
+                        searchType = "doctor";
+                        searchParams = new String[]{doctorIDField.getText()};
+                    } else if (searchByDate.isSelected()) {
+                        if (dateField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Date required");
+                        }
+                        searchType = "date";
+                        searchParams = new String[]{dateField.getText()};
+                    }
+                    
+                    ResultSet("visit", searchType, searchParams);
+                    
+                } catch (IllegalArgumentException ex) {
+                    JOptionPane.showMessageDialog(this,
+                        ex.getMessage(),
+                        "Input Error",
+                        JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        searchMenu.add(searchDoctorMenuItem);
+        searchMenu.add(searchPatientMenuItem);
+        searchMenu.add(searchDrugMenuItem);
+        searchMenu.add(searchInsuranceComMenuItem);
+        searchMenu.add(searchPrescriptionMenuItem);
+        searchMenu.add(searchVisitMenuItem);
+        menuBar.add(searchMenu);
 
         // Add Records menu
         JMenu addRecordsMenu = new JMenu("Add Records");
@@ -140,6 +302,56 @@ public class MainFrame extends JFrame {
         }
         }
 
+    // Update the ResultSet method to handle multiple IDs
+    public void ResultSet(String tableType, String searchType, String... searchParams) {
+        try {
+            BaseDAO<?> dao = DAOFactory.getDAO(tableType);
+            List<?> results;
+            
+            if (tableType.equals("visit")) {
+                VisitDAO visitDao = (VisitDAO) dao;
+                results = switch (searchType) {
+                    case "keys" -> Collections.singletonList(visitDao.get(searchParams));
+                    case "patient" -> visitDao.findByPatient(searchParams[0]);
+                    case "doctor" -> visitDao.findByDoctor(searchParams[0]);
+                    case "date" -> visitDao.findByDate(searchParams[0]);
+                    default -> throw new IllegalArgumentException("Invalid search type");
+                };
+            } else {
+                results = Collections.singletonList(dao.get(searchParams));
+            }
+            
+            if (results != null && !results.isEmpty() && results.get(0) != null) {
+                JTable table = new JTable(new CustomTableModel(results, tableType));
+                table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+                table.getTableHeader().setReorderingAllowed(false);
+                table.setRowHeight(25);
+                table.setAutoCreateRowSorter(true);
+
+                JScrollPane scrollPane = new JScrollPane(table);
+                mainPanel.removeAll();
+                mainPanel.add(scrollPane, BorderLayout.CENTER);
+                mainPanel.revalidate();
+                mainPanel.repaint();
+            } else {
+                JOptionPane.showMessageDialog(
+                    this,
+                    "No results found",
+                    "Not Found",
+                    JOptionPane.INFORMATION_MESSAGE
+                );
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(
+                this,
+                "Error searching: " + ex.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+            );
+        }
+
+    }
+
     private void viewDoctorTable() {
         createTable("doctor");
     }
@@ -163,6 +375,8 @@ public class MainFrame extends JFrame {
     public void viewVisitTable() {
         createTable("visit");
     }
+    
+
 
     private <T> void showForm(String type, T entity) {
         try {
