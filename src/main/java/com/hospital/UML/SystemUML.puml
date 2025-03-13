@@ -194,6 +194,36 @@ package "com.hospital.models" {
     }
 }
 
+// Add new validation package
+package "com.hospital.validation" {
+    class FieldValidation {
+        - String fieldName
+        - int maxLength
+        - boolean required
+        - String pattern
+        - String errorMessage
+        + FieldValidation(String, int, boolean, String, String)
+        + getters()
+    }
+}
+
+// Add exceptions package
+package "com.hospital.exceptions" {
+    class DatabaseException {
+        + DatabaseException(String message)
+        + DatabaseException(String message, Throwable cause)
+    }
+}
+
+// Add utils package
+package "com.hospital.utils" {
+    class DateValidator {
+        + {static} String getCurrentDate()
+        + {static} boolean isValidDate(String date)
+        + {static} String getValidDate(String date)
+    }
+}
+
 ' Relationships with cardinality
 MainFrame "1" *--> "1..*" TableRightClick : creates >
 MainFrame "1" --> "1" FormFactory : uses >
@@ -241,4 +271,9 @@ DrugDAO --> Drug : manages >
 VisitDAO --> Visit : manages >
 PrescriptionDAO --> Prescription : manages >
 InsuranceComDAO --> InsuranceCom : manages >
+
+// Add new relationships
+BaseForm --> FieldValidation : uses >
+BaseDAO ..> DatabaseException : throws >
+Prescription --> DateValidator : uses >
 @enduml

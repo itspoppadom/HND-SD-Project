@@ -1,0 +1,107 @@
+@startuml Hospital Models
+!theme hacker
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor WhiteSmoke
+
+package "com.hospital.models" {
+    abstract class Person {
+        - String firstName
+        - String lastName
+        - String address
+        - String email
+        + Person(String firstName, String lastName, String address, String email)
+        + Person()
+        + getters/setters()
+        + void displayInfo()
+        + void addNewPerson()
+    }
+
+    class Patient extends Person {
+        - String patientID
+        - String postcode
+        - String phoneNumber
+        - String insuranceID
+        + Patient()
+        + Patient(String firstName, String lastName, String address, String email, String patientID, String postcode, String phoneNumber, String insuranceID)
+        + getters/setters()
+        + void displayInfo()
+        + void addNewPatient()
+    }
+
+    class Doctor extends Person {
+        - String doctorID
+        - String specialization
+        - String hospital
+        + Doctor()
+        + Doctor(String firstName, String lastName, String address, String email, String doctorID, String specialization, String hospital)
+        + getters/setters()
+        + void displayInfo()
+        + void addNewDoctor()
+    }
+
+    class Drug {
+        - String drugID
+        - String drugName
+        - String sideEffects
+        - String benefits
+        + Drug()
+        + Drug(String drugID, String drugName, String sideEffects, String benefits)
+        + getters/setters()
+        + void displayInfo()
+        + void addNewDrug()
+    }
+
+    class Visit {
+        - String patientID
+        - String doctorID
+        - String dateOfVisit
+        - String symptoms
+        - String diagnosisID
+        + Visit()
+        + Visit(String patientID, String doctorID, String dateOfVisit, String symptoms, String diagnosisID)
+        + getters/setters()
+        + void displayVisit()
+        + void addNewVisit()
+    }
+
+    class Prescription {
+        - String prescriptionID
+        - String datePrescribed
+        - int dosage
+        - int duration
+        - String comment
+        - String drugID
+        - String doctorID
+        - String patientID
+        + Prescription()
+        + Prescription(String prescriptionID, String datePrescribed, int dosage, int duration, String comment, String drugID, String doctorID, String patientID)
+        + getters/setters()
+        + void addNewPrescription()
+    }
+
+    class InsuranceCom {
+        - String insuranceID
+        - String companyName
+        - String address
+        - String phone
+        + InsuranceCom()
+        + InsuranceCom(String insuranceID, String companyName, String address, String phone)
+        + getters/setters()
+        + void DisplayInsuranceCom()
+        + void addNewInsuranceCom()
+    }
+}
+
+' Model relationships
+Patient "1" --> "0..1" InsuranceCom : has insurance >
+Doctor "1" <-- "*" Visit : visits <
+Patient "1" <-- "*" Visit : makes <
+Prescription "*" --> "1" Drug : prescribes >
+Prescription "*" --> "1" Doctor : prescribed by >
+Prescription "*" --> "1" Patient : prescribed to >
+
+note "Model Relationships Only\nDominic Christopher Cameron 30087241" as N1
+
+@enduml
