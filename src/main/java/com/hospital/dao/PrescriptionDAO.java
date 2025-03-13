@@ -13,23 +13,23 @@ import com.hospital.models.Prescription;
 public class PrescriptionDAO implements BaseDAO<Prescription> {
 
     public List<Prescription> findByPatient(String patientID) throws DatabaseException {
-        return executeSearch("SELECT * FROM prescription WHERE patientID = ?", patientID);
+        return executeSearch("SELECT * FROM prescription WHERE patientID LIKE ?", patientID);
     }
 
     public List<Prescription> findByDoctor(String doctorID) throws DatabaseException {
-        return executeSearch("SELECT * FROM prescription WHERE doctorID = ?", doctorID);
+        return executeSearch("SELECT * FROM prescription WHERE doctorID LIKE ?", doctorID);
     }
     public List<Prescription> findByDrug(String drugID) throws DatabaseException {
-        return executeSearch("SELECT * FROM prescription WHERE drugID = ?", drugID);
+        return executeSearch("SELECT * FROM prescription WHERE drugID LIKE ?", drugID);
     }
     public List<Prescription> findByDate(String date) throws DatabaseException {
-        return executeSearch("SELECT * FROM prescription WHERE datePrescribed = ?", date);
+        return executeSearch("SELECT * FROM prescription WHERE datePrescribed LIKE ?", date);
     }
     public List<Prescription> findByDuration(int duration) throws DatabaseException {
-        return executeSearch("SELECT * FROM prescription WHERE duration = ?", String.valueOf(duration));
+        return executeSearch("SELECT * FROM prescription WHERE duration LIKE ?", String.valueOf(duration));
     }
     public List<Prescription> findByDosage(int dosage) throws DatabaseException {
-        return executeSearch("SELECT * FROM prescription WHERE dosage = ?", String.valueOf(dosage));
+        return executeSearch("SELECT * FROM prescription WHERE dosage LIKE ?", String.valueOf(dosage));
     }
     private List<Prescription> executeSearch(String query, String value) throws DatabaseException {
         List<Prescription> prescriptions = new ArrayList<>();

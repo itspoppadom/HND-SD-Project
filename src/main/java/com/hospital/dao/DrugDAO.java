@@ -10,6 +10,38 @@ import java.util.List;
 import com.hospital.models.Drug;
 
 public class DrugDAO implements BaseDAO<Drug> {
+
+    public List<Drug> findByDrugName(String name) {
+        return executeSearch("SELECT * FROM drug WHERE drugname LIKE ?", name);
+    }
+    public List<Drug> findBySideEffects(String sideEffects) {
+        return executeSearch("SELECT * FROM drug WHERE sideEffects LIKE ?", sideEffects);
+    }
+    public List<Drug> findByBenefits(String benefits) {
+        return executeSearch("SELECT * FROM drug WHERE benefits LIKE ?", benefits);
+    }
+    private List<Drug> executeSearch(String query, String value) {
+        List<Drug> drugs = new ArrayList<>();
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, "%" + value + "%");
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                Drug drug = new Drug();
+                drug.setDrugID(resultSet.getString("drugID"));
+                drug.setDrugName(resultSet.getString("drugname"));
+                drug.setSideEffects(resultSet.getString("sideEffects"));
+                drug.setBenefits(resultSet.getString("benefits"));
+                drugs.add(drug);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return drugs;
+        }
+    
+
+
     @Override
     public List<Drug> getAll() {
         List<Drug> drugs = new ArrayList<>();

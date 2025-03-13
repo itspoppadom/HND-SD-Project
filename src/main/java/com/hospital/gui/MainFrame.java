@@ -26,6 +26,10 @@ import javax.swing.SwingUtilities;
 import com.hospital.dao.BaseDAO;
 import com.hospital.dao.DAOFactory;
 import com.hospital.dao.DatabaseConnection;
+import com.hospital.dao.DoctorDAO;
+import com.hospital.dao.DrugDAO;
+import com.hospital.dao.InsuranceComDAO;
+import com.hospital.dao.PatientDAO;
 import com.hospital.dao.PrescriptionDAO;
 import com.hospital.dao.VisitDAO;
 import com.hospital.models.Doctor;
@@ -94,28 +98,677 @@ public class MainFrame extends JFrame {
         JMenuItem searchPrescriptionMenuItem = new JMenuItem("Prescription");
         JMenuItem searchVisitMenuItem = new JMenuItem("Visit");
 
+        // Add search menu items
+
+        //Update the Doctor search menu item action listener
         searchDoctorMenuItem.addActionListener(e -> {
-            String id = JOptionPane.showInputDialog(this, "Enter Doctor ID:");
-            ResultSet("doctor", id);
+            JPanel panel = new JPanel();
+            panel.setLayout(new BorderLayout(5, 5));
+
+            // Create radio buttons for search type 
+            JRadioButton searchByKeys = new JRadioButton("Search by Doctor ID");
+            JRadioButton searchByFirstName = new JRadioButton("Search by First Name");
+            JRadioButton searchByLastName = new JRadioButton("Search by Last Name");
+            JRadioButton searchByAddress = new JRadioButton("Search by Address");
+            JRadioButton searchByEmail = new JRadioButton("Search by Email");
+            JRadioButton searchBySpecialization = new JRadioButton("Search by Specialization");
+            JRadioButton searchByHospital = new JRadioButton("Search by Hospital");
+
+            ButtonGroup bg = new ButtonGroup();
+            bg.add(searchByKeys);
+            bg.add(searchByFirstName);
+            bg.add(searchByLastName);
+            bg.add(searchByAddress);
+            bg.add(searchByEmail);
+            bg.add(searchBySpecialization);
+            bg.add(searchByHospital);
+            searchByKeys.setSelected(true);
+
+            // Create fields panel
+            JPanel fieldsPanel = new JPanel();
+            fieldsPanel.setLayout(new GridLayout(7, 1, 5, 5));
+            JTextField doctorIDField = new JTextField(10);
+            JTextField firstNameField = new JTextField(10);
+            JTextField lastNameField = new JTextField(10);
+            JTextField addressField = new JTextField(10);
+            JTextField emailField = new JTextField(10);
+            JTextField specializationField = new JTextField(10);
+            JTextField hospitalField = new JTextField(10);
+
+            fieldsPanel.add(new JLabel("Doctor ID:"));
+            fieldsPanel.add(doctorIDField);
+            fieldsPanel.add(new JLabel("First Name:"));
+            fieldsPanel.add(firstNameField);
+            fieldsPanel.add(new JLabel("Last Name:"));
+            fieldsPanel.add(lastNameField);
+            fieldsPanel.add(new JLabel("Address:"));
+            fieldsPanel.add(addressField);
+            fieldsPanel.add(new JLabel("Email:"));
+            fieldsPanel.add(emailField);
+            fieldsPanel.add(new JLabel("Specialization:"));
+            fieldsPanel.add(specializationField);
+            fieldsPanel.add(new JLabel("Hospital:"));
+            fieldsPanel.add(hospitalField);
+
+            // Add components to panel
+            JPanel radioPanel = new JPanel(new GridLayout(7, 1));
+            radioPanel.add(searchByKeys);
+            radioPanel.add(searchByFirstName);
+            radioPanel.add(searchByLastName);
+            radioPanel.add(searchByAddress);
+            radioPanel.add(searchByEmail);
+            radioPanel.add(searchBySpecialization);
+            radioPanel.add(searchByHospital);
+
+            panel.add(radioPanel, BorderLayout.NORTH);
+            panel.add(fieldsPanel, BorderLayout.CENTER);
+
+            // Enable/disable fields based on radio selection
+            searchByKeys.addActionListener(event -> {
+                doctorIDField.setEnabled(true);
+                firstNameField.setEnabled(false);
+                lastNameField.setEnabled(false);
+                addressField.setEnabled(false);
+                emailField.setEnabled(false);
+                specializationField.setEnabled(false);
+                hospitalField.setEnabled(false);
+            });
+            searchByFirstName.addActionListener(event -> {
+                doctorIDField.setEnabled(false);
+                firstNameField.setEnabled(true);
+                lastNameField.setEnabled(false);
+                addressField.setEnabled(false);
+                emailField.setEnabled(false);
+                specializationField.setEnabled(false);
+                hospitalField.setEnabled(false);
+            });
+            searchByLastName.addActionListener(event -> {
+                doctorIDField.setEnabled(false);
+                firstNameField.setEnabled(false);
+                lastNameField.setEnabled(true);
+                addressField.setEnabled(false);
+                emailField.setEnabled(false);
+                specializationField.setEnabled(false);
+                hospitalField.setEnabled(false);
+            });
+            searchByAddress.addActionListener(event -> {
+                doctorIDField.setEnabled(false);
+                firstNameField.setEnabled(false);
+                lastNameField.setEnabled(false);
+                addressField.setEnabled(true);
+                emailField.setEnabled(false);
+                specializationField.setEnabled(false);
+                hospitalField.setEnabled(false);
+            });
+            searchByEmail.addActionListener(event -> {
+                doctorIDField.setEnabled(false);
+                firstNameField.setEnabled(false);
+                lastNameField.setEnabled(false);
+                addressField.setEnabled(false);
+                emailField.setEnabled(true);
+                specializationField.setEnabled(false);
+                hospitalField.setEnabled(false);
+            });
+            searchBySpecialization.addActionListener(event -> {
+                doctorIDField.setEnabled(false);
+                firstNameField.setEnabled(false);
+                lastNameField.setEnabled(false);
+                addressField.setEnabled(false);
+                emailField.setEnabled(false);
+                specializationField.setEnabled(true);
+                hospitalField.setEnabled(false);
+            });
+            searchByHospital.addActionListener(event -> {
+                doctorIDField.setEnabled(false);
+                firstNameField.setEnabled(false);
+                lastNameField.setEnabled(false);
+                addressField.setEnabled(false);
+                emailField.setEnabled(false);
+                specializationField.setEnabled(false);
+                hospitalField.setEnabled(true);
+            });
+
+            int result = JOptionPane.showConfirmDialog(
+                this, panel, "Search Doctor",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+            );
+
+            if (result == JOptionPane.OK_OPTION) {
+                try {
+                    String searchType = "";
+                    String[] searchParams = null;
+
+                    if (searchByKeys.isSelected()) {
+                        if (doctorIDField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Doctor ID required");
+                        }
+                        searchType = "keys";
+                        searchParams = new String[]{doctorIDField.getText()};
+                    } else if (searchByFirstName.isSelected()) {
+                        if (firstNameField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("First name required");
+                        }
+                        searchType = "firstName";
+                        searchParams = new String[]{firstNameField.getText()};
+                    } else if (searchByLastName.isSelected()) {
+                        if (lastNameField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Last name required");
+                        }
+                        searchType = "lastName";
+                        searchParams = new String[]{lastNameField.getText()};
+                    } else if (searchByAddress.isSelected()) {
+                        if (addressField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Address required");
+                        }
+                        searchType = "address";
+                        searchParams = new String[]{addressField.getText()};
+                    } else if (searchByEmail.isSelected()) {
+                        if (emailField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Email required");
+                        }
+                        searchType = "email";
+                        searchParams = new String[]{emailField.getText()};
+                    } else if (searchBySpecialization.isSelected()) {
+                        if (specializationField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Specialization required");
+                        }
+                        searchType = "specialization";
+                        searchParams = new String[]{specializationField.getText()};
+                    } else if (searchByHospital.isSelected()) {
+                        if (hospitalField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Hospital required");
+                        }
+                        searchType = "hospital";
+                        searchParams = new String[]{hospitalField.getText()};
+                    }
+
+                    ResultSet("doctor", searchType, searchParams);
+
+                } catch (IllegalArgumentException ex) {
+                    JOptionPane.showMessageDialog(this,
+                        ex.getMessage(),
+                        "Input Error",
+                        JOptionPane.ERROR_MESSAGE);
+                }
+            }
         });
+
+        // Update the patient search menu item action listener
         searchPatientMenuItem.addActionListener(e -> {
-            String id = JOptionPane.showInputDialog(this, "Enter Patient ID:");
-            ResultSet("patient", id);
+            JPanel panel = new JPanel();
+            panel.setLayout(new BorderLayout(5, 5));
+
+            // Create radio buttons for search type
+            JRadioButton searchByKeys = new JRadioButton("Search by Patient ID");
+            JRadioButton searchByFirstName = new JRadioButton("Search by First Name");
+            JRadioButton searchByLastName = new JRadioButton("Search by Last Name");
+            JRadioButton searchByAddress = new JRadioButton("Search by Address");
+            JRadioButton searchByPostcode = new JRadioButton("Search by Postcode");
+            JRadioButton searchByPhone = new JRadioButton("Search by Phone Number");
+            JRadioButton searchByEmail = new JRadioButton("Search by Email");
+            JRadioButton searchByInsurance = new JRadioButton("Search by Insurance ID");
+
+            ButtonGroup bg = new ButtonGroup();
+            bg.add(searchByKeys);
+            bg.add(searchByFirstName);
+            bg.add(searchByLastName);
+            bg.add(searchByAddress);
+            bg.add(searchByPostcode);
+            bg.add(searchByPhone);
+            bg.add(searchByEmail);
+            bg.add(searchByInsurance);
+            searchByKeys.setSelected(true);
+
+            // Create fields panel
+            JPanel fieldsPanel = new JPanel();
+            fieldsPanel.setLayout(new GridLayout(8, 1, 5, 5));
+            JTextField patientIDField = new JTextField(10);
+            JTextField firstNameField = new JTextField(10);
+            JTextField lastNameField = new JTextField(10);
+            JTextField addressField = new JTextField(10);
+            JTextField postcodeField = new JTextField(10);
+            JTextField phoneField = new JTextField(10);
+            JTextField emailField = new JTextField(10);
+            JTextField insuranceField = new JTextField(10);
+
+            fieldsPanel.add(new JLabel("Patient ID:"));
+            fieldsPanel.add(patientIDField);
+            fieldsPanel.add(new JLabel("First Name:"));
+            fieldsPanel.add(firstNameField);
+            fieldsPanel.add(new JLabel("Last Name:"));
+            fieldsPanel.add(lastNameField);
+            fieldsPanel.add(new JLabel("Address:"));
+            fieldsPanel.add(addressField);
+            fieldsPanel.add(new JLabel("Postcode:"));
+            fieldsPanel.add(postcodeField);
+            fieldsPanel.add(new JLabel("Phone Number:"));
+            fieldsPanel.add(phoneField);
+            fieldsPanel.add(new JLabel("Email:"));
+            fieldsPanel.add(emailField);
+            fieldsPanel.add(new JLabel("Insurance ID:"));
+            fieldsPanel.add(insuranceField);
+
+            // Add components to panel
+            JPanel radioPanel = new JPanel(new GridLayout(8, 1));
+            radioPanel.add(searchByKeys);
+            radioPanel.add(searchByFirstName);
+            radioPanel.add(searchByLastName);
+            radioPanel.add(searchByAddress);
+            radioPanel.add(searchByPostcode);
+            radioPanel.add(searchByPhone);
+            radioPanel.add(searchByEmail);
+            radioPanel.add(searchByInsurance);
+
+            panel.add(radioPanel, BorderLayout.NORTH);
+            panel.add(fieldsPanel, BorderLayout.CENTER);
+
+            // Enable/disable fields based on radio selection
+            searchByKeys.addActionListener(event -> {
+                patientIDField.setEnabled(true);
+                firstNameField.setEnabled(false);
+                lastNameField.setEnabled(false);
+                addressField.setEnabled(false);
+                postcodeField.setEnabled(false);
+                phoneField.setEnabled(false);
+                emailField.setEnabled(false);
+                insuranceField.setEnabled(false);
+            });
+            searchByFirstName.addActionListener(event -> {
+                patientIDField.setEnabled(false);
+                firstNameField.setEnabled(true);
+                lastNameField.setEnabled(false);
+                addressField.setEnabled(false);
+                postcodeField.setEnabled(false);
+                phoneField.setEnabled(false);
+                emailField.setEnabled(false);
+                insuranceField.setEnabled(false);
+            });
+            searchByLastName.addActionListener(event -> {
+                patientIDField.setEnabled(false);
+                firstNameField.setEnabled(false);
+                lastNameField.setEnabled(true);
+                addressField.setEnabled(false);
+                postcodeField.setEnabled(false);
+                phoneField.setEnabled(false);
+                emailField.setEnabled(false);
+                insuranceField.setEnabled(false);
+            });
+            searchByAddress.addActionListener(event -> {
+                patientIDField.setEnabled(false);
+                firstNameField.setEnabled(false);
+                lastNameField.setEnabled(false);
+                addressField.setEnabled(true);
+                postcodeField.setEnabled(false);
+                phoneField.setEnabled(false);
+                emailField.setEnabled(false);
+                insuranceField.setEnabled(false);
+            });
+            searchByPostcode.addActionListener(event -> {
+                patientIDField.setEnabled(false);
+                firstNameField.setEnabled(false);
+                lastNameField.setEnabled(false);
+                addressField.setEnabled(false);
+                postcodeField.setEnabled(true);
+                phoneField.setEnabled(false);
+                emailField.setEnabled(false);
+                insuranceField.setEnabled(false);
+            });
+            searchByPhone.addActionListener(event -> {
+                patientIDField.setEnabled(false);
+                firstNameField.setEnabled(false);
+                lastNameField.setEnabled(false);
+                addressField.setEnabled(false);
+                postcodeField.setEnabled(false);
+                phoneField.setEnabled(true);
+                emailField.setEnabled(false);
+                insuranceField.setEnabled(false);
+            });
+            searchByEmail.addActionListener(event -> {
+                patientIDField.setEnabled(false);
+                firstNameField.setEnabled(false);
+                lastNameField.setEnabled(false);
+                addressField.setEnabled(false);
+                postcodeField.setEnabled(false);
+                phoneField.setEnabled(false);
+                emailField.setEnabled(true);
+                insuranceField.setEnabled(false);
+            });
+            searchByInsurance.addActionListener(event -> {
+                patientIDField.setEnabled(false);
+                firstNameField.setEnabled(false);
+                lastNameField.setEnabled(false);
+                addressField.setEnabled(false);
+                postcodeField.setEnabled(false);
+                phoneField.setEnabled(false);
+                emailField.setEnabled(false);
+                insuranceField.setEnabled(true);
+            });
+
+            int result = JOptionPane.showConfirmDialog(
+                this, panel, "Search Patient",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+            );
+
+            if (result == JOptionPane.OK_OPTION) {
+                try {
+                    String searchType = "";
+                    String[] searchParams = null;
+
+                    if (searchByKeys.isSelected()) {
+                        if (patientIDField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Patient ID required");
+                        }
+                        searchType = "keys";
+                        searchParams = new String[]{patientIDField.getText()};
+                    } else if (searchByFirstName.isSelected()) {
+                        if (firstNameField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("First name required");
+                        }
+                        searchType = "firstName";
+                        searchParams = new String[]{firstNameField.getText()};
+                    } else if (searchByLastName.isSelected()) {
+                        if (lastNameField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Last name required");
+                        }
+                        searchType = "lastName";
+                        searchParams = new String[]{lastNameField.getText()};
+                    } else if (searchByAddress.isSelected()) {
+                        if (addressField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Address required");
+                        }
+                        searchType = "address";
+                        searchParams = new String[]{addressField.getText()};
+                    } else if (searchByPostcode.isSelected()) {
+                        if (postcodeField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Postcode required");
+                        }
+                        searchType = "postcode";
+                        searchParams = new String[]{postcodeField.getText()};
+                    } else if (searchByPhone.isSelected()) {
+                        if (phoneField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Phone number required");
+                        }
+                        searchType = "phone";
+                        searchParams = new String[]{phoneField.getText()};
+                    } else if (searchByEmail.isSelected()) {
+                        if (emailField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Email required");
+                        }
+                        searchType = "email";
+                        searchParams = new String[]{emailField.getText()};
+                    } else if (searchByInsurance.isSelected()) {
+                        if (insuranceField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Insurance ID required");
+                        }
+                        searchType = "insurance";
+                        searchParams = new String[]{insuranceField.getText()};
+                    }
+
+                    ResultSet("patient", searchType, searchParams);
+
+                } catch (IllegalArgumentException ex) {
+                    JOptionPane.showMessageDialog(this,
+                        ex.getMessage(),
+                        "Input Error",
+                        JOptionPane.ERROR_MESSAGE);
+                }
+            }
+
         });
+
+
+        // Update the drug search menu item action listener
         searchDrugMenuItem.addActionListener(e -> {
-            String id = JOptionPane.showInputDialog(this, "Enter Drug ID:");
-            ResultSet("drug", id);
+            JPanel panel = new JPanel();
+            panel.setLayout(new BorderLayout(5, 5));
+
+            // Create radio buttons for search type
+            JRadioButton searchByKeys = new JRadioButton("Search by Drug ID");
+            JRadioButton searchByDrugName = new JRadioButton("Search by Drug Name");
+            JRadioButton searchBySideEffects = new JRadioButton("Search by Side Effects");
+            JRadioButton searchByBenefits = new JRadioButton("Search by Benefits");
+
+            ButtonGroup bg = new ButtonGroup();
+            bg.add(searchByKeys);
+            bg.add(searchByDrugName);
+            bg.add(searchBySideEffects);
+            bg.add(searchByBenefits);
+            searchByKeys.setSelected(true);
+
+
+            // Create fields panel
+            JPanel fieldsPanel = new JPanel();
+            fieldsPanel.setLayout(new GridLayout(4, 1, 5, 5));
+            JTextField drugIDField = new JTextField(10);
+            JTextField drugNameField = new JTextField(10);
+            JTextField sideEffectsField = new JTextField(10);
+            JTextField benefitsField = new JTextField(10);
+
+            fieldsPanel.add(new JLabel("Drug ID:"));
+            fieldsPanel.add(drugIDField);
+            fieldsPanel.add(new JLabel("Drug Name:"));
+            fieldsPanel.add(drugNameField);
+            fieldsPanel.add(new JLabel("Side Effects:"));
+            fieldsPanel.add(sideEffectsField);
+            fieldsPanel.add(new JLabel("Benefits:"));
+            fieldsPanel.add(benefitsField);
+
+            // Add components to panel
+            JPanel radioPanel = new JPanel(new GridLayout(4, 1));
+            radioPanel.add(searchByKeys);
+            radioPanel.add(searchByDrugName);
+            radioPanel.add(searchBySideEffects);
+            radioPanel.add(searchByBenefits);
+            
+            panel.add(radioPanel, BorderLayout.NORTH);
+            panel.add(fieldsPanel, BorderLayout.CENTER);
+
+            // Enable/disable fields based on radio selection
+            searchByKeys.addActionListener(event -> {
+                drugIDField.setEnabled(true);
+                drugNameField.setEnabled(false);
+                sideEffectsField.setEnabled(false);
+                benefitsField.setEnabled(false);
+            });
+            searchByDrugName.addActionListener(event -> {
+                drugIDField.setEnabled(false);
+                drugNameField.setEnabled(true);
+                sideEffectsField.setEnabled(false);
+                benefitsField.setEnabled(false);
+            });
+            searchBySideEffects.addActionListener(event -> {
+                drugIDField.setEnabled(false);
+                drugNameField.setEnabled(false);
+                sideEffectsField.setEnabled(true);
+                benefitsField.setEnabled(false);
+            });
+            searchByBenefits.addActionListener(event -> {
+                drugIDField.setEnabled(false);
+                drugNameField.setEnabled(false);
+                sideEffectsField.setEnabled(false);
+                benefitsField.setEnabled(true);
+            });
+
+            int result = JOptionPane.showConfirmDialog(
+                this, panel, "Search Drug",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+            );
+
+            if (result == JOptionPane.OK_OPTION) {
+                try {
+                    String searchType = "";
+                    String[] searchParams = null;
+
+                    if (searchByKeys.isSelected()) {
+                        if (drugIDField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Drug ID required");
+                        }
+                        searchType = "keys";
+                        searchParams = new String[]{drugIDField.getText()};
+                    } else if (searchByDrugName.isSelected()) {
+                        if (drugNameField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Drug name required");
+                        }
+                        searchType = "drugName";
+                        searchParams = new String[]{drugNameField.getText()};
+                    } else if (searchBySideEffects.isSelected()) {
+                        if (sideEffectsField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Side effects required");
+                        }
+                        searchType = "sideEffects";
+                        searchParams = new String[]{sideEffectsField.getText()};
+                    } else if (searchByBenefits.isSelected()) {
+                        if (benefitsField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Benefits required");
+                        }
+                        searchType = "benefits";
+                        searchParams = new String[]{benefitsField.getText()};
+                    }
+
+                    ResultSet("drug", searchType, searchParams);
+
+                } catch (IllegalArgumentException ex) {
+                    JOptionPane.showMessageDialog(this,
+                        ex.getMessage(),
+                        "Input Error",
+                        JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            
         });
+
+        // Update the insurance company search menu item action listener
         searchInsuranceComMenuItem.addActionListener(e -> {
-            String id = JOptionPane.showInputDialog(this, "Enter Insurance Company ID:");
-            ResultSet("insurance", id);
+           JPanel panel = new JPanel();
+           panel.setLayout(new BorderLayout(5,5));
+
+              // Create radio buttons for search type
+            JRadioButton searchByKeys = new JRadioButton("Search by Insurance ID");
+            JRadioButton searchByCompany = new JRadioButton("Search by Company Name");
+            JRadioButton searchByAddress = new JRadioButton("Search by Address");
+            JRadioButton searchByPhone = new JRadioButton("Search by Phone Number");
+
+            ButtonGroup bg = new ButtonGroup();
+            bg.add(searchByKeys);
+            bg.add(searchByCompany);
+            bg.add(searchByAddress);
+            bg.add(searchByPhone);
+            searchByKeys.setSelected(true);
+
+            // Create fields panel
+            JPanel fieldsPanel = new JPanel();
+            fieldsPanel.setLayout(new GridLayout(4, 1, 5, 5));
+            JTextField insuranceIDField = new JTextField(10);
+            JTextField companyField = new JTextField(10);
+            JTextField addressField = new JTextField(10);
+            JTextField phoneField = new JTextField(10);
+            
+            fieldsPanel.add(new JLabel("Insurance ID:"));
+            fieldsPanel.add(insuranceIDField);
+            fieldsPanel.add(new JLabel("Company Name:"));
+            fieldsPanel.add(companyField);
+            fieldsPanel.add(new JLabel("Address:"));
+            fieldsPanel.add(addressField);
+            fieldsPanel.add(new JLabel("Phone Number:"));
+            fieldsPanel.add(phoneField);
+
+            // Add components to panel
+            JPanel radioPanel = new JPanel(new GridLayout(4, 1));
+            radioPanel.add(searchByKeys);
+            radioPanel.add(searchByCompany);
+            radioPanel.add(searchByAddress);
+            radioPanel.add(searchByPhone);
+
+            panel.add(radioPanel, BorderLayout.NORTH);
+            panel.add(fieldsPanel, BorderLayout.CENTER);
+
+            // Enable/disable fields based on radio selection
+            searchByKeys.addActionListener(event -> {
+                insuranceIDField.setEnabled(true);
+                companyField.setEnabled(false);
+                addressField.setEnabled(false);
+                phoneField.setEnabled(false);
+            });
+            searchByCompany.addActionListener(event -> {
+                insuranceIDField.setEnabled(false);
+                companyField.setEnabled(true);
+                addressField.setEnabled(false);
+                phoneField.setEnabled(false);
+            });
+            searchByAddress.addActionListener(event -> {
+                insuranceIDField.setEnabled(false);
+                companyField.setEnabled(false);
+                addressField.setEnabled(true);
+                phoneField.setEnabled(false);
+            });
+            searchByPhone.addActionListener(event -> {
+                insuranceIDField.setEnabled(false);
+                companyField.setEnabled(false);
+                addressField.setEnabled(false);
+                phoneField.setEnabled(true);
+            });
+
+            int result = JOptionPane.showConfirmDialog(
+                this, panel, "Search Insurance Company",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+            );
+            
+            //Handle search
+            if (result == JOptionPane.OK_OPTION) {
+                try {
+                    String searchType = "";
+                    String[] searchParams = null;
+                    
+                    if (searchByKeys.isSelected()) {
+                        if (insuranceIDField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Insurance ID required");
+                        }
+                        searchType = "keys";
+                        searchParams = new String[]{insuranceIDField.getText()};
+                    } else if (searchByCompany.isSelected()) {
+                        if (companyField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Company name required");
+                        }
+                        searchType = "company";
+                        searchParams = new String[]{companyField.getText()};
+                    } else if (searchByAddress.isSelected()) {
+                        if (addressField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Address required");
+                        }
+                        searchType = "address";
+                        searchParams = new String[]{addressField.getText()};
+                    } else if (searchByPhone.isSelected()) {
+                        if (phoneField.getText().isEmpty()) {
+                            throw new IllegalArgumentException("Phone number required");
+                        }
+                        searchType = "phone";
+                        searchParams = new String[]{phoneField.getText()};
+                    }
+                    
+                    ResultSet("insurance", searchType, searchParams);
+                    
+                } catch (IllegalArgumentException ex) {
+                    JOptionPane.showMessageDialog(this,
+                        ex.getMessage(),
+                        "Input Error",
+                        JOptionPane.ERROR_MESSAGE);
+                }
+            }
+
         });
-        
-        
+
+
+
+        // Update the prescription search menu item action listener
         searchPrescriptionMenuItem.addActionListener(e -> {
             JPanel panel = new JPanel();
             panel.setLayout(new BorderLayout(5, 5));
 
+        // Create radio buttons for search type
 
             JRadioButton searchByKeys = new JRadioButton("Search by Prescription ID");
             JRadioButton searchByPatient = new JRadioButton("Search by Patient ID");
@@ -125,7 +778,7 @@ public class MainFrame extends JFrame {
             JRadioButton searchByDosage = new JRadioButton("Search by Dosage");
             JRadioButton searchByDuration = new JRadioButton("Search by Duration");
             
-            
+            // Add radio buttons to button group
             ButtonGroup bg = new ButtonGroup();
             bg.add(searchByKeys);
             bg.add(searchByPatient);
@@ -135,9 +788,12 @@ public class MainFrame extends JFrame {
             bg.add(searchByDosage);
             bg.add(searchByDuration);
             searchByKeys.setSelected(true);
-
+            
+            // Create fields panel
             JPanel fieldsPanel = new JPanel();
-            fieldsPanel.setLayout(new GridLayout(4, 1, 5, 5));  
+            fieldsPanel.setLayout(new GridLayout(4, 1, 5, 5)); 
+
+            // Create text fields for search parameters
             JTextField prescriptionIDField = new JTextField(10);
             JTextField patientIDField = new JTextField(10);
             JTextField doctorIDField = new JTextField(10);
@@ -146,6 +802,7 @@ public class MainFrame extends JFrame {
             JTextField dosageField = new JTextField(10);
             JTextField durationField = new JTextField(10);
 
+            // Add fields to panel
             fieldsPanel.add(new JLabel("Prescription ID:"));
             fieldsPanel.add(prescriptionIDField);
             fieldsPanel.add(new JLabel("Patient ID:"));
@@ -161,6 +818,7 @@ public class MainFrame extends JFrame {
             fieldsPanel.add(new JLabel("Duration:"));
             fieldsPanel.add(durationField);
 
+            // Add components to panel  
             JPanel radioPanel = new JPanel(new GridLayout(5, 5));
             radioPanel.add(searchByKeys);
             radioPanel.add(searchByPatient);
@@ -170,9 +828,12 @@ public class MainFrame extends JFrame {
             radioPanel.add(searchByDosage);
             radioPanel.add(searchByDuration);
 
+            // Add panels to main panel
             panel.add(radioPanel, BorderLayout.NORTH);
             panel.add(fieldsPanel, BorderLayout.CENTER);
 
+
+            // Enable/disable fields based on radio selection
             searchByKeys.addActionListener(event -> {
                 prescriptionIDField.setEnabled(true);
                 patientIDField.setEnabled(true);
@@ -236,13 +897,14 @@ public class MainFrame extends JFrame {
                 dosageField.setEnabled(false);
                 durationField.setEnabled(true);
             });
-
+            // Show dialog
             int result = JOptionPane.showConfirmDialog(
                 this, panel, "Search Prescription",
                 JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.PLAIN_MESSAGE
             );
 
+            // Handle search
             if (result == JOptionPane.OK_OPTION) {
                 try {
                     String searchType = "";
@@ -575,8 +1237,50 @@ public class MainFrame extends JFrame {
                         case "duration" -> prescriptionDao.findByDuration(Integer.parseInt(searchParams[0]));
                         default -> throw new IllegalArgumentException("Invalid search type for Prescription");
                     };
-                }
-                default -> {
+                } 
+                case "insurance" -> {
+                    InsuranceComDAO insuranceDao = (InsuranceComDAO) dao;
+                    results = switch (searchType) {
+                        case "keys" -> Collections.singletonList(insuranceDao.get(searchParams));
+                        case "company" -> insuranceDao.findByCompany(searchParams[0]);
+                        case "address" -> insuranceDao.findByAddress(searchParams[0]);
+                        case "phone" -> insuranceDao.findByPhone(searchParams[0]);
+                        default -> throw new IllegalArgumentException("Invalid search type for Insurance Company");};
+                } case "drug" -> {
+                    DrugDAO drugDao = (DrugDAO) dao;
+                    results = switch (searchType) {
+                        case "keys" -> Collections.singletonList(drugDao.get(searchParams));
+                        case "drugName" -> drugDao.findByDrugName(searchParams[0]);
+                        case "sideEffects" -> drugDao.findBySideEffects(searchParams[0]);
+                        case "benefits" -> drugDao.findByBenefits(searchParams[0]);
+                        default -> throw new IllegalArgumentException("Invalid search type for Drug");
+                    };
+                } case "patient" -> {
+                    PatientDAO patientDao = (PatientDAO) dao;
+                    results = switch (searchType) {
+                        case "keys" -> Collections.singletonList(patientDao.get(searchParams));
+                        case "firstName" -> patientDao.findByFirstName(searchParams[0]);
+                        case "lastName" -> patientDao.findByLastName(searchParams[0]);
+                        case "address" -> patientDao.findByAddress(searchParams[0]);
+                        case "postcode" -> patientDao.findByPostcode(searchParams[0]);
+                        case "phone" -> patientDao.findByPhoneNumber(searchParams[0]);
+                        case "email" -> patientDao.findByEmail(searchParams[0]);
+                        case "insurance" -> patientDao.findByInsuranceID(searchParams[0]);
+                        default -> throw new IllegalArgumentException("Invalid search type for Patient");
+                    };
+                } case "doctor" -> {
+                    DoctorDAO doctorDAO = (DoctorDAO) dao;
+                    results = switch (searchType) {
+                        case "keys" -> Collections.singletonList(doctorDAO.get(searchParams));
+                        case "firstName" -> doctorDAO.findByFirstName(searchParams[0]);
+                        case "lastName" -> doctorDAO.findByLastName(searchParams[0]);
+                        case "address" -> doctorDAO.findByAddress(searchParams[0]);
+                        case "email" -> doctorDAO.findByEmail(searchParams[0]);
+                        case "specialization" -> doctorDAO.findBySpecialization(searchParams[0]);
+                        case "hospital" -> doctorDAO.findByHospital(searchParams[0]);
+                        default -> throw new IllegalArgumentException("Invalid search type for Doctor");
+                    };
+                } default -> {
                     // Simple single parameter search for other entities
                     results = Collections.singletonList(dao.get(searchParams));
                 }

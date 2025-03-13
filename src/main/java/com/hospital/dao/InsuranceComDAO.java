@@ -11,6 +11,36 @@ import com.hospital.exceptions.DatabaseException;
 import com.hospital.models.InsuranceCom;
 
 public class InsuranceComDAO implements BaseDAO<InsuranceCom> {
+    public List<InsuranceCom> findByCompany(String company) {
+        return executeSearch("SELECT * FROM insurance WHERE company LIKE ?", company);
+    }
+    public List<InsuranceCom> findByAddress(String address) {
+        return executeSearch("SELECT * FROM insurance WHERE address LIKE ?", address);
+    }
+    public List<InsuranceCom> findByPhone(String phone) {
+        return executeSearch("SELECT * FROM insurance WHERE phone LIKE ?", phone);
+    }
+    private List<InsuranceCom> executeSearch(String query, String value) {
+        List<InsuranceCom> insuranceComs = new ArrayList<>();
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, "%" + value + "%");
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                InsuranceCom insuranceCom = new InsuranceCom();
+                insuranceCom.setInsuranceID(resultSet.getString("insuranceID"));
+                insuranceCom.setCompanyName(resultSet.getString("company"));
+                insuranceCom.setAddress(resultSet.getString("address"));
+                insuranceCom.setPhone(resultSet.getString("phone"));
+                insuranceComs.add(insuranceCom);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return insuranceComs;
+    }
+
+
     @Override
     public List<InsuranceCom> getAll() {
         List<InsuranceCom> insuranceComs = new ArrayList<>();

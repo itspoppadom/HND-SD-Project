@@ -143,11 +143,11 @@ public class VisitDAO implements BaseDAO<Visit> {
         return executeSearch(query, date);
     }
     public List<Visit> findByDiagnosis(String diagnosisID) throws DatabaseException {
-        String query = "SELECT * FROM visit WHERE diagnosisID = ?";
+        String query = "SELECT * FROM visit WHERE diagnosisID LIKE ?";
         return executeSearch(query, diagnosisID);
     }
     public List<Visit> findBySymptoms(String symptoms) throws DatabaseException {
-        String query = "SELECT * FROM visit WHERE symptoms = ?";
+        String query = "SELECT * FROM visit WHERE symptoms LIKE ?";
         return executeSearch(query, symptoms);
     }
 
@@ -156,7 +156,7 @@ public class VisitDAO implements BaseDAO<Visit> {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             
-            stmt.setString(1, param);
+            stmt.setString(1, "%" +param + "%");
             ResultSet rs = stmt.executeQuery();
             
             while (rs.next()) {

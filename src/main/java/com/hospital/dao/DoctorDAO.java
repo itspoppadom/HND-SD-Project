@@ -10,6 +10,48 @@ import com.hospital.exceptions.DatabaseException;
 import com.hospital.models.Doctor;
 
 public class DoctorDAO implements BaseDAO<Doctor> {
+
+    public List<Doctor> findByFirstName(String firstName) {
+        return executeSearch("SELECT * FROM doctor WHERE firstname LIKE ?", firstName);
+    }
+    public List<Doctor> findByLastName(String lastName) {
+        return executeSearch("SELECT * FROM doctor WHERE surname LIKE ?", lastName);
+    }
+    public List<Doctor> findByAddress(String address) {
+        return executeSearch("SELECT * FROM doctor WHERE address LIKE ?", address);
+    }
+    public List<Doctor> findByEmail(String email) {
+        return executeSearch("SELECT * FROM doctor WHERE email LIKE ?", email);
+    }
+    public List<Doctor> findBySpecialization(String specialization) {
+        return executeSearch("SELECT * FROM doctor WHERE specialization LIKE ?", specialization);
+    }
+    public List<Doctor> findByHospital(String hospital) {
+        return executeSearch("SELECT * FROM doctor WHERE hospital LIKE ?", hospital);
+    }
+    private List<Doctor> executeSearch(String query, String value) {
+        List<Doctor> doctors = new ArrayList<>();
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, "%" + value + "%");
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                Doctor doctor = new Doctor();
+                doctor.setDoctorID(resultSet.getString("doctorID"));
+                doctor.setFirstName(resultSet.getString("firstname"));
+                doctor.setLastName(resultSet.getString("surname"));
+                doctor.setAddress(resultSet.getString("address"));
+                doctor.setEmail(resultSet.getString("email"));
+                doctor.setSpecialization(resultSet.getString("specialization"));
+                doctor.setHospital(resultSet.getString("hospital"));
+                doctors.add(doctor);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return doctors;
+    }
+
     @Override
     public void save(Doctor doctor) throws DatabaseException {
         String query = "INSERT INTO doctor (doctorID, firstname, surname, address, email, specialization, hospital) VALUES (?, ?, ?, ?, ?, ?, ?)";

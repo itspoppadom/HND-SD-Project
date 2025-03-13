@@ -12,6 +12,52 @@ import com.hospital.models.Patient;
 
 
 public class PatientDAO implements BaseDAO<Patient> {
+
+    public List<Patient> findByFirstName(String firstName) {
+        return executeSearch("SELECT * FROM patient WHERE firstname LIKE ?", firstName);
+    }
+    public List<Patient> findByLastName(String lastName) {
+        return executeSearch("SELECT * FROM patient WHERE surname LIKE ?", lastName);
+    }
+    public List<Patient> findByPostcode(String postcode) {
+        return executeSearch("SELECT * FROM patient WHERE postcode LIKE ?", postcode);
+    }
+    public List<Patient> findByAddress(String address) {
+        return executeSearch("SELECT * FROM patient WHERE address LIKE ?", address);
+    }
+    public List<Patient> findByPhoneNumber(String phoneNumber) {
+        return executeSearch("SELECT * FROM patient WHERE phone LIKE ?", phoneNumber);
+    }
+    public List<Patient> findByEmail(String email) {
+        return executeSearch("SELECT * FROM patient WHERE email LIKE ?", email);
+    }
+    public List<Patient> findByInsuranceID(String insuranceID) {
+        return executeSearch("SELECT * FROM patient WHERE insuranceID LIKE ?", insuranceID);
+    }
+
+    private List<Patient> executeSearch(String query, String value) {
+        List<Patient> patients = new ArrayList<>();
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, "%" + value + "%");
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                Patient patient = new Patient();
+                patient.setPatientID(resultSet.getString("patientID"));
+                patient.setFirstName(resultSet.getString("firstname"));
+                patient.setLastName(resultSet.getString("surname"));
+                patient.setPostcode(resultSet.getString("postcode"));
+                patient.setAddress(resultSet.getString("address"));
+                patient.setPhoneNumber(resultSet.getString("phone"));
+                patient.setEmail(resultSet.getString("email"));
+                patient.setInsuranceID(resultSet.getString("insuranceID"));
+                patients.add(patient);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return patients;
+    }
     
     @Override
     public void save(Patient patient) throws DatabaseException {
