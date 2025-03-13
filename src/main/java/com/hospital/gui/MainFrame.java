@@ -1207,6 +1207,8 @@ public class MainFrame extends JFrame {
         }
         }
 
+
+    // Method to display search results depending on the table type
     public void ResultSet(String tableType, String searchType, String... searchParams) {
         try {
             BaseDAO<?> dao = DAOFactory.getDAO(tableType);
@@ -1320,7 +1322,7 @@ public class MainFrame extends JFrame {
         mainPanel.revalidate();
         mainPanel.repaint();
     }
-
+    // Method to view the doctor table
     private void viewDoctorTable() {
         createTable("doctor");
     }
@@ -1345,8 +1347,8 @@ public class MainFrame extends JFrame {
         createTable("visit");
     }
     
-
-
+    // showForm method to display the form for adding a new record
+    // The type parameter is used to determine the type of form to display
     private <T> void showForm(String type, T entity) {
         try {
             BaseForm<T> form = FormFactory.getForm(type, this, entity);
@@ -1365,7 +1367,7 @@ public class MainFrame extends JFrame {
             );
         }
     }
-
+    // Different Methods used to display different types of forms. 
     private void showInsuranceComForm() {
         showForm("insurance", new InsuranceCom());
     }

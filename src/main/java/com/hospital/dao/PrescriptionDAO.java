@@ -12,6 +12,8 @@ import com.hospital.models.Prescription;
 
 public class PrescriptionDAO implements BaseDAO<Prescription> {
 
+    // Functions for searching the database by different parameters of the table
+    // All functions use the LIKE operator to search for partial matches
     public List<Prescription> findByPatient(String patientID) throws DatabaseException {
         return executeSearch("SELECT * FROM prescription WHERE patientID LIKE ?", patientID);
     }
@@ -31,11 +33,13 @@ public class PrescriptionDAO implements BaseDAO<Prescription> {
     public List<Prescription> findByDosage(int dosage) throws DatabaseException {
         return executeSearch("SELECT * FROM prescription WHERE dosage LIKE ?", String.valueOf(dosage));
     }
+
+    // Function to execute the search query
     private List<Prescription> executeSearch(String query, String value) throws DatabaseException {
         List<Prescription> prescriptions = new ArrayList<>();
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, value);
+            preparedStatement.setString(1, "%" + value + "%");
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 Prescription prescription = new Prescription();
@@ -54,7 +58,7 @@ public class PrescriptionDAO implements BaseDAO<Prescription> {
         }
         return prescriptions;
     }
-    
+    // Functions for saving, updating, deleting, getting, and getting all prescriptions
     @Override
     public void save( Prescription prescription) throws DatabaseException {
     String query = "INSERT INTO prescription (prescriptionID, datePrescribed, dosage, duration, comment, drugID, doctorID, patientID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -80,6 +84,7 @@ public class PrescriptionDAO implements BaseDAO<Prescription> {
             }
         }
     }
+    // Function to update a prescription
     @Override
     public void update( Prescription prescription) {
         String query = "UPDATE prescription SET datePrescribed = ?, dosage = ?, duration = ?, comment = ?, drugID = ?, doctorID = ?, patientID = ? WHERE prescriptionID = ?";
@@ -101,6 +106,7 @@ public class PrescriptionDAO implements BaseDAO<Prescription> {
         }
 
     }
+    // Function to delete a prescription
     @Override
     public void delete(String... ids) {
         String query = "DELETE FROM prescription WHERE prescriptionID = ?";
@@ -113,6 +119,7 @@ public class PrescriptionDAO implements BaseDAO<Prescription> {
             e.printStackTrace();
         }
     }
+    // Function to get a prescription
     @Override
     public Prescription get(String... ids) {
         String query = "SELECT * FROM prescription WHERE prescriptionID = ?";
@@ -136,6 +143,7 @@ public class PrescriptionDAO implements BaseDAO<Prescription> {
         }
         return prescription;
     }
+    // Function to get all prescriptions
     @Override
     public List<Prescription> getAll() {
         List<Prescription> prescriptions = new ArrayList<>();
