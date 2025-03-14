@@ -5,19 +5,24 @@ import java.util.Scanner;
 
 public class Drug {
 
+    //Attributes for the Drug Class
     private String drugID;
     private String drugName;
     private String sideEffects;
     private String benefits;
 
+    //Singleton Scanner
     Scanner scanner = new Scanner(System.in);
 
+    //Constructor for the Drug Class
     public Drug(String drugID, String drugName, String sideEffects, String benefits) {
         this.drugID = drugID;
         this.drugName = drugName;
         this.sideEffects = sideEffects;
         this.benefits = benefits;
     }
+
+    //Default Constructor for Drug Class
     public Drug(){
         this.drugID = "";
         this.drugName = "";
@@ -51,7 +56,7 @@ public class Drug {
         this.benefits = benefits;
     }
 
-
+    //Function to display the Drug Information
     public void displayInfo(){
         System.out.println("Drug ID: " + drugID);
         System.out.println("Drug Name: " + drugName);
@@ -59,6 +64,7 @@ public class Drug {
         System.out.println("Benefits: " + benefits);
     }
 
+    //Function to add a new Drug
     public void addNewDrug(){
         System.out.println("Enter Drug ID: ");
         drugID = scanner.nextLine();

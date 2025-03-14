@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ValidationConfig {
+    // Validation rules for each entity
     private static final Map<String, FieldValidation[]> VALIDATION_RULES = new HashMap<>();
 
     static {
@@ -19,6 +20,7 @@ public class ValidationConfig {
             new FieldValidation("insuranceID", 10, false, "^[A-Z0-9]+$", "Insurance ID must be alphanumeric and cannot exceed 10 characters")
         });
         
+        // Doctor validation rules
         VALIDATION_RULES.put("doctor", new FieldValidation[] {
             new FieldValidation("doctorID", 5, true, "^[A-Z0-9]+$", "Doctor ID must be alphanumeric and uppercase"),
             new FieldValidation("firstName", 18, true, "^[A-Za-z\\s]+$", "First name must contain only letters"),
@@ -29,6 +31,7 @@ public class ValidationConfig {
             new FieldValidation("hospital", 64, false, null, "Hospital cannot exceed 64 characters")
         });
 
+        // Drug validation rules
         VALIDATION_RULES.put("drug", new FieldValidation[] {
             new FieldValidation("drugID", 8, true, "^[A-Z0-9]+$", "Drug ID must be alphanumeric and uppercase"),
             new FieldValidation("name", 40, true, "^[A-Za-z\\s]+$", "Name must contain only letters"),
@@ -36,6 +39,7 @@ public class ValidationConfig {
             new FieldValidation("benefits", 255, true, null, "Benefits are required")
         }); 
 
+        // Prescription validation rules
         VALIDATION_RULES.put("prescription", new FieldValidation[] {
             new FieldValidation("prescriptionID", 15, true, "^[A-Z0-9]+$", "Prescription ID must be alphanumeric and uppercase"),
             new FieldValidation("datePrescribed", 10, true, "^[0-9]{4}-[0-9]{2}-[0-9]{2}$", "Invalid date format (YYYY-MM-DD)"),
@@ -47,6 +51,7 @@ public class ValidationConfig {
             new FieldValidation("patientID", 10, true, "^[A-Z0-9]+$", "Patient ID must be alphanumeric and uppercase")
         });
 
+        // Insurance validation rules
         VALIDATION_RULES.put("insurance", new FieldValidation[] {
             new FieldValidation("insuranceID", 10, true, "^[A-Z0-9]+$", "Insurance ID must be alphanumeric and uppercase"),
             new FieldValidation("name", 40, true, "^[A-Za-z\\s]+$", "Name must contain only letters"),
@@ -54,6 +59,7 @@ public class ValidationConfig {
             new FieldValidation("phone", 16, true, "^[0-9\\-\\+]+$", "Invalid phone number format")
         });
 
+        // Visit validation rules
         VALIDATION_RULES.put("visit", new FieldValidation[] {
             new FieldValidation("patientID", 10, true, "^[A-Z0-9]+$", "Patient ID must be alphanumeric and uppercase"),
             new FieldValidation("doctorID", 5, true, "^[A-Z0-9]+$", "Doctor ID must be alphanumeric and uppercase"),
@@ -64,6 +70,7 @@ public class ValidationConfig {
 
     }
 
+    // Get validation rules for a given entity type
     public static FieldValidation[] getValidationRules(String entityType) {
         return VALIDATION_RULES.get(entityType.toLowerCase());
     }

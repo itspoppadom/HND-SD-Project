@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 public class Visit{
 
+    //Attributes for the Visit class
     private String patientID;
     private String doctorID;
     private String dateOfVisit;
@@ -63,6 +64,7 @@ public class Visit{
         this.diagnosisID = diagnosisID;
     }
 
+    //Function to display the Visit Information
     public void displayVisit(){
         System.out.println("Patient ID: " + patientID);
         System.out.println("Doctor ID: " + doctorID);
@@ -70,6 +72,7 @@ public class Visit{
         System.out.println("Symptoms: " + symptoms);
         System.out.println("Diagnosis ID: " + diagnosisID);
     }
+    //Function to add a new Visit
     public void addNewVisit(){
         System.out.println("Enter Patient ID: ");
         patientID = scanner.nextLine();

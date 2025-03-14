@@ -6,6 +6,7 @@ import com.hospital.utils.DateValidator;
 
 public class Prescription {
 
+    //Attributes for Prescription Class
     private String prescriptionID;
     private String datePrescribed;
     private int dosage;
@@ -15,7 +16,9 @@ public class Prescription {
     private String doctorID;  // Association by ID
     private String patientID;  // Association by ID
 
+    // Singleton Scanner    
     Scanner scanner = new Scanner(System.in);
+
     // Default Constructor for Prescription Class
     public Prescription() {
         this.prescriptionID = "";
@@ -28,6 +31,7 @@ public class Prescription {
         this.patientID = "";
     }
 
+    // Constructor for Prescription Class
     public Prescription(String prescriptionID, String datePrescribed, int dosage, int duration, String comment, String drugID, String doctorID, String patientID) {
         this.prescriptionID = prescriptionID;
         this.datePrescribed = datePrescribed;
@@ -104,6 +108,19 @@ public class Prescription {
         this.patientID = patientID;
     }
 
+    // Function to display Prescription Information
+    public void displayInfo() {
+        System.out.println("Prescription ID: " + prescriptionID);
+        System.out.println("Date Prescribed: " + datePrescribed);
+        System.out.println("Dosage: " + dosage);
+        System.out.println("Duration: " + duration);
+        System.out.println("Comment: " + comment);
+        System.out.println("Drug ID: " + drugID);
+        System.out.println("Doctor ID: " + doctorID);
+        System.out.println("Patient ID: " + patientID);
+    }
+
+    // Function to add a new Prescription
     public void addNewPrescription (){
         System.out.println("Enter Prescription ID: ");
         prescriptionID = scanner.nextLine();

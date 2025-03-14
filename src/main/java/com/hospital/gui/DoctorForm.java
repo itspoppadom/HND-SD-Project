@@ -6,6 +6,11 @@ import javax.swing.JTextField;
 import com.hospital.models.Doctor;
 
 public class DoctorForm extends BaseForm<Doctor> {
+
+    // Attributes
+    private boolean submitted = false;
+
+    // Form fields
     private JTextField doctorIDField;
     private JTextField firstNameField;
     private JTextField lastNameField;
@@ -14,10 +19,12 @@ public class DoctorForm extends BaseForm<Doctor> {
     private JTextField specializationField;
     private JTextField hospitalField;
 
+    // Constructor
     public DoctorForm(JFrame parent, Doctor doctor) {
         super(parent, doctor, "Doctor Form");
     }
 
+    // Method to create form fields
     @Override
     protected void createFormFields() {
         doctorIDField = new JTextField(20);
@@ -28,6 +35,7 @@ public class DoctorForm extends BaseForm<Doctor> {
         specializationField = new JTextField(20);
         hospitalField = new JTextField(20);
 
+        // Add form fields
         addFormField("Doctor ID", doctorIDField);
         addFormField("First Name", firstNameField);
         addFormField("Last Name", lastNameField);
@@ -36,10 +44,14 @@ public class DoctorForm extends BaseForm<Doctor> {
         addFormField("Specialization", specializationField);
         addFormField("Hospital", hospitalField);
     }
+
+    // Method to get the entity type
     @Override
     protected String getEntityType() {
         return "doctor";
     }
+
+    // Method to get the field by name
     @Override
     protected JTextField getFieldByName(String fieldName) {
         return switch (fieldName) {
@@ -54,6 +66,7 @@ public class DoctorForm extends BaseForm<Doctor> {
         };
     }
 
+    // Method to populate the form fields for editing purposes 
     @Override
     protected void populateFormFields() {
         if (entity != null) {
@@ -67,6 +80,7 @@ public class DoctorForm extends BaseForm<Doctor> {
         }
     }
 
+    // Method to save the entity
     @Override
     protected void saveEntity() {
         if (!validateFields()) {
@@ -84,6 +98,7 @@ public class DoctorForm extends BaseForm<Doctor> {
         dispose();
     }
 
+    // Method to check if the form has been submitted
     @Override
     public boolean isSubmitted() {
         return submitted;

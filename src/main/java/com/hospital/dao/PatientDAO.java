@@ -13,6 +13,9 @@ import com.hospital.models.Patient;
 
 public class PatientDAO implements BaseDAO<Patient> {
 
+
+    // Functions for searching the database by different parameters of the table
+    // All functions use the LIKE operator to search for partial matches
     public List<Patient> findByFirstName(String firstName) {
         return executeSearch("SELECT * FROM patient WHERE firstname LIKE ?", firstName);
     }
@@ -35,6 +38,7 @@ public class PatientDAO implements BaseDAO<Patient> {
         return executeSearch("SELECT * FROM patient WHERE insuranceID LIKE ?", insuranceID);
     }
 
+    // Function to execute the search query
     private List<Patient> executeSearch(String query, String value) {
         List<Patient> patients = new ArrayList<>();
         try (Connection connection = DatabaseConnection.getConnection();
@@ -59,6 +63,8 @@ public class PatientDAO implements BaseDAO<Patient> {
         return patients;
     }
     
+    // Function to save a new record in the table
+    // Throws an exception if a record with the same ID already exists
     @Override
     public void save(Patient patient) throws DatabaseException {
         String query = "INSERT INTO patient (patientID, firstname, surname,postcode ,address, phone, email ,insuranceID) VALUES (?, ?, ?, ?, ? , ? , ? , ? )";
@@ -85,6 +91,8 @@ public class PatientDAO implements BaseDAO<Patient> {
             
         }
     }
+
+    // Function to update a record in the table
     @Override
     public void update(Patient patient){
         String query = "UPDATE patient SET firstname = ?, surname = ?, postcode = ?, address = ?, phone = ?, email = ?, insuranceID = ? WHERE patientID = ?";
@@ -106,6 +114,7 @@ public class PatientDAO implements BaseDAO<Patient> {
             e.printStackTrace();
         }
     }
+    // Function to delete a record from the table
     @Override
     public void delete(String... ids){
         String query = "DELETE FROM patient WHERE patientID = ?";
@@ -119,10 +128,9 @@ public class PatientDAO implements BaseDAO<Patient> {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
-
-
     }
+
+    // Function to get a record from the table
     @Override
     public Patient get(String... ids) {
         String query = "SELECT * FROM patient WHERE patientID = ?";
@@ -151,6 +159,8 @@ public class PatientDAO implements BaseDAO<Patient> {
         }
         return patient;
     }
+
+    // Function to get all records from the table
     @Override
     public List<Patient> getAll() {
         String query = "SELECT * FROM patient ORDER BY patientID";  // Added ORDER BY for consistent display

@@ -6,9 +6,12 @@ import javax.swing.JTextField;
 import com.hospital.models.Visit;
 
 public class VisitForm extends BaseForm<Visit> {
+
+    // Attributes
     private final Visit visit;
     private boolean submitted = false;
 
+    // Form fields
     private JTextField patiendID;
     private JTextField doctorID;
     private JTextField dateOfVisit;
@@ -16,10 +19,13 @@ public class VisitForm extends BaseForm<Visit> {
     private JTextField diagnosisID;
 
 
+// Constructor
 public VisitForm(JFrame parent, Visit visit){
     super(parent, visit, "Visit Form");
     this.visit = visit;
 }
+
+// Method to create form fields
 @Override
 protected void createFormFields(){
     patiendID = new JTextField(20);
@@ -34,6 +40,8 @@ protected void createFormFields(){
     addFormField("Symptoms", symptoms);
     addFormField("Diagnosis ID", diagnosisID);
 }
+
+// Method to populate form fields for editing
 @Override
 protected void populateFormFields(){
     if (entity != null) {
@@ -44,10 +52,15 @@ protected void populateFormFields(){
         diagnosisID.setText(entity.getDiagnosisID());
     }
 }
+
+// Method to get the entity type
 @Override
 protected String getEntityType(){
     return "visit";
 }
+
+
+// Method to get the field by name
 @Override
 protected JTextField getFieldByName(String fieldName){
     return switch (fieldName) {
@@ -60,6 +73,8 @@ protected JTextField getFieldByName(String fieldName){
     };
 }
 
+
+// Method to save the entity
 @Override
 protected void saveEntity(){
     visit.setPatientID(patiendID.getText());
@@ -71,6 +86,8 @@ protected void saveEntity(){
     submitted = true;
     dispose();
 }
+
+// Method to check if the form is submitted
 @Override
 public boolean isSubmitted(){
     return submitted;

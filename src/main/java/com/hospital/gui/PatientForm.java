@@ -6,9 +6,12 @@ import javax.swing.JTextField;
 import com.hospital.models.Patient;
 
 public class PatientForm extends BaseForm<Patient> {
+
+    // Attributes
     private final Patient patient;
     private boolean submitted = false;
 
+    // Form fields
     private JTextField patientIDField;
     private JTextField firstNameField;
     private JTextField lastNameField;
@@ -18,13 +21,17 @@ public class PatientForm extends BaseForm<Patient> {
     private JTextField phoneNumberField;
     private JTextField insuranceIDField;
 
+    // Constructor
     public PatientForm(JFrame parent, Patient patient){
         super(parent, patient,"Patient Form");
         this.patient = patient;
     }
 
+    // Method to create form fields
     @Override
     protected void createFormFields() {
+
+        // Create form fields
         patientIDField = new JTextField(20);
         firstNameField = new JTextField(20);
         lastNameField = new JTextField(20);
@@ -34,6 +41,7 @@ public class PatientForm extends BaseForm<Patient> {
         emailField = new JTextField(20);
         insuranceIDField = new JTextField(20);
 
+        // Add form fields
         addFormField("Patient ID", patientIDField);
         addFormField("First Name", firstNameField);
         addFormField("Last Name", lastNameField);
@@ -43,7 +51,8 @@ public class PatientForm extends BaseForm<Patient> {
         addFormField("Email", emailField);
         addFormField("Insurance ID", insuranceIDField);
     }
-     
+
+    // Method to populate form fields for editing
     @Override
     protected void populateFormFields() {
         if (entity != null) {  // Use entity from BaseForm instead of local patient field
@@ -58,11 +67,14 @@ public class PatientForm extends BaseForm<Patient> {
         }
     }
 
+    // Method to get the entity type
     @Override
     protected String getEntityType() {
         return "patient";
     }
 
+
+    // Method to get the field by name
     @Override
     protected JTextField getFieldByName(String fieldName) {
         return switch (fieldName) {
@@ -78,6 +90,7 @@ public class PatientForm extends BaseForm<Patient> {
         };
     }
 
+    // Method to save the entity
     @Override   
     protected void saveEntity() {
         if (!validateFields()) {
@@ -96,6 +109,7 @@ public class PatientForm extends BaseForm<Patient> {
         dispose();
     }
 
+    // Method to check if the form has been submitted
     @Override
     public boolean isSubmitted() {
         return submitted;

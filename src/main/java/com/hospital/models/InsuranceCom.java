@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 public class InsuranceCom {
 
+    //Attributes for the Insurance Company Tables
     private String insuranceID;
     private String companyName;
     private String address;
@@ -11,14 +12,15 @@ public class InsuranceCom {
 
     //Singleton scanner
     Scanner scanner = new Scanner(System.in);
-    //Constructor for Insurance Company Tables
 
+    //Constructor for Insurance Company Tables
     public InsuranceCom (String insuranceID, String companyName, String address, String phone){
         this.insuranceID = insuranceID;
         this.companyName = companyName;
         this.address = address;
         this.phone = phone;
     }
+
     //Default Constructor
     public InsuranceCom (){
         this.insuranceID = "";
@@ -57,6 +59,7 @@ public class InsuranceCom {
         this.phone = phone;
     }
     
+    //Function to display the Insurance Company Information
     public void DisplayInsuranceCom(){
         System.out.println("Insurance ID: " + insuranceID);
         System.out.println("Company Name: " + companyName);
@@ -64,6 +67,7 @@ public class InsuranceCom {
         System.out.println("Phone: " + phone);
     }
 
+    //Function to add a new Insurance Company
     public void addNewInsuranceCom(){
         
         System.out.println("Enter Insurance ID: ");

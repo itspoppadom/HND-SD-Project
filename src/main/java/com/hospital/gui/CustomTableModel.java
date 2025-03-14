@@ -12,17 +12,24 @@ import com.hospital.models.Prescription;
 import com.hospital.models.Visit;
 
 public class CustomTableModel extends AbstractTableModel {
+
+    //Attributes for the CustomTableModel
     private final Object[][] data;
     private final String[] columnNames;
     private final String tableType;
 
+    //Constructor for the CustomTableModel
     public CustomTableModel(List<?> items, String tableType) {
         this.tableType = tableType;
         this.columnNames = getColumnNamesForType(tableType);
         this.data = convertListToArray(items);
     }
 
+
+    //Function to get the column names for the table
     private String[] getColumnNamesForType(String type) {
+
+        //Switch statement to get the column names based on the table type
         return switch (type.toLowerCase()) {
             case "patient" -> new String[]{"Patient ID", "First Name", "Last Name", "Address", 
                                          "Postcode", "Phone", "Email", "Insurance ID"};
@@ -38,11 +45,12 @@ public class CustomTableModel extends AbstractTableModel {
         };
     }
 
+    //Function to convert the list of items to a 2D array
     private Object[][] convertListToArray(List<?> items) {
         if (items.isEmpty()) {
             return new Object[0][getColumnCount()];
         }
-
+        // Create a 2D array to store the data
         Object[][] result = new Object[items.size()][getColumnCount()];
         for (int i = 0; i < items.size(); i++) {
             Object item = items.get(i);
@@ -59,6 +67,7 @@ public class CustomTableModel extends AbstractTableModel {
         return result;
     }
 
+    //Functions to convert the patient object to an array
     private Object[] convertPatient(Patient patient) {
         return new Object[]{
             patient.getPatientID(),
@@ -72,6 +81,7 @@ public class CustomTableModel extends AbstractTableModel {
         };
     }
 
+    //Function to convert the doctor object to an array
     private Object[] convertDoctor(Doctor doctor) {
         return new Object[]{
             doctor.getDoctorID(),
@@ -84,6 +94,7 @@ public class CustomTableModel extends AbstractTableModel {
         };
     }
 
+    //Function to convert the drug object to an array
     private Object[] convertDrug(Drug drug) {
         return new Object[]{
             drug.getDrugID(),
@@ -93,6 +104,7 @@ public class CustomTableModel extends AbstractTableModel {
         };
     }
 
+    //Function to convert the prescription object to an array
     private Object[] convertPrescription(Prescription prescription) {
         return new Object[]{
             prescription.getPrescriptionID(),
@@ -106,6 +118,7 @@ public class CustomTableModel extends AbstractTableModel {
         };
     }
 
+    //Function to convert the insurance object to an array
     private Object[] convertInsurance(InsuranceCom insurance) {
         return new Object[]{
             insurance.getInsuranceID(),
@@ -115,6 +128,7 @@ public class CustomTableModel extends AbstractTableModel {
         };
     }
 
+    //Function to convert the visit object to an array
     private Object[] convertVisit(Visit visit) {
         return new Object[]{
             visit.getPatientID(),
@@ -125,21 +139,25 @@ public class CustomTableModel extends AbstractTableModel {
         };
     }
 
+    //Function to get the number of rows
     @Override
     public int getRowCount() {
         return data.length;
     }
 
+    //Function to get the number of columns
     @Override
     public int getColumnCount() {
         return columnNames.length;
     }
 
+    //Function to get the value at a specific row and column
     @Override
     public Object getValueAt(int row, int col) {
         return data[row][col];
     }
 
+    //Function to get the column name
     @Override
     public String getColumnName(int col) {
         return columnNames[col];

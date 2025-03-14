@@ -41,6 +41,8 @@ public class Person {
         System.out.println("Address: " + address);
 
     }
+    
+    //Function to add a new Person
     public void addNewPerson(){
         System.out.println("Enter First Name: ");
         setFirstName(scanner.nextLine());

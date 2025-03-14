@@ -44,6 +44,7 @@ public class MainFrame extends JFrame {
     private JPanel mainPanel;
 
     public MainFrame() {
+        // Set window properties
         setTitle("Hospital Database System");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -53,6 +54,7 @@ public class MainFrame extends JFrame {
         JLabel welcomeLabel = new JLabel("Welcome to the Hospital Database System", SwingConstants.CENTER);
         welcomeLabel.setFont(new Font("Arial", Font.BOLD, 24));
 
+        // Add welcome message to main panel
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(welcomeLabel, BorderLayout.CENTER);
         add(mainPanel);
@@ -80,6 +82,8 @@ public class MainFrame extends JFrame {
         JMenuItem viewPrescriptioMenuItem = new JMenuItem("Prescription Table");
         viewPrescriptioMenuItem.addActionListener(e -> viewPrescriptionTable());
         JMenuItem viewVisitMenuItem = new JMenuItem("Visit Table");
+        
+        // Add view table menu items
         viewVisitMenuItem.addActionListener(e -> viewVisitTable());
         viewTableMenu.add(viewVisitMenuItem);
         viewTableMenu.add(viewPrescriptioMenuItem);
@@ -114,6 +118,7 @@ public class MainFrame extends JFrame {
             JRadioButton searchBySpecialization = new JRadioButton("Search by Specialization");
             JRadioButton searchByHospital = new JRadioButton("Search by Hospital");
 
+            // Add radio buttons to button group
             ButtonGroup bg = new ButtonGroup();
             bg.add(searchByKeys);
             bg.add(searchByFirstName);
@@ -135,6 +140,7 @@ public class MainFrame extends JFrame {
             JTextField specializationField = new JTextField(10);
             JTextField hospitalField = new JTextField(10);
 
+            // Add fields to panel
             fieldsPanel.add(new JLabel("Doctor ID:"));
             fieldsPanel.add(doctorIDField);
             fieldsPanel.add(new JLabel("First Name:"));
@@ -160,6 +166,7 @@ public class MainFrame extends JFrame {
             radioPanel.add(searchBySpecialization);
             radioPanel.add(searchByHospital);
 
+            // Add panels to main panel
             panel.add(radioPanel, BorderLayout.NORTH);
             panel.add(fieldsPanel, BorderLayout.CENTER);
 
@@ -227,13 +234,14 @@ public class MainFrame extends JFrame {
                 specializationField.setEnabled(false);
                 hospitalField.setEnabled(true);
             });
-
+            // Display search dialog
             int result = JOptionPane.showConfirmDialog(
                 this, panel, "Search Doctor",
                 JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.PLAIN_MESSAGE
             );
 
+            //Handle search
             if (result == JOptionPane.OK_OPTION) {
                 try {
                     String searchType = "";
@@ -309,6 +317,7 @@ public class MainFrame extends JFrame {
             JRadioButton searchByEmail = new JRadioButton("Search by Email");
             JRadioButton searchByInsurance = new JRadioButton("Search by Insurance ID");
 
+            // Add radio buttons to button group
             ButtonGroup bg = new ButtonGroup();
             bg.add(searchByKeys);
             bg.add(searchByFirstName);
@@ -332,6 +341,7 @@ public class MainFrame extends JFrame {
             JTextField emailField = new JTextField(10);
             JTextField insuranceField = new JTextField(10);
 
+            // Add fields to panel
             fieldsPanel.add(new JLabel("Patient ID:"));
             fieldsPanel.add(patientIDField);
             fieldsPanel.add(new JLabel("First Name:"));
@@ -360,6 +370,8 @@ public class MainFrame extends JFrame {
             radioPanel.add(searchByEmail);
             radioPanel.add(searchByInsurance);
 
+
+            // Add panels to main panel
             panel.add(radioPanel, BorderLayout.NORTH);
             panel.add(fieldsPanel, BorderLayout.CENTER);
 
@@ -444,12 +456,13 @@ public class MainFrame extends JFrame {
                 emailField.setEnabled(false);
                 insuranceField.setEnabled(true);
             });
-
+            // Display search dialog
             int result = JOptionPane.showConfirmDialog(
                 this, panel, "Search Patient",
                 JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.PLAIN_MESSAGE
             );
+            //Handle search
 
             if (result == JOptionPane.OK_OPTION) {
                 try {
@@ -530,6 +543,7 @@ public class MainFrame extends JFrame {
             JRadioButton searchBySideEffects = new JRadioButton("Search by Side Effects");
             JRadioButton searchByBenefits = new JRadioButton("Search by Benefits");
 
+            // Add radio buttons to button group
             ButtonGroup bg = new ButtonGroup();
             bg.add(searchByKeys);
             bg.add(searchByDrugName);
@@ -546,6 +560,7 @@ public class MainFrame extends JFrame {
             JTextField sideEffectsField = new JTextField(10);
             JTextField benefitsField = new JTextField(10);
 
+            // Add fields to panel
             fieldsPanel.add(new JLabel("Drug ID:"));
             fieldsPanel.add(drugIDField);
             fieldsPanel.add(new JLabel("Drug Name:"));
@@ -562,6 +577,7 @@ public class MainFrame extends JFrame {
             radioPanel.add(searchBySideEffects);
             radioPanel.add(searchByBenefits);
             
+            // Add panels to main panel
             panel.add(radioPanel, BorderLayout.NORTH);
             panel.add(fieldsPanel, BorderLayout.CENTER);
 
@@ -591,11 +607,13 @@ public class MainFrame extends JFrame {
                 benefitsField.setEnabled(true);
             });
 
+            // Display search dialog
             int result = JOptionPane.showConfirmDialog(
                 this, panel, "Search Drug",
                 JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.PLAIN_MESSAGE
             );
+            //Handle search
 
             if (result == JOptionPane.OK_OPTION) {
                 try {
@@ -651,6 +669,7 @@ public class MainFrame extends JFrame {
             JRadioButton searchByAddress = new JRadioButton("Search by Address");
             JRadioButton searchByPhone = new JRadioButton("Search by Phone Number");
 
+            // Add radio buttons to button group
             ButtonGroup bg = new ButtonGroup();
             bg.add(searchByKeys);
             bg.add(searchByCompany);
@@ -666,6 +685,7 @@ public class MainFrame extends JFrame {
             JTextField addressField = new JTextField(10);
             JTextField phoneField = new JTextField(10);
             
+            // Add fields to panel
             fieldsPanel.add(new JLabel("Insurance ID:"));
             fieldsPanel.add(insuranceIDField);
             fieldsPanel.add(new JLabel("Company Name:"));
@@ -711,6 +731,7 @@ public class MainFrame extends JFrame {
                 phoneField.setEnabled(true);
             });
 
+            // Display search dialog
             int result = JOptionPane.showConfirmDialog(
                 this, panel, "Search Insurance Company",
                 JOptionPane.OK_CANCEL_OPTION,
@@ -897,6 +918,7 @@ public class MainFrame extends JFrame {
                 dosageField.setEnabled(false);
                 durationField.setEnabled(true);
             });
+
             // Show dialog
             int result = JOptionPane.showConfirmDialog(
                 this, panel, "Search Prescription",
@@ -904,7 +926,7 @@ public class MainFrame extends JFrame {
                 JOptionPane.PLAIN_MESSAGE
             );
 
-            // Handle search
+            // Handle search depending on selected parameters 
             if (result == JOptionPane.OK_OPTION) {
                 try {
                     String searchType = "";
@@ -969,7 +991,7 @@ public class MainFrame extends JFrame {
                     }
 
                     ResultSet("prescription", searchType, searchParams);
-
+            
                 } catch (IllegalArgumentException ex) {
                     JOptionPane.showMessageDialog(this,
                         ex.getMessage(),
@@ -993,6 +1015,7 @@ public class MainFrame extends JFrame {
             JRadioButton searchByDiagnosis = new JRadioButton("Search by Diagnosis ID");
             JRadioButton searchBySymptoms = new JRadioButton("Search by Symptoms");
             
+            // Add radio buttons to button group
             ButtonGroup bg = new ButtonGroup();
             bg.add(searchByKeys);
             bg.add(searchByPatient);
@@ -1011,6 +1034,7 @@ public class MainFrame extends JFrame {
             JTextField diagnosisField = new JTextField(10);
             JTextField symptomsField = new JTextField(40);
             
+            // Add fields to panel
             fieldsPanel.add(new JLabel("Patient ID:"));
             fieldsPanel.add(patientIDField);
             fieldsPanel.add(new JLabel("Doctor ID:"));
@@ -1075,7 +1099,7 @@ public class MainFrame extends JFrame {
                 JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.PLAIN_MESSAGE
             );
-            
+            // Handle search
             if (result == JOptionPane.OK_OPTION) {
                 try {
                     String searchType = "";
@@ -1126,7 +1150,7 @@ public class MainFrame extends JFrame {
                     }
                     
                     ResultSet("visit", searchType, searchParams);
-                    
+             
                 } catch (IllegalArgumentException ex) {
                     JOptionPane.showMessageDialog(this,
                         ex.getMessage(),
@@ -1135,7 +1159,7 @@ public class MainFrame extends JFrame {
                 }
             }
         });
-
+        // Add search menu
         searchMenu.add(searchDoctorMenuItem);
         searchMenu.add(searchPatientMenuItem);
         searchMenu.add(searchDrugMenuItem);
@@ -1147,6 +1171,7 @@ public class MainFrame extends JFrame {
         // Add Records menu
         JMenu addRecordsMenu = new JMenu("Add Records");
 
+        // Add menu items to add records menu
         JMenuItem addDoctorFormMenuItem = new JMenuItem("Doctor Form");
         JMenuItem addPatientFormMenuItem = new JMenuItem("Patient Form");
         JMenuItem addDrugFormMenuItem = new JMenuItem("Drug Form");
@@ -1154,6 +1179,8 @@ public class MainFrame extends JFrame {
         JMenuItem addPrescriptionFormMenuItem = new JMenuItem("Prescription Form");
         JMenuItem addVisitFormMenuItem = new JMenuItem("Visit Form");
 
+
+        // Add action listeners to menu items
         addDoctorFormMenuItem.addActionListener(e -> showDoctorForm());
         addPatientFormMenuItem.addActionListener(e -> showPatientForm());
         addDrugFormMenuItem.addActionListener(e -> showDrugForm());
@@ -1161,6 +1188,7 @@ public class MainFrame extends JFrame {
         addPrescriptionFormMenuItem.addActionListener(e -> showPrescriptionForm());
         addVisitFormMenuItem.addActionListener(e -> showVisitForm());
 
+        // Add menu items to menu
         addRecordsMenu.add(addDoctorFormMenuItem);
         addRecordsMenu.add(addPatientFormMenuItem);
         addRecordsMenu.add(addDrugFormMenuItem);
@@ -1173,7 +1201,7 @@ public class MainFrame extends JFrame {
 
         setVisible(true);
     }
-
+    // A function designed to create a table based on the selected table type
     public void createTable(String tableType) {
         try {
             // Get the DAO from the factory
@@ -1208,7 +1236,7 @@ public class MainFrame extends JFrame {
         }
 
 
-    // Method to display search results depending on the table type
+    // Method to display search results depending on the different keys, search types and search parameters in different tables
     public void ResultSet(String tableType, String searchType, String... searchParams) {
         try {
             BaseDAO<?> dao = DAOFactory.getDAO(tableType);
@@ -1291,6 +1319,7 @@ public class MainFrame extends JFrame {
             if (results != null && !results.isEmpty() && results.get(0) != null) {
                 displayResults(results, tableType);
             } else {
+                // Display message if no results found
                 JOptionPane.showMessageDialog(
                     this,
                     "No results found",
@@ -1298,6 +1327,7 @@ public class MainFrame extends JFrame {
                     JOptionPane.INFORMATION_MESSAGE
                 );
             }
+            //Error handling for search invalid search type
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(
                 this,
@@ -1367,7 +1397,7 @@ public class MainFrame extends JFrame {
             );
         }
     }
-    // Different Methods used to display different types of forms. 
+    // Different Methods used to call and display different types of forms. 
     private void showInsuranceComForm() {
         showForm("insurance", new InsuranceCom());
     }

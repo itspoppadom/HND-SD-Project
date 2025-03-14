@@ -19,28 +19,37 @@ import com.hospital.validation.FieldValidation;
 import com.hospital.validation.ValidationConfig;
 
 public abstract class BaseForm<T> extends JDialog {
+
+    // Attributes
     protected T entity;
     protected boolean submitted = false;
     protected JPanel mainPanel;
     protected GridBagConstraints gbc;
 
+    // Constructor
     public BaseForm(JFrame parent, T entity, String title) {
         super(parent, title, true);
         this.entity = entity;
         initializeForm();
     }
 
+    // Method to initialize the form
     protected void initializeForm() {
+
+        // Create the main panel
         mainPanel = new JPanel(new GridBagLayout());
         gbc = new GridBagConstraints();
+        // Set the grid bag constraints
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         
+        // Set the main panel as the content pane
         setContentPane(mainPanel);
         createFormFields();      // First create the fields
         populateFormFields();    // Then populate them with entity data
         createButtons();         // Finally add the buttons
         
+        // Set the size of the form
         pack();
         setLocationRelativeTo(getOwner());
     }
@@ -50,10 +59,13 @@ public abstract class BaseForm<T> extends JDialog {
     protected abstract void populateFormFields();
     protected abstract void saveEntity();
 
+    // Method to create buttons to save and cancel
     protected void createButtons() {
+        
         JButton saveButton = new JButton("Save");
         JButton cancelButton = new JButton("Cancel");
 
+        // Save button action listener
         saveButton.addActionListener(e -> {
             if (validateFields()) {
                 saveEntity();
@@ -62,8 +74,10 @@ public abstract class BaseForm<T> extends JDialog {
             }
         });
 
+        // Cancel button action listener
         cancelButton.addActionListener(e -> dispose());
 
+        //Add buttons to the form on a predefined grid
         gbc.gridx = 0;
         gbc.gridy++;
         gbc.gridwidth = 2;
@@ -73,6 +87,8 @@ public abstract class BaseForm<T> extends JDialog {
         mainPanel.add(buttonPanel, gbc);
     }
 
+
+    // Method to add a form field to the form
     protected void addFormField(String label, javax.swing.JComponent component) {
         gbc.gridwidth = 1;
         gbc.gridx = 0;
@@ -83,14 +99,22 @@ public abstract class BaseForm<T> extends JDialog {
         mainPanel.add(component, gbc);
     }
 
+
+    // Method to check if the form has been submitted
     public boolean isSubmitted() {
         return submitted;
     }
 
+
+    // Method to validate the form fields
     protected boolean validateFields() {
+
+        // Get the validation rules for the entity type
         FieldValidation[] rules = ValidationConfig.getValidationRules(getEntityType());
+        //List to store errors
         List<String> errors = new ArrayList<>();
 
+        // Loop through the rules and validate each field
         for (FieldValidation rule : rules) {
             JTextField field = getFieldByName(rule.getFieldName());
             String value = field.getText().trim();
@@ -114,7 +138,7 @@ public abstract class BaseForm<T> extends JDialog {
                 }
             }
         }
-
+        //Error message if there are issues with validation
         if (!errors.isEmpty()) {
             JOptionPane.showMessageDialog(this,
                 String.join("\n", errors),
@@ -126,6 +150,8 @@ public abstract class BaseForm<T> extends JDialog {
         return true;
     }
 
+
+    // Abstract methods to be implemented by concrete forms
     protected abstract String getEntityType();
     protected abstract JTextField getFieldByName(String fieldName);
 }

@@ -7,10 +7,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DatabaseConnection {
+
+    // Database connection details
     private static final String URL = "jdbc:mysql://localhost:3306/assesment_hospital";
     private static final String USER = "root";
     private static final String PASSWORD = "root";
 
+    // Get a connection to the database
     public static Connection getConnection() {
         try {
             return DriverManager.getConnection(URL, USER, PASSWORD);
@@ -20,6 +23,7 @@ public class DatabaseConnection {
         }
     }
 
+    // Test the connection
     public static void testConnection() {
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement();

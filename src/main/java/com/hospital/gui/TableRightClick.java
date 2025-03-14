@@ -23,24 +23,30 @@ import com.hospital.models.Visit;
 
 
 public class TableRightClick extends MouseAdapter {
+
+    // Attributes
     private final JPopupMenu popupMenu;
     private final JTable table;
     private final String tableType;
     private final BaseDAO<?> dao;
     
 
+    // Constructor
     public TableRightClick(JTable table, String tableType) {
         
+        // Initialize attributes
         this.table = table;
         this.tableType = tableType;
         this.dao = DAOFactory.getDAO(tableType);
         this.popupMenu = new JPopupMenu();
         
+        // Create menu items
         JMenuItem addItem = new JMenuItem("Add");
         JMenuItem editItem = new JMenuItem("Edit");
         JMenuItem deleteItem = new JMenuItem("Delete");
         JMenuItem reloadTable = new JMenuItem("Refresh Table");
         
+        // Add action listeners
         addItem.addActionListener(e -> handleAdd());
         editItem.addActionListener(e -> handleEdit());
         deleteItem.addActionListener(e -> handleDelete());
@@ -57,14 +63,18 @@ public class TableRightClick extends MouseAdapter {
             }
         });
 
+        // Add menu items to popup menu
         popupMenu.add(addItem);
         popupMenu.add(editItem);
         popupMenu.add(deleteItem);
         popupMenu.add(reloadTable);
         
+        // Add mouse listener to table
         table.addMouseListener(this);
     }
     
+
+    // Methods to handle mouse events
     @Override
     public void mousePressed(MouseEvent e) {
         if (e.isPopupTrigger()) {
@@ -87,6 +97,7 @@ public class TableRightClick extends MouseAdapter {
         popupMenu.show(e.getComponent(), e.getX(), e.getY());
     }
     
+    // Methods to handle menu item actions
     private void handleAdd() {
         try {
             // Create a new empty entity based on table type with proper typing
@@ -144,6 +155,8 @@ public class TableRightClick extends MouseAdapter {
         }
     }
     
+
+    // Method to handle editing a record
     private void handleEdit() {
         int row = table.getSelectedRow();
         if (row != -1) {
@@ -184,7 +197,7 @@ public class TableRightClick extends MouseAdapter {
         }
     }
 
-    
+    // Method to handle form submission
     private <T> void handleFormSubmission(T entity) {
         if (entity == null) {
             throw new IllegalArgumentException("Record not found");
@@ -223,6 +236,7 @@ public class TableRightClick extends MouseAdapter {
         }
     }
     
+    // Method to handle deleting a record
     private void handleDelete() {
         int row = table.getSelectedRow();
         if (row != -1) {

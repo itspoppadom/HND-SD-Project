@@ -7,19 +7,24 @@ import com.hospital.models.InsuranceCom;
 
 
 public class InsuranceComForm extends BaseForm<InsuranceCom> {
+
+    // Attributes
     private final InsuranceCom insurance;
     private boolean submitted = false;
 
-
+    // Form fields
     private JTextField insuranceIDField;
     private JTextField companyNameField;
     private JTextField addressField;
     private JTextField phoneField;
 
+    // Constructor
     public InsuranceComForm(JFrame parent, InsuranceCom insurance){
         super(parent, insurance,"Add Insurance Company");
         this.insurance = insurance; 
     }
+
+    // Method to create form fields
     @Override
     protected void createFormFields(){
         insuranceIDField = new JTextField(20);
@@ -32,6 +37,7 @@ public class InsuranceComForm extends BaseForm<InsuranceCom> {
         addFormField("Address", addressField);
         addFormField("Phone", phoneField);
     }
+    // Method to populate form fields for editing
     @Override
     protected void populateFormFields(){
         if (entity != null) {
@@ -41,10 +47,13 @@ public class InsuranceComForm extends BaseForm<InsuranceCom> {
             phoneField.setText(entity.getPhone());
         }
     }
+    // Method to get the entity type
     @Override
     protected String getEntityType(){
         return "insurance";
     }
+
+    // Method to get the field by name
     @Override
     protected JTextField getFieldByName(String fieldName){
         return switch (fieldName) {
@@ -56,6 +65,8 @@ public class InsuranceComForm extends BaseForm<InsuranceCom> {
         };
     }
 
+
+    // Method to save the entity
     @Override
     protected void saveEntity(){
         insurance.setInsuranceID(insuranceIDField.getText());
@@ -66,6 +77,8 @@ public class InsuranceComForm extends BaseForm<InsuranceCom> {
         submitted = true;
         dispose();
     }
+
+    // Method to check if the form is submitted
     public boolean isSubmitted(){
         return submitted;
     }

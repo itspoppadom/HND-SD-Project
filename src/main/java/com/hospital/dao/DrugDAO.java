@@ -11,6 +11,9 @@ import com.hospital.models.Drug;
 
 public class DrugDAO implements BaseDAO<Drug> {
 
+    
+    // Functions for searching the database by different parameters of the table
+    // All functions use the LIKE operator to search for partial matches
     public List<Drug> findByDrugName(String name) {
         return executeSearch("SELECT * FROM drug WHERE drugname LIKE ?", name);
     }
@@ -20,6 +23,8 @@ public class DrugDAO implements BaseDAO<Drug> {
     public List<Drug> findByBenefits(String benefits) {
         return executeSearch("SELECT * FROM drug WHERE benefits LIKE ?", benefits);
     }
+
+    // Function to execute the search query
     private List<Drug> executeSearch(String query, String value) {
         List<Drug> drugs = new ArrayList<>();
         try (Connection connection = DatabaseConnection.getConnection();
@@ -41,7 +46,7 @@ public class DrugDAO implements BaseDAO<Drug> {
         }
     
 
-
+    // Function to get all the records from the table
     @Override
     public List<Drug> getAll() {
         List<Drug> drugs = new ArrayList<>();
@@ -65,6 +70,8 @@ public class DrugDAO implements BaseDAO<Drug> {
         }
         return drugs;
     }
+
+    // Function to get a single record from the table
     @Override
     public Drug get(String... ids) {
         String query = "SELECT * FROM drug WHERE drugID = ?";
@@ -91,8 +98,9 @@ public class DrugDAO implements BaseDAO<Drug> {
         return null;
 
     }
+
+    // Function to delete a record from the table
     @Override
-    // Delete Drug from Database
     public void delete(String... ids) {
         String query = "DELETE FROM drug WHERE drugID = ?";
 
@@ -106,6 +114,8 @@ public class DrugDAO implements BaseDAO<Drug> {
             e.printStackTrace();
         }
     }
+
+    // Function to save a record to the table
     @Override
     public void save(Drug drug) {
         String query = "INSERT INTO drug (drugID, drugname, sideEffects, benefits) VALUES (?, ?, ?, ?)";
@@ -123,6 +133,8 @@ public class DrugDAO implements BaseDAO<Drug> {
             e.printStackTrace();
         }
     }
+
+    // Function to update a record in the table
     @Override
     public void update(Drug drug) {
         String query = "UPDATE drug SET drugname = ?, sideEffects = ?, benefits = ? WHERE drugID = ?";

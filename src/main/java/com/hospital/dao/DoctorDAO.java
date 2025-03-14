@@ -11,6 +11,8 @@ import com.hospital.models.Doctor;
 
 public class DoctorDAO implements BaseDAO<Doctor> {
 
+    // Functions for searching the database by different parameters of the table
+    // All functions use the LIKE operator to search for partial matches
     public List<Doctor> findByFirstName(String firstName) {
         return executeSearch("SELECT * FROM doctor WHERE firstname LIKE ?", firstName);
     }
@@ -29,6 +31,8 @@ public class DoctorDAO implements BaseDAO<Doctor> {
     public List<Doctor> findByHospital(String hospital) {
         return executeSearch("SELECT * FROM doctor WHERE hospital LIKE ?", hospital);
     }
+
+    // Function to execute the search query
     private List<Doctor> executeSearch(String query, String value) {
         List<Doctor> doctors = new ArrayList<>();
         try (Connection connection = DatabaseConnection.getConnection();
@@ -52,6 +56,7 @@ public class DoctorDAO implements BaseDAO<Doctor> {
         return doctors;
     }
 
+    // Function to get all the records from the table
     @Override
     public void save(Doctor doctor) throws DatabaseException {
         String query = "INSERT INTO doctor (doctorID, firstname, surname, address, email, specialization, hospital) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -76,6 +81,8 @@ public class DoctorDAO implements BaseDAO<Doctor> {
             }
         }
     }
+
+    // Function to update a doctor
     @Override
     public void update(Doctor doctor) {
         String query = "UPDATE doctor SET firstname = ?, surname = ?, address = ?, email = ?, specialization = ?, hospital = ? WHERE doctorID = ?";
@@ -96,6 +103,8 @@ public class DoctorDAO implements BaseDAO<Doctor> {
             e.printStackTrace();
         }
     }
+
+    // Function to delete a record from the table
     @Override
     public void delete(String... ids) {
         String query = "DELETE FROM doctor WHERE doctorID = ?";
@@ -110,6 +119,8 @@ public class DoctorDAO implements BaseDAO<Doctor> {
             e.printStackTrace();
         }
     }
+
+    // Function to get a record from the table by the ID (Primary Key)
     @Override
     public Doctor get(String... ids) {
         String query = "SELECT * FROM doctor WHERE doctorID = ?";
@@ -137,6 +148,8 @@ public class DoctorDAO implements BaseDAO<Doctor> {
         }
         return null;
     }
+
+    // Function to get all the records from the table
     @Override
     public List<Doctor> getAll() {
         String query = "SELECT * FROM doctor";

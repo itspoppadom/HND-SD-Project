@@ -7,9 +7,11 @@ import javax.swing.JTextField;
 import com.hospital.models.Prescription;
 
 public class PrescriptionForm extends BaseForm<Prescription> {
+    // Attributes
     private final Prescription prescription;
     private boolean submitted = false;
 
+    // Form fields
     private JTextField prescriptionIDField;
     private JTextField dateOfPrescriptionField;
     private JTextField dosageField;
@@ -18,12 +20,18 @@ public class PrescriptionForm extends BaseForm<Prescription> {
     private JTextField drugIDField;
     private JTextField doctorIDField;
     private JTextField patientIDField;
+
+    // Constructor
 public PrescriptionForm(JFrame parent, Prescription prescription){
     super(parent, prescription, "Add Prescription");
     this.prescription = prescription;
 }
+
+// Method to create form fields
 @Override
 protected void createFormFields(){
+
+    // Create form fields
     prescriptionIDField = new JTextField(20);
     dateOfPrescriptionField = new JTextField(20);
     dosageField = new JTextField(20);
@@ -33,6 +41,7 @@ protected void createFormFields(){
     doctorIDField = new JTextField(20);
     patientIDField = new JTextField(20);
 
+    // Add form fields
     addFormField("Prescription ID", prescriptionIDField);
     addFormField("Date of Prescription", dateOfPrescriptionField);
     addFormField("Dosage", dosageField);
@@ -42,6 +51,8 @@ protected void createFormFields(){
     addFormField("Doctor ID", doctorIDField);
     addFormField("Patient ID", patientIDField);
 }
+
+// Method to populate form fields for editing
 @Override
 protected void populateFormFields(){
     if (entity != null) {
@@ -55,11 +66,13 @@ protected void populateFormFields(){
         patientIDField.setText(entity.getPatientID());
     }
 }
+
+// Method to get the entity type
 @Override
 protected String getEntityType(){
     return "prescription";
 }
-
+// Method to get the field/collumn by name
 @Override
 protected JTextField getFieldByName(String fieldName){
     return switch (fieldName) {
@@ -74,8 +87,11 @@ protected JTextField getFieldByName(String fieldName){
         default -> throw new IllegalArgumentException("Invalid field name: " + fieldName);
     };
 }
+
+// Method to save the details input by the user in the form
 @Override
 protected void saveEntity(){
+
     if (entity == null) {
         entity = new Prescription();
     }
@@ -92,6 +108,7 @@ protected void saveEntity(){
     dispose();
 
 }
+// Method to check if the form is submitted
 public boolean isSubmitted(){
     return submitted;
 

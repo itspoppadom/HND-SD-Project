@@ -1,12 +1,15 @@
 package com.hospital.validation;
 
 public class FieldValidation {
+
+    // Attributes
     private final String fieldName;
     private final int maxLength;
     private final boolean required;
     private final String pattern;
     private final String errorMessage;
 
+    // Constructor
     public FieldValidation(String fieldName, int maxLength, boolean required, String pattern, String errorMessage) {
         this.fieldName = fieldName;
         this.maxLength = maxLength;

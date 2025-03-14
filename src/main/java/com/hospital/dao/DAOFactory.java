@@ -3,6 +3,9 @@ package com.hospital.dao;
 
 
 public class DAOFactory {
+
+    // Method to get the DAO object based on the type
+    // This method is used to get the DAO object based on the type
     @SuppressWarnings("unchecked")
     public static <T> BaseDAO<T> getDAO(String type) {
         return switch (type.toLowerCase()) {

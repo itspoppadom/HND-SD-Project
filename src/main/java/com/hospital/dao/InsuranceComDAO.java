@@ -11,6 +11,10 @@ import com.hospital.exceptions.DatabaseException;
 import com.hospital.models.InsuranceCom;
 
 public class InsuranceComDAO implements BaseDAO<InsuranceCom> {
+
+    // Functions for searching the database by different parameters of the table
+    // All functions use the LIKE operator to search for partial matches
+
     public List<InsuranceCom> findByCompany(String company) {
         return executeSearch("SELECT * FROM insurance WHERE company LIKE ?", company);
     }
@@ -20,6 +24,8 @@ public class InsuranceComDAO implements BaseDAO<InsuranceCom> {
     public List<InsuranceCom> findByPhone(String phone) {
         return executeSearch("SELECT * FROM insurance WHERE phone LIKE ?", phone);
     }
+
+    // Function to execute the search query
     private List<InsuranceCom> executeSearch(String query, String value) {
         List<InsuranceCom> insuranceComs = new ArrayList<>();
         try (Connection connection = DatabaseConnection.getConnection();
@@ -40,7 +46,7 @@ public class InsuranceComDAO implements BaseDAO<InsuranceCom> {
         return insuranceComs;
     }
 
-
+    // Function to get all the records from the table
     @Override
     public List<InsuranceCom> getAll() {
         List<InsuranceCom> insuranceComs = new ArrayList<>();
@@ -66,6 +72,8 @@ public class InsuranceComDAO implements BaseDAO<InsuranceCom> {
         return insuranceComs;
     
 }
+
+    // Function to get a single record from the table by the Primary Key (ID)
     @Override
     public InsuranceCom get(String... ids) {
         String query = "SELECT * FROM insurance WHERE insuranceID = ?";
@@ -92,7 +100,9 @@ public class InsuranceComDAO implements BaseDAO<InsuranceCom> {
         return null;
 
     }
-    // Add new Insurance com
+
+
+    // Add new Insurance company to the database
     @Override
     public void save(InsuranceCom insuranceCom) throws DatabaseException {
         String query = "INSERT INTO insurance (insuranceID, company, address, phone) VALUES (?, ?, ?, ?)";
@@ -114,6 +124,8 @@ public class InsuranceComDAO implements BaseDAO<InsuranceCom> {
             }
         }
     }
+
+    // Function to delete an Insurance Company from the database
     @Override
     public void delete(String... ids) {
         String query = "DELETE FROM insurance WHERE insuranceID = ?";
@@ -128,6 +140,8 @@ public class InsuranceComDAO implements BaseDAO<InsuranceCom> {
             e.printStackTrace();
         }
     }
+
+    // Function to update an Insurance Company in the database
     @Override
     public void update(InsuranceCom insuranceCom){
         String query = "UPDATE insurance SET company = ?, address = ?, phone = ? WHERE insuranceID = ?";

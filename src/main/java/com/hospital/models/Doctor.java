@@ -2,7 +2,8 @@ package com.hospital.models;
 import java.util.Scanner;
 
 public class Doctor extends Person {
-
+    
+    //Attributes for the Doctor class
     private String doctorID;
     private String specialization;
     private String hospital;
@@ -11,7 +12,6 @@ public class Doctor extends Person {
     Scanner scanner = new Scanner(System.in);
 
     //Constructor for the Doctor class
-
     public Doctor(String firstName, String lastName, String address,String email, String doctorID,String specialization,String hospital ){
         super(firstName,lastName,address,email);
         this.doctorID = doctorID;

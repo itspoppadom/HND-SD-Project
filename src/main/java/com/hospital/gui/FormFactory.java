@@ -1,9 +1,17 @@
 package com.hospital.gui;
 
 import javax.swing.JFrame;
-import com.hospital.models.*;
+
+import com.hospital.models.Doctor;
+import com.hospital.models.Drug;
+import com.hospital.models.InsuranceCom;
+import com.hospital.models.Patient;
+import com.hospital.models.Prescription;
+import com.hospital.models.Visit;
 
 public class FormFactory {
+
+    // Method to get the correct type of form
     public static <T> BaseForm<T> getForm(String type, JFrame parent, T entity) {
         return switch (type.toLowerCase()) {
             case "patient" -> (BaseForm<T>) new PatientForm(parent, (Patient) entity);
