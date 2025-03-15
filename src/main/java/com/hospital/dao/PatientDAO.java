@@ -95,7 +95,7 @@ public class PatientDAO implements BaseDAO<Patient> {
     // Function to update a record in the table
     @Override
     public void update(Patient patient){
-        String query = "UPDATE patient SET firstname = ?, surname = ?, postcode = ?, address = ?, phone = ?, email = ?, insuranceID = ? WHERE patientID = ?";
+        String query = "UPDATE patient SET firstname = ?, surname = ?, postcode = ?, address = ?, phone = ?, email = ?, insuranceID = ?, patientID = ? WHERE patientID = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -108,6 +108,7 @@ public class PatientDAO implements BaseDAO<Patient> {
             stmt.setString(6, patient.getEmail());
             stmt.setString(7, patient.getInsuranceID());
             stmt.setString(8, patient.getPatientID());
+            stmt.setString(9, patient.getPatientID());
 
             stmt.executeUpdate();
         } catch (SQLException e) {

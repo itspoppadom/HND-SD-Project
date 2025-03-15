@@ -43,7 +43,7 @@ protected void createFormFields(){
 
     // Add form fields
     addFormField("Prescription ID", prescriptionIDField);
-    addFormField("Date of Prescription", dateOfPrescriptionField);
+    addFormField("Date (YYYY-MM-DD)", dateOfPrescriptionField);
     addFormField("Dosage", dosageField);
     addFormField("Duration", durationField);
     addFormField("Comment", commentField);

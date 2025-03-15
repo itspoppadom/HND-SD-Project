@@ -85,12 +85,12 @@ public class MainFrame extends JFrame {
         
         // Add view table menu items
         viewVisitMenuItem.addActionListener(e -> viewVisitTable());
-        viewTableMenu.add(viewVisitMenuItem);
-        viewTableMenu.add(viewPrescriptioMenuItem);
-        viewTableMenu.add(viewDrugTableMenuItem);
         viewTableMenu.add(viewDoctorTableMenuItem);
-        viewTableMenu.add(viewPatientTableMenuItem);
+        viewTableMenu.add(viewDrugTableMenuItem);
         viewTableMenu.add(viewICTableMenuItem);
+        viewTableMenu.add(viewPatientTableMenuItem);
+        viewTableMenu.add(viewPrescriptioMenuItem);
+        viewTableMenu.add(viewVisitMenuItem);
         menuBar.add(viewTableMenu);
 
         // Search menu
@@ -1161,9 +1161,9 @@ public class MainFrame extends JFrame {
         });
         // Add search menu
         searchMenu.add(searchDoctorMenuItem);
-        searchMenu.add(searchPatientMenuItem);
         searchMenu.add(searchDrugMenuItem);
         searchMenu.add(searchInsuranceComMenuItem);
+        searchMenu.add(searchPatientMenuItem);
         searchMenu.add(searchPrescriptionMenuItem);
         searchMenu.add(searchVisitMenuItem);
         menuBar.add(searchMenu);
@@ -1190,9 +1190,9 @@ public class MainFrame extends JFrame {
 
         // Add menu items to menu
         addRecordsMenu.add(addDoctorFormMenuItem);
-        addRecordsMenu.add(addPatientFormMenuItem);
         addRecordsMenu.add(addDrugFormMenuItem);
         addRecordsMenu.add(addInsuranceComFormMenuItem);
+        addRecordsMenu.add(addPatientFormMenuItem);
         addRecordsMenu.add(addPrescriptionFormMenuItem);
         addRecordsMenu.add(addVisitFormMenuItem);
         menuBar.add(addRecordsMenu);
@@ -1318,6 +1318,7 @@ public class MainFrame extends JFrame {
             
             if (results != null && !results.isEmpty() && results.get(0) != null) {
                 displayResults(results, tableType);
+                
             } else {
                 // Display message if no results found
                 JOptionPane.showMessageDialog(
@@ -1327,6 +1328,7 @@ public class MainFrame extends JFrame {
                     JOptionPane.INFORMATION_MESSAGE
                 );
             }
+            
             //Error handling for search invalid search type
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(
@@ -1351,6 +1353,9 @@ public class MainFrame extends JFrame {
         mainPanel.add(scrollPane, BorderLayout.CENTER);
         mainPanel.revalidate();
         mainPanel.repaint();
+
+        //Add right click functionality
+        new TableRightClick(table, tableType);
     }
     // Method to view the doctor table
     private void viewDoctorTable() {

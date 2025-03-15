@@ -36,7 +36,7 @@ protected void createFormFields(){
 
     addFormField("Patient ID", patiendID);
     addFormField("Doctor ID", doctorID);
-    addFormField("Date of Visit", dateOfVisit);
+    addFormField("Date of Visit (YYYY-MM-DD)", dateOfVisit);
     addFormField("Symptoms", symptoms);
     addFormField("Diagnosis ID", diagnosisID);
 }

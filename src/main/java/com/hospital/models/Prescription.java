@@ -124,7 +124,7 @@ public class Prescription {
     public void addNewPrescription (){
         System.out.println("Enter Prescription ID: ");
         prescriptionID = scanner.nextLine();
-        System.out.println("Enter Date Prescribed: ");
+        System.out.println("Enter Date (YYYY-MM-DD): ");
         datePrescribed = scanner.nextLine();
         datePrescribed = DateValidator.isValidDate(datePrescribed) ? datePrescribed : DateValidator.getCurrentDate();
         System.out.println("Enter Dosage: ");
