@@ -2,20 +2,28 @@
 
 A Java-based hospital management system for tracking patients, doctors, prescriptions, and insurance claims.
 
+## Table of Contents
+
+- [System Requirements](#system-requirements)
+- [Dependencies](#dependencies)
+- [Installation](#installation)
+- [Database Setup](#database-setup)
+- [Running the Application](#running-the-application)
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Contributing](#contributing)
+- [License](#license)
+- [Author](#author)
+- [Support](#support)
+
 ## System Requirements
 
 ### Software Requirements
 
 - Java JDK 17 or higher
-- MySQL Server 8.0 or higher
+- MySQL Server 8.0 or MariaDB 10.0 or higher
 - Maven 3.6 or higher
 - IDE supporting Java (recommended: Visual Studio Code with Java extensions)
-
-### Database Configuration
-
-- Database Name: `assessment_hospital`
-- Default Port: 3306
-- Default Host: localhost
 
 ### Hardware Requirements
 
@@ -25,53 +33,96 @@ A Java-based hospital management system for tracking patients, doctors, prescrip
 
 ## Dependencies
 
-The project uses Maven for dependency management. Key dependencies include:
+The project uses Maven for dependency management:
 
 ```xml
-- mysql-connector-java (8.0.33)
-- junit (5.9.2)
-- javax.swing (included in JDK)
-
+<dependencies>
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>8.0.33</version>
+    </dependency>
+    <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>5.9.2</version>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
 ```
 
 ## Installation
 
-1. Clone the Repository:
+1. Clone the repository:
 
 ```bash
-   git clone https://github.com/itspoppadom/HND-SD-Project
+git clone https://github.com/itspoppadom/HND-SD-Project
 ```
 
-2. Create MySQL Database:
+2. Navigate to project directory:
+
+```bash
+cd HND-SD-Project
+```
+
+3. Build the project:
+
+```bash
+mvn clean install
+```
+
+## Database Setup
+
+### Connection Settings
+
+- Database Name: `assessment_hospital`
+- Default Port: 3306
+- Default Host: localhost
+- Default Credentials:
+  - Username: root
+  - Password: root
+  - URL: jdbc:mysql://localhost:3306/assessment_hospital
+
+### Option 1: Import Existing Database
+
+1. Create database:
 
 ```sql
-   CREATE DATABASE assesment_hospital;
+CREATE DATABASE assessment_hospital;
 ```
 
-3. Configure database connection
-
-   Update database credentials in DatabaseConnection.java
-
-   Default settings:
-
-   Username: root
-   Password: root
-   URL: jdbc:mysql://localhost:3306/assessment_hospital
-
-4. Build the project:
+2. Import provided SQL file:
 
 ```bash
-   mvn clean install
+mysql -u root -p assessment_hospital < database/assessment_hospital.sql
 ```
+
+### Option 2: Manual Setup
+
+Required tables:
+
+- patient
+- doctor
+- drug
+- prescription
+- visit
+- insurance
+
+Refer to `database/assessment_hospital.sql` for complete schema.
 
 ## Running the Application
 
-1. Execute the main class:
-   - Run "MainFrame.java"
-   - Or use Maven:
+Execute using one of these methods:
+
+1. Via IDE:
+
+   - Open project in VS Code
+   - Run `MainFrame.java`
+
+2. Via Maven:
 
 ```bash
-     mvn exec:java -Dexec.mainClass-"com.hospital.gui.MainFrame"
+mvn exec:java -Dexec.mainClass="com.hospital.gui.MainFrame"
 ```
 
 ## Features
@@ -102,28 +153,17 @@ src/
 │               └── validation/ # Input Validation
 ```
 
-## Database Schema
-
-The system uses the following tables:
-
-- patients
-- doctors
-- drugs
-- prescriptions
-- visits
-- insurance_companies
-
 ## Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Commit changes
-4. Push to the branch
+4. Push to branch
 5. Open a Pull Request
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Author
 
