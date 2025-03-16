@@ -1,6 +1,6 @@
 /*M!999999\- enable the sandbox mode */ 
 -- MariaDB dump 10.19-11.5.2-MariaDB, for Win64 (AMD64)
---
+-- Author : Dominic Christopher Cameron 30087241
 -- Host: localhost    Database: assesment_hospital
 -- ------------------------------------------------------
 -- Server version	11.5.2-MariaDB

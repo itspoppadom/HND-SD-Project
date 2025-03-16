@@ -857,12 +857,12 @@ public class MainFrame extends JFrame {
             // Enable/disable fields based on radio selection
             searchByKeys.addActionListener(event -> {
                 prescriptionIDField.setEnabled(true);
-                patientIDField.setEnabled(true);
-                doctorIDField.setEnabled(true);
-                drugIDField.setEnabled(true);
-                dateField.setEnabled(true);
-                dosageField.setEnabled(true);
-                durationField.setEnabled(true);
+                patientIDField.setEnabled(false);
+                doctorIDField.setEnabled(false);
+                drugIDField.setEnabled(false);
+                dateField.setEnabled(false);
+                dosageField.setEnabled(false);
+                durationField.setEnabled(false);
             });
             searchByPatient.addActionListener(event -> {
                 prescriptionIDField.setEnabled(false);
@@ -933,24 +933,12 @@ public class MainFrame extends JFrame {
                     String[] searchParams = null;
 
                     if (searchByKeys.isSelected()) {
-                        if (prescriptionIDField.getText().isEmpty() || 
-                            patientIDField.getText().isEmpty() || 
-                            doctorIDField.getText().isEmpty() || 
-                            drugIDField.getText().isEmpty() || 
-                            dateField.getText().isEmpty() || 
-                            dosageField.getText().isEmpty() || 
-                            durationField.getText().isEmpty()) {
-                            throw new IllegalArgumentException("All fields required for primary key search");
+                        if (prescriptionIDField.getText().isEmpty())  {
+                            throw new IllegalArgumentException("All prescriptionID is required for primary key search");
                         }
                         searchType = "keys";
                         searchParams = new String[]{
                             prescriptionIDField.getText(),
-                            patientIDField.getText(),
-                            doctorIDField.getText(),
-                            drugIDField.getText(),
-                            dateField.getText(),
-                            dosageField.getText(),
-                            durationField.getText()
                         };
                     } else if (searchByPatient.isSelected()) {
                         if (patientIDField.getText().isEmpty()) {

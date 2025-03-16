@@ -34,7 +34,7 @@ public class ValidationConfig {
         // Drug validation rules
         VALIDATION_RULES.put("drug", new FieldValidation[] {
             new FieldValidation("drugID", 8, true, "^[A-Z0-9]+$", "Drug ID must be alphanumeric and uppercase"),
-            new FieldValidation("name", 40, true, "^[A-Za-z\\s]+$", "Name must contain only letters"),
+            new FieldValidation("drugName", 40, true, "^[A-Za-z\\s]+$", "Name must contain only letters"),
             new FieldValidation("sideEffects", 60, true, null, "Side effects are required"),
             new FieldValidation("benefits", 255, true, null, "Benefits are required")
         }); 
@@ -54,7 +54,7 @@ public class ValidationConfig {
         // Insurance validation rules
         VALIDATION_RULES.put("insurance", new FieldValidation[] {
             new FieldValidation("insuranceID", 10, true, "^[A-Z0-9]+$", "Insurance ID must be alphanumeric and uppercase"),
-            new FieldValidation("name", 40, true, "^[A-Za-z\\s]+$", "Name must contain only letters"),
+            new FieldValidation("companyName", 40, true, "^[A-Za-z\\s]+$", "Name must contain only letters"),
             new FieldValidation("address", 40, true, null, "Address is required"),
             new FieldValidation("phone", 16, true, "^[0-9\\-\\+]+$", "Invalid phone number format")
         });
