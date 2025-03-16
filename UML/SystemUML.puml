@@ -1,4 +1,4 @@
-@startuml
+@startuml SystemUML
 !theme hacker
 skinparam packageStyle rectangle
 skinparam classAttributeIconSize 0
@@ -194,7 +194,7 @@ package "com.hospital.models" {
     }
 }
 
-// Add new validation package
+' Add new validation package
 package "com.hospital.validation" {
     class FieldValidation {
         - String fieldName
@@ -207,7 +207,7 @@ package "com.hospital.validation" {
     }
 }
 
-// Add exceptions package
+' Add exceptions package
 package "com.hospital.exceptions" {
     class DatabaseException {
         + DatabaseException(String message)
@@ -215,7 +215,7 @@ package "com.hospital.exceptions" {
     }
 }
 
-// Add utils package
+' Add utils package
 package "com.hospital.utils" {
     class DateValidator {
         + {static} String getCurrentDate()
@@ -272,7 +272,7 @@ VisitDAO --> Visit : manages >
 PrescriptionDAO --> Prescription : manages >
 InsuranceComDAO --> InsuranceCom : manages >
 
-// Add new relationships
+' Add new relationships
 BaseForm --> FieldValidation : uses >
 BaseDAO ..> DatabaseException : throws >
 Prescription --> DateValidator : uses >
