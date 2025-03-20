@@ -1,7 +1,5 @@
 package com.hospital.dao;
 
-
-
 public class DAOFactory {
 
     // Method to get the DAO object based on the type
@@ -18,5 +16,9 @@ public class DAOFactory {
             default -> throw new IllegalArgumentException("Unknown table type: " + type);
         };
     }
-    
+
+    // Add a method to get specific DAO types
+    public static PatientDAO getPatientDAO() {
+        return new PatientDAO();
+    }
 }

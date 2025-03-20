@@ -1,6 +1,10 @@
 package com.hospital.models;
 
-import java.util.Scanner;;
+import java.util.Scanner;
+
+import com.hospital.dao.DAOFactory;
+import com.hospital.dao.PatientDAO;
+import com.hospital.exceptions.DatabaseException;
 
 public class Patient extends Person {
    
@@ -82,5 +86,8 @@ public class Patient extends Person {
         insuranceID = scanner.nextLine();
     }
 
-
+    public Doctor getPrimaryDoctor() throws DatabaseException {
+        PatientDAO dao = DAOFactory.getPatientDAO(); // Use the specific method
+        return dao.getPrimaryDoctor(this.getPatientID());
+    }
 }

@@ -12,6 +12,7 @@ import javax.swing.SwingUtilities;
 
 import com.hospital.dao.BaseDAO;
 import com.hospital.dao.DAOFactory;
+import com.hospital.dao.PatientDAO;
 import com.hospital.exceptions.DatabaseException;
 import com.hospital.models.Doctor;
 import com.hospital.models.Drug;
@@ -50,24 +51,23 @@ public class TableRightClick extends MouseAdapter {
         addItem.addActionListener(e -> handleAdd());
         editItem.addActionListener(e -> handleEdit());
         deleteItem.addActionListener(e -> handleDelete());
-        reloadTable.addActionListener(e -> {
-            try {
-            table.setModel(new CustomTableModel(dao.getAll(), tableType));
-            } catch (DatabaseException ex) {
-                JOptionPane.showMessageDialog(
-                    table,
-                    "Error refreshing table: " + ex.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-                );
-            }
-        });
+        reloadTable.addActionListener(e -> handleReload());
 
         // Add menu items to popup menu
         popupMenu.add(addItem);
         popupMenu.add(editItem);
         popupMenu.add(deleteItem);
         popupMenu.add(reloadTable);
+
+        // Add patient-specific menu items
+        if (tableType.equalsIgnoreCase("patient")) {
+            popupMenu.addSeparator();
+            JMenuItem viewDoctorItem = new JMenuItem("View Primary Doctor");
+            // Optional: set an icon for the menu item
+            //viewDoctorItem.setIcon(new ImageIcon(getClass().getResource("icons/doctor.png"))); // Optional
+            viewDoctorItem.addActionListener(e -> showPrimaryDoctor());
+            popupMenu.add(viewDoctorItem);
+        }
         
         // Add mouse listener to table
         table.addMouseListener(this);
@@ -274,6 +274,80 @@ public class TableRightClick extends MouseAdapter {
                 );
             }
         }
+    }
+
+    // Method to handle reloading the table
+    private void handleReload() {
+        try {
+            table.setModel(new CustomTableModel(dao.getAll(), tableType));
+        } catch (DatabaseException ex) {
+            JOptionPane.showMessageDialog(
+                table,
+                "Error refreshing table: " + ex.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+            );
+        }
+    }
+
+    // Method to show primary doctor information
+    private void showPrimaryDoctor() {
+        int row = table.getSelectedRow();
+        if (row == -1) return;
+
+        try {
+            String patientId = table.getValueAt(row, 0).toString();
+            
+            // Use the specific DAO getter
+            PatientDAO patientDao = DAOFactory.getPatientDAO();
+            Doctor doctor = patientDao.getPrimaryDoctor(patientId);
+
+            if (doctor != null) {
+                String message = String.format("""
+                    Primary Doctor Information:
+                    Dr. %s %s
+                    Specialization: %s
+                    Hospital: %s
+                    Contact: %s
+                    """,
+                    doctor.getFirstName(),
+                    doctor.getLastName(),
+                    doctor.getSpecialization(),
+                    doctor.getHospital(),
+                    doctor.getEmail()
+                );
+                JOptionPane.showMessageDialog(
+                    table,
+                    message,
+                    "Primary Doctor Information",
+                    JOptionPane.INFORMATION_MESSAGE
+                );
+            } else {
+                showWarning("No primary doctor found for this patient");
+            }
+        } catch (DatabaseException ex) {
+            showError("Database error: " + ex.getMessage());
+        } catch (Exception ex) {
+            showError("Unexpected error: " + ex.getMessage());
+        }
+    }
+
+    private void showError(String message) {
+        JOptionPane.showMessageDialog(
+            table,
+            message,
+            "Error",
+            JOptionPane.ERROR_MESSAGE
+        );
+    }
+
+    private void showWarning(String message) {
+        JOptionPane.showMessageDialog(
+            table,
+            message,
+            "Warning",
+            JOptionPane.WARNING_MESSAGE
+        );
     }
 }
 

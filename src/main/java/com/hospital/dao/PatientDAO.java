@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hospital.exceptions.DatabaseException;
+import com.hospital.models.Doctor;
 import com.hospital.models.Patient;
 
 
@@ -62,6 +63,7 @@ public class PatientDAO implements BaseDAO<Patient> {
         }
         return patients;
     }
+    // 
     
     // Function to save a new record in the table
     // Throws an exception if a record with the same ID already exists
@@ -190,6 +192,39 @@ public class PatientDAO implements BaseDAO<Patient> {
         }
 
         return patients;
+    }
+
+    public Doctor getPrimaryDoctor(String patientID) throws DatabaseException {
+        String query = """
+            SELECT d.*, v.dateOfVisit 
+            FROM doctor d
+            INNER JOIN visit v ON d.doctorID = v.doctorID
+            WHERE v.patientID = ?
+            ORDER BY v.dateOfVisit DESC
+            LIMIT 1
+            """;
+            
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            
+            stmt.setString(1, patientID);
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                return new Doctor(
+                    rs.getString("firstname"),
+                        rs.getString("surname"),
+                        rs.getString("address"),
+                        rs.getString("email"),
+                        rs.getString("doctorID"),
+                        rs.getString("specialization"),
+                        rs.getString("hospital")
+                );
+            }
+            return null;
+        } catch (SQLException e) {
+            throw new DatabaseException("Error getting primary doctor: " + e.getMessage());
+        }
     }
 }
 

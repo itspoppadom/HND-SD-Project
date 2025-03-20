@@ -12,4 +12,5 @@ public interface BaseDAO<T> {
     List<T> getAll() throws DatabaseException;
     void save(T entity) throws DatabaseException;
     void update(T entity) throws DatabaseException;
+    
 }
