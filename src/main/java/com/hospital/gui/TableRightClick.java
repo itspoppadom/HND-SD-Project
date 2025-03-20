@@ -63,10 +63,14 @@ public class TableRightClick extends MouseAdapter {
         if (tableType.equalsIgnoreCase("patient")) {
             popupMenu.addSeparator();
             JMenuItem viewDoctorItem = new JMenuItem("View Primary Doctor");
+            JMenuItem viewInsuranceItem = new JMenuItem("View Insurance Company");
             // Optional: set an icon for the menu item
             //viewDoctorItem.setIcon(new ImageIcon(getClass().getResource("icons/doctor.png"))); // Optional
             viewDoctorItem.addActionListener(e -> showPrimaryDoctor());
+            viewInsuranceItem.addActionListener(e -> showInsuranceCompany());
+            
             popupMenu.add(viewDoctorItem);
+            popupMenu.add(viewInsuranceItem);
         }
         
         // Add mouse listener to table
@@ -331,7 +335,85 @@ public class TableRightClick extends MouseAdapter {
             showError("Unexpected error: " + ex.getMessage());
         }
     }
+    // Show insurance company information using regular factory method
+    private void showInsuranceCompany() {
+        int row = table.getSelectedRow();
+        if (row == -1) return;
 
+        try {
+            String insuranceID = table.getValueAt(row, 7).toString();
+
+            //Use the specific DAO getter
+            BaseDAO<InsuranceCom> dao = DAOFactory.getDAO("insurance");
+            InsuranceCom insuranceCom = dao.get(insuranceID);
+
+            if (insuranceCom != null) {
+                String message = String.format("""
+                    Insurance Company Information:
+                    Company Name: %s
+                    Address: %s
+                    Phone: %s
+                    """,
+                    insuranceCom.getCompanyName(),
+                    insuranceCom.getAddress(),
+                    insuranceCom.getPhone()
+                );
+                JOptionPane.showMessageDialog(
+                    table,
+                    message,
+                    "Insurance Company Information",
+                    JOptionPane.INFORMATION_MESSAGE
+                );
+            } else {
+                showWarning("No insurance company found for this patient");
+            }
+        } catch (Exception e) {
+        }
+    }
+
+    //Get Insurance company info for the current patient
+    /*
+    private void showInsuranceCompany() {
+        int row = table.getSelectedRow();
+        if (row == -1) return;
+
+        try {
+            String patientId = table.getValueAt(row, 0).toString();
+            
+            // Use the specific DAO getter
+            PatientDAO patientDao = DAOFactory.getPatientDAO();
+            InsuranceCom insuranceCom = patientDao.getInsuranceComInfo(patientId);
+
+            if (insuranceCom != null) {
+                String message = String.format("""
+                    Insurance Company Information:
+                    Company Name: %s
+                    Address: %s
+                    Phone: %s
+                    """,
+                    insuranceCom.getCompanyName(),
+                    insuranceCom.getAddress(),
+                    insuranceCom.getPhone()
+                );
+                JOptionPane.showMessageDialog(
+                    table,
+                    message,
+                    "Insurance Company Information",
+                    JOptionPane.INFORMATION_MESSAGE
+                );
+            } else {
+                showWarning("No insurance company found for this patient");
+            }
+        } catch (DatabaseException ex) {
+            showError("Database error: " + ex.getMessage());
+        } catch (Exception ex) {
+            showError("Unexpected error: " + ex.getMessage());
+        }
+    } 
+    */
+
+
+    // Helper methods to show messages
     private void showError(String message) {
         JOptionPane.showMessageDialog(
             table,

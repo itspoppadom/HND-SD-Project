@@ -9,6 +9,7 @@ import java.util.List;
 
 import com.hospital.exceptions.DatabaseException;
 import com.hospital.models.Doctor;
+import com.hospital.models.InsuranceCom;
 import com.hospital.models.Patient;
 
 
@@ -225,6 +226,31 @@ public class PatientDAO implements BaseDAO<Patient> {
         } catch (SQLException e) {
             throw new DatabaseException("Error getting primary doctor: " + e.getMessage());
         }
+    }
+
+    // Function to get the company information of the patient
+    public  InsuranceCom getInsuranceComInfo(String insuranceID) throws DatabaseException {
+        String query = "SELECT * FROM insurance WHERE insuranceID = ?";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, insuranceID);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return new InsuranceCom(
+                    rs.getString("insuranceID"),
+                    rs.getString("company"),
+                    rs.getString("address"),
+                    rs.getString("phone")
+                );
+            }
+            return null;
+        } catch (SQLException e) {
+            throw new DatabaseException("Error getting insurance company information: " + e.getMessage());
+        }
+        
     }
 }
 

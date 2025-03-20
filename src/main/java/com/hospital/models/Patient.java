@@ -90,4 +90,9 @@ public class Patient extends Person {
         PatientDAO dao = DAOFactory.getPatientDAO(); // Use the specific method
         return dao.getPrimaryDoctor(this.getPatientID());
     }
+
+    public InsuranceCom getInsuranceComInfo() throws DatabaseException {
+        PatientDAO dao = DAOFactory.getPatientDAO(); // Use the specific method
+        return dao.getInsuranceComInfo(this.getInsuranceID());
+    }
 }

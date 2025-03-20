@@ -21,4 +21,12 @@ public class DAOFactory {
     public static PatientDAO getPatientDAO() {
         return new PatientDAO();
     }
+
+    public static DoctorDAO getDoctorDAO() {
+        return new DoctorDAO();
+    }
+
+    public static InsuranceComDAO getInsuranceComDAO() {
+        return new InsuranceComDAO();
+    }
 }
