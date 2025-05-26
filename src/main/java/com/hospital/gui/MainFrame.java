@@ -43,6 +43,37 @@ import com.hospital.models.Visit;
 public class MainFrame extends JFrame {
     private JPanel mainPanel;
 
+    //Constants
+
+
+    // Constants for Column names
+    private static final String[] DOCTOR_COLUMNS = {"Doctor ID", "First Name", "Last Name", "Address", "Email", "Specialization", "Hospital"};
+    private static final String[] PATIENT_COLUMNS = {"Patient ID", "First Name", "Last Name", "Address", "Postcode", "Phone Number", "Email", "Insurance ID"};
+    private static final String[] DRUG_COLUMNS = {"Drug ID", "Drug Name", "Side Effects", "Benefits"};
+    private static final String[] INSURANCE_COLUMNS = {"Insurance ID", "Company Name", "Address", "Phone Number"};
+    private static final String[] PRESCRIPTION_COLUMNS = {"Prescription ID", "Patient ID", "Doctor ID", "Drug ID", "Date", "Dosage", "Duration"};
+    private static final String[] VISIT_COLUMNS = {"Patient ID", "Doctor ID", "Date", "Diagnosis ID", "Symptoms"};
+
+    // Constants for Search Parameters
+    private static final String[] DOCTOR_SEARCH_PARAMS = {"keys", "firstName", "lastName", "address", "email", "specialization", "hospital"};
+    private static final String[] PATIENT_SEARCH_PARAMS = {"keys", "firstName", "lastName", "address", "postcode", "phone", "email", "insurance"};
+    private static final String[] DRUG_SEARCH_PARAMS = {"keys", "drugName", "sideEffects", "benefits"};
+    private static final String[] INSURANCE_SEARCH_PARAMS = {"keys", "company", "address", "phone"};
+    private static final String[] PRESCRIPTION_SEARCH_PARAMS = {"prescription", "patient", "doctor", "drug", "date", "dosage", "duration"};
+    private static final String[] VISIT_SEARCH_PARAMS = {"patient", "doctor", "date", "diagnosis", "symptoms"};
+
+
+    // Constants for Entity Types
+    private static final String DOCTOR = "doctor";
+    private static final String PATIENT = "patient";
+    private static final String DRUG = "drug";
+    private static final String INSURANCE = "insurance";
+    private static final String PRESCRIPTION = "prescription";
+    private static final String VISIT = "visit";
+
+    // Utils message
+    private static final String SEARCH_BY = "Search by : ";
+
     public MainFrame() {
         // Set window properties
         setTitle("Hospital Database System");
@@ -71,17 +102,17 @@ public class MainFrame extends JFrame {
 
         // View Table menu
         JMenu viewTableMenu = new JMenu("View / Edit");
-        JMenuItem viewDoctorTableMenuItem = new JMenuItem("Doctor Table");
+        JMenuItem viewDoctorTableMenuItem = new JMenuItem(DOCTOR);
         viewDoctorTableMenuItem.addActionListener(e -> viewDoctorTable());
-        JMenuItem viewPatientTableMenuItem = new JMenuItem("Patient Table");
+        JMenuItem viewPatientTableMenuItem = new JMenuItem(PATIENT);
         viewPatientTableMenuItem.addActionListener(e -> viewPatientTable());
-        JMenuItem viewDrugTableMenuItem = new JMenuItem("Drug Table");
+        JMenuItem viewDrugTableMenuItem = new JMenuItem(DRUG);
         viewDrugTableMenuItem.addActionListener(e -> viewDrugTable());
-        JMenuItem viewICTableMenuItem = new JMenuItem("Insurance Company Table");
+        JMenuItem viewICTableMenuItem = new JMenuItem(INSURANCE);
         viewICTableMenuItem.addActionListener(e -> viewInsuranceComTable());
-        JMenuItem viewPrescriptioMenuItem = new JMenuItem("Prescription Table");
+        JMenuItem viewPrescriptioMenuItem = new JMenuItem(PRESCRIPTION);
         viewPrescriptioMenuItem.addActionListener(e -> viewPrescriptionTable());
-        JMenuItem viewVisitMenuItem = new JMenuItem("Visit Table");
+        JMenuItem viewVisitMenuItem = new JMenuItem(VISIT);
         
         // Add view table menu items
         viewVisitMenuItem.addActionListener(e -> viewVisitTable());
@@ -95,12 +126,12 @@ public class MainFrame extends JFrame {
 
         // Search menu
         JMenu searchMenu = new JMenu("Search");
-        JMenuItem searchDoctorMenuItem = new JMenuItem("Doctor");
-        JMenuItem searchPatientMenuItem = new JMenuItem("Patient");
-        JMenuItem searchDrugMenuItem = new JMenuItem("Drug");
-        JMenuItem searchInsuranceComMenuItem = new JMenuItem("Insurance Company");
-        JMenuItem searchPrescriptionMenuItem = new JMenuItem("Prescription");
-        JMenuItem searchVisitMenuItem = new JMenuItem("Visit");
+        JMenuItem searchDoctorMenuItem = new JMenuItem(DOCTOR);
+        JMenuItem searchPatientMenuItem = new JMenuItem(PATIENT);
+        JMenuItem searchDrugMenuItem = new JMenuItem(DRUG);
+        JMenuItem searchInsuranceComMenuItem = new JMenuItem(INSURANCE);
+        JMenuItem searchPrescriptionMenuItem = new JMenuItem(PRESCRIPTION);
+        JMenuItem searchVisitMenuItem = new JMenuItem(VISIT);
 
         // Add search menu items
 
@@ -110,13 +141,13 @@ public class MainFrame extends JFrame {
             panel.setLayout(new BorderLayout(5, 5));
 
             // Create radio buttons for search type 
-            JRadioButton searchByKeys = new JRadioButton("Search by Doctor ID");
-            JRadioButton searchByFirstName = new JRadioButton("Search by First Name");
-            JRadioButton searchByLastName = new JRadioButton("Search by Last Name");
-            JRadioButton searchByAddress = new JRadioButton("Search by Address");
-            JRadioButton searchByEmail = new JRadioButton("Search by Email");
-            JRadioButton searchBySpecialization = new JRadioButton("Search by Specialization");
-            JRadioButton searchByHospital = new JRadioButton("Search by Hospital");
+            JRadioButton searchByKeys = new JRadioButton(SEARCH_BY + DOCTOR_COLUMNS[0]);
+            JRadioButton searchByFirstName = new JRadioButton(SEARCH_BY + DOCTOR_COLUMNS[1]);
+            JRadioButton searchByLastName = new JRadioButton(SEARCH_BY + DOCTOR_COLUMNS[2]);
+            JRadioButton searchByAddress = new JRadioButton(SEARCH_BY + DOCTOR_COLUMNS[3]);
+            JRadioButton searchByEmail = new JRadioButton(SEARCH_BY + DOCTOR_COLUMNS[4]);
+            JRadioButton searchBySpecialization = new JRadioButton(SEARCH_BY + DOCTOR_COLUMNS[5]);
+            JRadioButton searchByHospital = new JRadioButton(SEARCH_BY + DOCTOR_COLUMNS[6]);
 
             // Add radio buttons to button group
             ButtonGroup bg = new ButtonGroup();
@@ -141,19 +172,19 @@ public class MainFrame extends JFrame {
             JTextField hospitalField = new JTextField(10);
 
             // Add fields to panel
-            fieldsPanel.add(new JLabel("Doctor ID:"));
+            fieldsPanel.add(new JLabel(DOCTOR_COLUMNS[0]+" :"));
             fieldsPanel.add(doctorIDField);
-            fieldsPanel.add(new JLabel("First Name:"));
+            fieldsPanel.add(new JLabel(DOCTOR_COLUMNS[1] + " :"));
             fieldsPanel.add(firstNameField);
-            fieldsPanel.add(new JLabel("Last Name:"));
+            fieldsPanel.add(new JLabel(DOCTOR_COLUMNS[2] + " :"));
             fieldsPanel.add(lastNameField);
-            fieldsPanel.add(new JLabel("Address:"));
+            fieldsPanel.add(new JLabel(DOCTOR_COLUMNS[3] + " :"));
             fieldsPanel.add(addressField);
-            fieldsPanel.add(new JLabel("Email:"));
+            fieldsPanel.add(new JLabel(DOCTOR_COLUMNS[4]+" :"));
             fieldsPanel.add(emailField);
-            fieldsPanel.add(new JLabel("Specialization:"));
+            fieldsPanel.add(new JLabel(DOCTOR_COLUMNS[5]+ " :"));
             fieldsPanel.add(specializationField);
-            fieldsPanel.add(new JLabel("Hospital:"));
+            fieldsPanel.add(new JLabel(DOCTOR_COLUMNS[6]+" :"));
             fieldsPanel.add(hospitalField);
 
             // Add components to panel
@@ -251,47 +282,47 @@ public class MainFrame extends JFrame {
                         if (doctorIDField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Doctor ID required");
                         }
-                        searchType = "keys";
+                        searchType = DOCTOR_SEARCH_PARAMS[0];
                         searchParams = new String[]{doctorIDField.getText()};
                     } else if (searchByFirstName.isSelected()) {
                         if (firstNameField.getText().isEmpty()) {
                             throw new IllegalArgumentException("First name required");
                         }
-                        searchType = "firstName";
+                        searchType = DOCTOR_SEARCH_PARAMS[1];
                         searchParams = new String[]{firstNameField.getText()};
                     } else if (searchByLastName.isSelected()) {
                         if (lastNameField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Last name required");
                         }
-                        searchType = "lastName";
+                        searchType = DOCTOR_SEARCH_PARAMS[2];
                         searchParams = new String[]{lastNameField.getText()};
                     } else if (searchByAddress.isSelected()) {
                         if (addressField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Address required");
                         }
-                        searchType = "address";
+                        searchType = DOCTOR_SEARCH_PARAMS[3];
                         searchParams = new String[]{addressField.getText()};
                     } else if (searchByEmail.isSelected()) {
                         if (emailField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Email required");
                         }
-                        searchType = "email";
+                        searchType = DOCTOR_SEARCH_PARAMS[4];
                         searchParams = new String[]{emailField.getText()};
                     } else if (searchBySpecialization.isSelected()) {
                         if (specializationField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Specialization required");
                         }
-                        searchType = "specialization";
+                        searchType = DOCTOR_SEARCH_PARAMS[5];
                         searchParams = new String[]{specializationField.getText()};
                     } else if (searchByHospital.isSelected()) {
                         if (hospitalField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Hospital required");
                         }
-                        searchType = "hospital";
+                        searchType = DOCTOR_SEARCH_PARAMS[6];
                         searchParams = new String[]{hospitalField.getText()};
                     }
 
-                    ResultSet("doctor", searchType, searchParams);
+                    ResultSet(DOCTOR, searchType, searchParams);
 
                 } catch (IllegalArgumentException ex) {
                     JOptionPane.showMessageDialog(this,
@@ -308,14 +339,14 @@ public class MainFrame extends JFrame {
             panel.setLayout(new BorderLayout(5, 5));
 
             // Create radio buttons for search type
-            JRadioButton searchByKeys = new JRadioButton("Search by Patient ID");
-            JRadioButton searchByFirstName = new JRadioButton("Search by First Name");
-            JRadioButton searchByLastName = new JRadioButton("Search by Last Name");
-            JRadioButton searchByAddress = new JRadioButton("Search by Address");
-            JRadioButton searchByPostcode = new JRadioButton("Search by Postcode");
-            JRadioButton searchByPhone = new JRadioButton("Search by Phone Number");
-            JRadioButton searchByEmail = new JRadioButton("Search by Email");
-            JRadioButton searchByInsurance = new JRadioButton("Search by Insurance ID");
+            JRadioButton searchByKeys = new JRadioButton(SEARCH_BY + PATIENT_COLUMNS[0]);
+            JRadioButton searchByFirstName = new JRadioButton(SEARCH_BY + PATIENT_COLUMNS[1]);
+            JRadioButton searchByLastName = new JRadioButton(SEARCH_BY + PATIENT_COLUMNS[2]);
+            JRadioButton searchByAddress = new JRadioButton(SEARCH_BY + PATIENT_COLUMNS[3]);
+            JRadioButton searchByPostcode = new JRadioButton(SEARCH_BY + PATIENT_COLUMNS[4]);
+            JRadioButton searchByPhone = new JRadioButton(SEARCH_BY + PATIENT_COLUMNS[5]);
+            JRadioButton searchByEmail = new JRadioButton(SEARCH_BY + PATIENT_COLUMNS[6]);
+            JRadioButton searchByInsurance = new JRadioButton(SEARCH_BY + PATIENT_COLUMNS[7]);
 
             // Add radio buttons to button group
             ButtonGroup bg = new ButtonGroup();
@@ -342,21 +373,21 @@ public class MainFrame extends JFrame {
             JTextField insuranceField = new JTextField(10);
 
             // Add fields to panel
-            fieldsPanel.add(new JLabel("Patient ID:"));
+            fieldsPanel.add(new JLabel(PATIENT_COLUMNS[0] +" :"));
             fieldsPanel.add(patientIDField);
-            fieldsPanel.add(new JLabel("First Name:"));
+            fieldsPanel.add(new JLabel(PATIENT_COLUMNS[1]+ " :"));
             fieldsPanel.add(firstNameField);
-            fieldsPanel.add(new JLabel("Last Name:"));
+            fieldsPanel.add(new JLabel(PATIENT_COLUMNS[2]+" :"));
             fieldsPanel.add(lastNameField);
-            fieldsPanel.add(new JLabel("Address:"));
+            fieldsPanel.add(new JLabel(PATIENT_COLUMNS[3] + " :"));
             fieldsPanel.add(addressField);
-            fieldsPanel.add(new JLabel("Postcode:"));
+            fieldsPanel.add(new JLabel(PATIENT_COLUMNS[4] + " :"));
             fieldsPanel.add(postcodeField);
-            fieldsPanel.add(new JLabel("Phone Number:"));
+            fieldsPanel.add(new JLabel(PATIENT_COLUMNS[5] + " :"));
             fieldsPanel.add(phoneField);
-            fieldsPanel.add(new JLabel("Email:"));
+            fieldsPanel.add(new JLabel(PATIENT_COLUMNS[6]+" :"));
             fieldsPanel.add(emailField);
-            fieldsPanel.add(new JLabel("Insurance ID:"));
+            fieldsPanel.add(new JLabel(PATIENT_COLUMNS[7] + " :"));
             fieldsPanel.add(insuranceField);
 
             // Add components to panel
@@ -473,53 +504,53 @@ public class MainFrame extends JFrame {
                         if (patientIDField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Patient ID required");
                         }
-                        searchType = "keys";
+                        searchType = PATIENT_SEARCH_PARAMS[0];
                         searchParams = new String[]{patientIDField.getText()};
                     } else if (searchByFirstName.isSelected()) {
                         if (firstNameField.getText().isEmpty()) {
                             throw new IllegalArgumentException("First name required");
                         }
-                        searchType = "firstName";
+                        searchType = PATIENT_SEARCH_PARAMS[1];
                         searchParams = new String[]{firstNameField.getText()};
                     } else if (searchByLastName.isSelected()) {
                         if (lastNameField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Last name required");
                         }
-                        searchType = "lastName";
+                        searchType = PATIENT_SEARCH_PARAMS[2];
                         searchParams = new String[]{lastNameField.getText()};
                     } else if (searchByAddress.isSelected()) {
                         if (addressField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Address required");
                         }
-                        searchType = "address";
+                        searchType = PATIENT_SEARCH_PARAMS[3];
                         searchParams = new String[]{addressField.getText()};
                     } else if (searchByPostcode.isSelected()) {
                         if (postcodeField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Postcode required");
                         }
-                        searchType = "postcode";
+                        searchType = PATIENT_SEARCH_PARAMS[4];
                         searchParams = new String[]{postcodeField.getText()};
                     } else if (searchByPhone.isSelected()) {
                         if (phoneField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Phone number required");
                         }
-                        searchType = "phone";
+                        searchType = PATIENT_SEARCH_PARAMS[5];
                         searchParams = new String[]{phoneField.getText()};
                     } else if (searchByEmail.isSelected()) {
                         if (emailField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Email required");
                         }
-                        searchType = "email";
+                        searchType = PATIENT_SEARCH_PARAMS[6];
                         searchParams = new String[]{emailField.getText()};
                     } else if (searchByInsurance.isSelected()) {
                         if (insuranceField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Insurance ID required");
                         }
-                        searchType = "insurance";
+                        searchType = PATIENT_SEARCH_PARAMS[7];
                         searchParams = new String[]{insuranceField.getText()};
                     }
 
-                    ResultSet("patient", searchType, searchParams);
+                    ResultSet(PATIENT, searchType, searchParams);
 
                 } catch (IllegalArgumentException ex) {
                     JOptionPane.showMessageDialog(this,
@@ -538,10 +569,10 @@ public class MainFrame extends JFrame {
             panel.setLayout(new BorderLayout(5, 5));
 
             // Create radio buttons for search type
-            JRadioButton searchByKeys = new JRadioButton("Search by Drug ID");
-            JRadioButton searchByDrugName = new JRadioButton("Search by Drug Name");
-            JRadioButton searchBySideEffects = new JRadioButton("Search by Side Effects");
-            JRadioButton searchByBenefits = new JRadioButton("Search by Benefits");
+            JRadioButton searchByKeys = new JRadioButton(SEARCH_BY + DRUG_COLUMNS[0]);
+            JRadioButton searchByDrugName = new JRadioButton(SEARCH_BY + DRUG_COLUMNS[1]);
+            JRadioButton searchBySideEffects = new JRadioButton(SEARCH_BY + DRUG_COLUMNS[2]);
+            JRadioButton searchByBenefits = new JRadioButton(SEARCH_BY + DRUG_COLUMNS[3]);
 
             // Add radio buttons to button group
             ButtonGroup bg = new ButtonGroup();
@@ -561,13 +592,13 @@ public class MainFrame extends JFrame {
             JTextField benefitsField = new JTextField(10);
 
             // Add fields to panel
-            fieldsPanel.add(new JLabel("Drug ID:"));
+            fieldsPanel.add(new JLabel(DRUG_COLUMNS[0] + " :"));
             fieldsPanel.add(drugIDField);
-            fieldsPanel.add(new JLabel("Drug Name:"));
+            fieldsPanel.add(new JLabel(DRUG_COLUMNS[1] + " :"));
             fieldsPanel.add(drugNameField);
-            fieldsPanel.add(new JLabel("Side Effects:"));
+            fieldsPanel.add(new JLabel(DRUG_COLUMNS[2] + " :"));
             fieldsPanel.add(sideEffectsField);
-            fieldsPanel.add(new JLabel("Benefits:"));
+            fieldsPanel.add(new JLabel(DRUG_COLUMNS[3] + " :"));
             fieldsPanel.add(benefitsField);
 
             // Add components to panel
@@ -624,29 +655,29 @@ public class MainFrame extends JFrame {
                         if (drugIDField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Drug ID required");
                         }
-                        searchType = "keys";
+                        searchType = DRUG_SEARCH_PARAMS[0];
                         searchParams = new String[]{drugIDField.getText()};
                     } else if (searchByDrugName.isSelected()) {
                         if (drugNameField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Drug name required");
                         }
-                        searchType = "drugName";
+                        searchType = DRUG_SEARCH_PARAMS[1];
                         searchParams = new String[]{drugNameField.getText()};
                     } else if (searchBySideEffects.isSelected()) {
                         if (sideEffectsField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Side effects required");
                         }
-                        searchType = "sideEffects";
+                        searchType = DRUG_SEARCH_PARAMS[2];
                         searchParams = new String[]{sideEffectsField.getText()};
                     } else if (searchByBenefits.isSelected()) {
                         if (benefitsField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Benefits required");
                         }
-                        searchType = "benefits";
+                        searchType = DRUG_SEARCH_PARAMS[3];
                         searchParams = new String[]{benefitsField.getText()};
                     }
 
-                    ResultSet("drug", searchType, searchParams);
+                    ResultSet(DRUG, searchType, searchParams);
 
                 } catch (IllegalArgumentException ex) {
                     JOptionPane.showMessageDialog(this,
@@ -664,10 +695,10 @@ public class MainFrame extends JFrame {
            panel.setLayout(new BorderLayout(5,5));
 
               // Create radio buttons for search type
-            JRadioButton searchByKeys = new JRadioButton("Search by Insurance ID");
-            JRadioButton searchByCompany = new JRadioButton("Search by Company Name");
-            JRadioButton searchByAddress = new JRadioButton("Search by Address");
-            JRadioButton searchByPhone = new JRadioButton("Search by Phone Number");
+            JRadioButton searchByKeys = new JRadioButton(SEARCH_BY + INSURANCE_COLUMNS[0]);
+            JRadioButton searchByCompany = new JRadioButton(SEARCH_BY + INSURANCE_COLUMNS[1]);
+            JRadioButton searchByAddress = new JRadioButton(SEARCH_BY + INSURANCE_COLUMNS[2]);
+            JRadioButton searchByPhone = new JRadioButton(SEARCH_BY + INSURANCE_COLUMNS[3]);
 
             // Add radio buttons to button group
             ButtonGroup bg = new ButtonGroup();
@@ -686,13 +717,13 @@ public class MainFrame extends JFrame {
             JTextField phoneField = new JTextField(10);
             
             // Add fields to panel
-            fieldsPanel.add(new JLabel("Insurance ID:"));
+            fieldsPanel.add(new JLabel(INSURANCE_COLUMNS[0] + " :"));
             fieldsPanel.add(insuranceIDField);
-            fieldsPanel.add(new JLabel("Company Name:"));
+            fieldsPanel.add(new JLabel(INSURANCE_COLUMNS[1] + " :"));
             fieldsPanel.add(companyField);
-            fieldsPanel.add(new JLabel("Address:"));
+            fieldsPanel.add(new JLabel(INSURANCE_COLUMNS[2] + " :"));
             fieldsPanel.add(addressField);
-            fieldsPanel.add(new JLabel("Phone Number:"));
+            fieldsPanel.add(new JLabel(INSURANCE_COLUMNS[3] + " :"));
             fieldsPanel.add(phoneField);
 
             // Add components to panel
@@ -748,29 +779,29 @@ public class MainFrame extends JFrame {
                         if (insuranceIDField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Insurance ID required");
                         }
-                        searchType = "keys";
+                        searchType = INSURANCE_SEARCH_PARAMS[0];
                         searchParams = new String[]{insuranceIDField.getText()};
                     } else if (searchByCompany.isSelected()) {
                         if (companyField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Company name required");
                         }
-                        searchType = "company";
+                        searchType = INSURANCE_SEARCH_PARAMS[1];
                         searchParams = new String[]{companyField.getText()};
                     } else if (searchByAddress.isSelected()) {
                         if (addressField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Address required");
                         }
-                        searchType = "address";
+                        searchType = INSURANCE_SEARCH_PARAMS[2];
                         searchParams = new String[]{addressField.getText()};
                     } else if (searchByPhone.isSelected()) {
                         if (phoneField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Phone number required");
                         }
-                        searchType = "phone";
+                        searchType = INSURANCE_SEARCH_PARAMS[3];
                         searchParams = new String[]{phoneField.getText()};
                     }
                     
-                    ResultSet("insurance", searchType, searchParams);
+                    ResultSet(INSURANCE, searchType, searchParams);
                     
                 } catch (IllegalArgumentException ex) {
                     JOptionPane.showMessageDialog(this,
@@ -791,13 +822,13 @@ public class MainFrame extends JFrame {
 
         // Create radio buttons for search type
 
-            JRadioButton searchByKeys = new JRadioButton("Search by Prescription ID");
-            JRadioButton searchByPatient = new JRadioButton("Search by Patient ID");
-            JRadioButton searchByDoctor = new JRadioButton("Search by Doctor ID");
-            JRadioButton searchByDrug = new JRadioButton("Search by Drug ID");
-            JRadioButton searchByDate = new JRadioButton("Search by Prescription Date");
-            JRadioButton searchByDosage = new JRadioButton("Search by Dosage");
-            JRadioButton searchByDuration = new JRadioButton("Search by Duration");
+            JRadioButton searchByKeys = new JRadioButton(SEARCH_BY + PRESCRIPTION_COLUMNS[0]);
+            JRadioButton searchByPatient = new JRadioButton(SEARCH_BY + PRESCRIPTION_COLUMNS[1]);
+            JRadioButton searchByDoctor = new JRadioButton(SEARCH_BY + PRESCRIPTION_COLUMNS[2]);
+            JRadioButton searchByDrug = new JRadioButton(SEARCH_BY + PRESCRIPTION_COLUMNS[3]);
+            JRadioButton searchByDate = new JRadioButton(SEARCH_BY + PRESCRIPTION_COLUMNS[4]);
+            JRadioButton searchByDosage = new JRadioButton(SEARCH_BY + PRESCRIPTION_COLUMNS[5]);
+            JRadioButton searchByDuration = new JRadioButton(SEARCH_BY + PRESCRIPTION_COLUMNS[6]);
             
             // Add radio buttons to button group
             ButtonGroup bg = new ButtonGroup();
@@ -824,19 +855,19 @@ public class MainFrame extends JFrame {
             JTextField durationField = new JTextField(10);
 
             // Add fields to panel
-            fieldsPanel.add(new JLabel("Prescription ID:"));
+            fieldsPanel.add(new JLabel(PRESCRIPTION_COLUMNS[0] + " :"));
             fieldsPanel.add(prescriptionIDField);
-            fieldsPanel.add(new JLabel("Patient ID:"));
+            fieldsPanel.add(new JLabel(PRESCRIPTION_COLUMNS[1] + " :"));
             fieldsPanel.add(patientIDField);
-            fieldsPanel.add(new JLabel("Doctor ID:"));
+            fieldsPanel.add(new JLabel(PRESCRIPTION_COLUMNS[2] + " :"));
             fieldsPanel.add(doctorIDField);
-            fieldsPanel.add(new JLabel("Drug ID:"));
+            fieldsPanel.add(new JLabel(PRESCRIPTION_COLUMNS[3] + " :"));
             fieldsPanel.add(drugIDField);
-            fieldsPanel.add(new JLabel("Date (YYYY-MM-DD):"));
+            fieldsPanel.add(new JLabel(PRESCRIPTION_COLUMNS[4] + " (YYYY-MM-DD) :"));
             fieldsPanel.add(dateField);
-            fieldsPanel.add(new JLabel("Dosage:"));
+            fieldsPanel.add(new JLabel(PRESCRIPTION_COLUMNS[5] + " :"));
             fieldsPanel.add(dosageField);
-            fieldsPanel.add(new JLabel("Duration:"));
+            fieldsPanel.add(new JLabel(PRESCRIPTION_COLUMNS[6] + " :"));
             fieldsPanel.add(durationField);
 
             // Add components to panel  
@@ -936,7 +967,7 @@ public class MainFrame extends JFrame {
                         if (prescriptionIDField.getText().isEmpty())  {
                             throw new IllegalArgumentException("All prescriptionID is required for primary key search");
                         }
-                        searchType = "keys";
+                        searchType = PRESCRIPTION_SEARCH_PARAMS[0];
                         searchParams = new String[]{
                             prescriptionIDField.getText(),
                         };
@@ -944,41 +975,41 @@ public class MainFrame extends JFrame {
                         if (patientIDField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Patient ID required");
                         }
-                        searchType = "patient";
+                        searchType = PRESCRIPTION_SEARCH_PARAMS[1];
                         searchParams = new String[]{patientIDField.getText()};
                     } else if (searchByDoctor.isSelected()) {
                         if (doctorIDField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Doctor ID required");
                         }
-                        searchType = "doctor";
+                        searchType = PRESCRIPTION_SEARCH_PARAMS[2];
                         searchParams = new String[]{doctorIDField.getText()};
                     } else if (searchByDrug.isSelected()) {
                         if (drugIDField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Drug ID required");
                         }
-                        searchType = "drug";
+                        searchType = PRESCRIPTION_SEARCH_PARAMS[3];
                         searchParams = new String[]{drugIDField.getText()};
                     } else if (searchByDate.isSelected()) {
                         if (dateField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Date required");
                         }
-                        searchType = "date";
+                        searchType = PRESCRIPTION_SEARCH_PARAMS[4];
                         searchParams = new String[]{dateField.getText()};
                     } else if (searchByDosage.isSelected()) {
                         if (dosageField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Dosage required");
                         }
-                        searchType = "dosage";
+                        searchType = PRESCRIPTION_SEARCH_PARAMS[5];
                         searchParams = new String[]{dosageField.getText()};
                     } else if (searchByDuration.isSelected()) {
                         if (durationField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Duration required");
                         }
-                        searchType = "duration";
+                        searchType = PRESCRIPTION_SEARCH_PARAMS[6];
                         searchParams = new String[]{durationField.getText()};
                     }
 
-                    ResultSet("prescription", searchType, searchParams);
+                    ResultSet(PRESCRIPTION, searchType, searchParams);
             
                 } catch (IllegalArgumentException ex) {
                     JOptionPane.showMessageDialog(this,
@@ -996,12 +1027,12 @@ public class MainFrame extends JFrame {
             panel.setLayout(new BorderLayout(5, 5));
             
             // Create radio buttons for search type
-            JRadioButton searchByKeys = new JRadioButton("Search by Primary Keys");
-            JRadioButton searchByPatient = new JRadioButton("Search by Patient ID");
-            JRadioButton searchByDoctor = new JRadioButton("Search by Doctor ID");
-            JRadioButton searchByDate = new JRadioButton("Search by Date");
-            JRadioButton searchByDiagnosis = new JRadioButton("Search by Diagnosis ID");
-            JRadioButton searchBySymptoms = new JRadioButton("Search by Symptoms");
+            JRadioButton searchByKeys = new JRadioButton(SEARCH_BY + " Primary Keys");
+            JRadioButton searchByPatient = new JRadioButton(SEARCH_BY + VISIT_COLUMNS[0]);
+            JRadioButton searchByDoctor = new JRadioButton(SEARCH_BY + VISIT_COLUMNS[1]);
+            JRadioButton searchByDate = new JRadioButton(SEARCH_BY + VISIT_COLUMNS[2]);
+            JRadioButton searchByDiagnosis = new JRadioButton(SEARCH_BY + VISIT_COLUMNS[3]);
+            JRadioButton searchBySymptoms = new JRadioButton(SEARCH_BY + VISIT_COLUMNS[4]);
             
             // Add radio buttons to button group
             ButtonGroup bg = new ButtonGroup();
@@ -1023,15 +1054,15 @@ public class MainFrame extends JFrame {
             JTextField symptomsField = new JTextField(40);
             
             // Add fields to panel
-            fieldsPanel.add(new JLabel("Patient ID:"));
+            fieldsPanel.add(new JLabel(VISIT_COLUMNS[0] + " :"));
             fieldsPanel.add(patientIDField);
-            fieldsPanel.add(new JLabel("Doctor ID:"));
+            fieldsPanel.add(new JLabel(VISIT_COLUMNS[1] + " :"));
             fieldsPanel.add(doctorIDField);
-            fieldsPanel.add(new JLabel("Date (YYYY-MM-DD):"));
+            fieldsPanel.add(new JLabel(VISIT_COLUMNS[2] + " (YYYY-MM-DD):"));
             fieldsPanel.add(dateField);
-            fieldsPanel.add(new JLabel("Diagnosis ID:"));
+            fieldsPanel.add(new JLabel(VISIT_COLUMNS[3] + " :"));
             fieldsPanel.add(diagnosisField);
-            fieldsPanel.add(new JLabel("Symptoms:"));
+            fieldsPanel.add(new JLabel(VISIT_COLUMNS[4] + " :"));
             fieldsPanel.add(symptomsField);
             
             // Add components to panel
@@ -1109,35 +1140,35 @@ public class MainFrame extends JFrame {
                         if (patientIDField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Patient ID required");
                         }
-                        searchType = "patient";
+                        searchType = VISIT_SEARCH_PARAMS[0];
                         searchParams = new String[]{patientIDField.getText()};
                     } else if (searchByDoctor.isSelected()) {
                         if (doctorIDField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Doctor ID required");
                         }
-                        searchType = "doctor";
+                        searchType = VISIT_SEARCH_PARAMS[1];
                         searchParams = new String[]{doctorIDField.getText()};
                     } else if (searchByDate.isSelected()) {
                         if (dateField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Date required");
                         }
-                        searchType = "date";
+                        searchType = VISIT_SEARCH_PARAMS[2];
                         searchParams = new String[]{dateField.getText()};
                     } else if (searchByDiagnosis.isSelected()) {
                         if (diagnosisField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Diagnosis ID required");
                         }
-                        searchType = "diagnosis";
+                        searchType = VISIT_SEARCH_PARAMS[3];
                         searchParams = new String[]{diagnosisField.getText()};
                     } else if (searchBySymptoms.isSelected()) {
                         if (symptomsField.getText().isEmpty()) {
                             throw new IllegalArgumentException("Symptoms required");
                         }
-                        searchType = "symptoms";
+                        searchType = VISIT_SEARCH_PARAMS[4];
                         searchParams = new String[]{symptomsField.getText()};
                     }
                     
-                    ResultSet("visit", searchType, searchParams);
+                    ResultSet(VISIT, searchType, searchParams);
              
                 } catch (IllegalArgumentException ex) {
                     JOptionPane.showMessageDialog(this,
@@ -1160,12 +1191,12 @@ public class MainFrame extends JFrame {
         JMenu addRecordsMenu = new JMenu("Add Records");
 
         // Add menu items to add records menu
-        JMenuItem addDoctorFormMenuItem = new JMenuItem("Doctor Form");
-        JMenuItem addPatientFormMenuItem = new JMenuItem("Patient Form");
-        JMenuItem addDrugFormMenuItem = new JMenuItem("Drug Form");
-        JMenuItem addInsuranceComFormMenuItem = new JMenuItem("Insurance Company Form");
-        JMenuItem addPrescriptionFormMenuItem = new JMenuItem("Prescription Form");
-        JMenuItem addVisitFormMenuItem = new JMenuItem("Visit Form");
+        JMenuItem addDoctorFormMenuItem = new JMenuItem(DOCTOR);
+        JMenuItem addPatientFormMenuItem = new JMenuItem(PATIENT);
+        JMenuItem addDrugFormMenuItem = new JMenuItem(DRUG);
+        JMenuItem addInsuranceComFormMenuItem = new JMenuItem(INSURANCE);
+        JMenuItem addPrescriptionFormMenuItem = new JMenuItem(PRESCRIPTION);
+        JMenuItem addVisitFormMenuItem = new JMenuItem(VISIT);
 
 
         // Add action listeners to menu items
@@ -1231,7 +1262,7 @@ public class MainFrame extends JFrame {
             List<?> results;
             
             switch (tableType) {
-                case "visit" -> {
+                case VISIT -> {
                     VisitDAO visitDao = (VisitDAO) dao;
                     results = switch (searchType) {
                         case "keys" -> Collections.singletonList(visitDao.get(searchParams));
@@ -1243,10 +1274,10 @@ public class MainFrame extends JFrame {
                         default -> throw new IllegalArgumentException("Invalid search type for Visit");
                     };
                 }
-                case "prescription" -> {
+                case PRESCRIPTION -> {
                     PrescriptionDAO prescriptionDao = (PrescriptionDAO) dao;
                     results = switch (searchType) {
-                        case "keys" -> Collections.singletonList(prescriptionDao.get(searchParams));
+                        case "prescription" -> Collections.singletonList(prescriptionDao.get(searchParams));
                         case "patient" -> prescriptionDao.findByPatient(searchParams[0]);
                         case "doctor" -> prescriptionDao.findByDoctor(searchParams[0]);
                         case "drug" -> prescriptionDao.findByDrug(searchParams[0]);
@@ -1256,7 +1287,7 @@ public class MainFrame extends JFrame {
                         default -> throw new IllegalArgumentException("Invalid search type for Prescription");
                     };
                 } 
-                case "insurance" -> {
+                case INSURANCE -> {
                     InsuranceComDAO insuranceDao = (InsuranceComDAO) dao;
                     results = switch (searchType) {
                         case "keys" -> Collections.singletonList(insuranceDao.get(searchParams));
@@ -1264,7 +1295,7 @@ public class MainFrame extends JFrame {
                         case "address" -> insuranceDao.findByAddress(searchParams[0]);
                         case "phone" -> insuranceDao.findByPhone(searchParams[0]);
                         default -> throw new IllegalArgumentException("Invalid search type for Insurance Company");};
-                } case "drug" -> {
+                } case DRUG -> {
                     DrugDAO drugDao = (DrugDAO) dao;
                     results = switch (searchType) {
                         case "keys" -> Collections.singletonList(drugDao.get(searchParams));
@@ -1273,7 +1304,7 @@ public class MainFrame extends JFrame {
                         case "benefits" -> drugDao.findByBenefits(searchParams[0]);
                         default -> throw new IllegalArgumentException("Invalid search type for Drug");
                     };
-                } case "patient" -> {
+                } case PATIENT -> {
                     PatientDAO patientDao = (PatientDAO) dao;
                     results = switch (searchType) {
                         case "keys" -> Collections.singletonList(patientDao.get(searchParams));
@@ -1286,7 +1317,7 @@ public class MainFrame extends JFrame {
                         case "insurance" -> patientDao.findByInsuranceID(searchParams[0]);
                         default -> throw new IllegalArgumentException("Invalid search type for Patient");
                     };
-                } case "doctor" -> {
+                } case DOCTOR -> {
                     DoctorDAO doctorDAO = (DoctorDAO) dao;
                     results = switch (searchType) {
                         case "keys" -> Collections.singletonList(doctorDAO.get(searchParams));
@@ -1347,27 +1378,27 @@ public class MainFrame extends JFrame {
     }
     // Method to view the doctor table
     private void viewDoctorTable() {
-        createTable("doctor");
+        createTable(DOCTOR);
     }
 
     private void viewPatientTable() {
-        createTable("patient");
+        createTable(PATIENT);
     }
 
     private void viewDrugTable() {
-        createTable("drug");
+        createTable(DRUG);
     }
 
     public void viewInsuranceComTable() {
-        createTable("insurance");
+        createTable(INSURANCE);
     }
 
     public void viewPrescriptionTable() {
-        createTable("prescription");
+        createTable(PRESCRIPTION);
     }
 
     public void viewVisitTable() {
-        createTable("visit");
+        createTable(VISIT);
     }
     
     // showForm method to display the form for adding a new record
@@ -1392,27 +1423,27 @@ public class MainFrame extends JFrame {
     }
     // Different Methods used to call and display different types of forms. 
     private void showInsuranceComForm() {
-        showForm("insurance", new InsuranceCom());
+        showForm(INSURANCE, new InsuranceCom());
     }
 
     private void showDrugForm() {
-        showForm("drug", new Drug());
+        showForm(DRUG, new Drug());
     }
 
     private void showDoctorForm() {
-        showForm("doctor", new Doctor());
+        showForm(DOCTOR, new Doctor());
     }
 
     private void showPatientForm() {
-        showForm("patient", new Patient());
+        showForm(PATIENT, new Patient());
     }
 
     private void showPrescriptionForm() {
-        showForm("prescription", new Prescription());
+        showForm(PRESCRIPTION, new Prescription());
     }
 
     private void showVisitForm() {
-        showForm("visit", new Visit());
+        showForm(VISIT, new Visit());
     }
 
     public static void main(String[] args) {

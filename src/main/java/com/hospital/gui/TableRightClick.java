@@ -32,6 +32,44 @@ public class TableRightClick extends MouseAdapter {
     private final BaseDAO<?> dao;
     
 
+    // Constants
+
+    // Constants for table types
+    private static final String PATIENT = "patient";
+    private static final String DOCTOR = "doctor";
+    private static final String DRUG = "drug";
+    private static final String PRESCRIPTION = "prescription";
+    private static final String INSURANCE = "insurance";
+    private static final String VISIT = "visit";
+
+    // Constants for menu items
+    private static final String ADD = "Add";
+    private static final String EDIT = "Edit";
+    private static final String DELETE = "Delete";
+    private static final String REFRESH = "Refresh Table";
+    private static final String VIEW_DOCTOR = "View Primary Doctor";
+    private static final String VIEW_INSURANCE = "View Insurance Company";
+
+    // Constants for messages
+    private static final String RECORD_ADDED = "Record added successfully";
+    private static final String RECORD_UPDATED = "Record updated successfully";
+    private static final String RECORD_DELETED = "Record deleted successfully";
+    private static final String NO_DOCTOR = "No primary doctor found for this patient";
+    private static final String NO_INSURANCE = "No insurance company found for this patient";
+    private static final String ERROR_ADDING = "Error adding record: ";
+    private static final String ERROR_EDITING = "Error updating record: ";
+    private static final String ERROR_DELETING = "Error deleting record: ";
+    private static final String ERROR_REFRESHING = "Error refreshing table: ";
+    private static final String ERROR_DOCTOR = "Error getting primary doctor information: ";
+    private static final String ERROR_INSURANCE = "Error getting insurance company information: ";
+    private static final String UNEXPECTED_ERROR = "Unexpected error: ";
+    private static final String ERROR = "Error";
+    private static final String WARNING = "Warning";
+    private static final String PRIMARY_DOCTOR_INFO = "Primary Doctor Information";
+    private static final String UNKNOWN_TABLE_TYPE = "Unknown table type: ";
+    private static final String INSURANCE_COMPANY_INFO = "Insurance Company Information";
+
+
     // Constructor
     public TableRightClick(JTable table, String tableType) {
         
@@ -42,10 +80,10 @@ public class TableRightClick extends MouseAdapter {
         this.popupMenu = new JPopupMenu();
         
         // Create menu items
-        JMenuItem addItem = new JMenuItem("Add");
-        JMenuItem editItem = new JMenuItem("Edit");
-        JMenuItem deleteItem = new JMenuItem("Delete");
-        JMenuItem reloadTable = new JMenuItem("Refresh Table");
+        JMenuItem addItem = new JMenuItem(ADD);
+        JMenuItem editItem = new JMenuItem(EDIT);
+        JMenuItem deleteItem = new JMenuItem(DELETE);
+        JMenuItem reloadTable = new JMenuItem(REFRESH);
         
         // Add action listeners
         addItem.addActionListener(e -> handleAdd());
@@ -60,10 +98,10 @@ public class TableRightClick extends MouseAdapter {
         popupMenu.add(reloadTable);
 
         // Add patient-specific menu items
-        if (tableType.equalsIgnoreCase("patient")) {
+        if (tableType.equalsIgnoreCase(PATIENT)) {
             popupMenu.addSeparator();
-            JMenuItem viewDoctorItem = new JMenuItem("View Primary Doctor");
-            JMenuItem viewInsuranceItem = new JMenuItem("View Insurance Company");
+            JMenuItem viewDoctorItem = new JMenuItem(VIEW_DOCTOR);
+            JMenuItem viewInsuranceItem = new JMenuItem(VIEW_INSURANCE);
             // Optional: set an icon for the menu item
             //viewDoctorItem.setIcon(new ImageIcon(getClass().getResource("icons/doctor.png"))); // Optional
             viewDoctorItem.addActionListener(e -> showPrimaryDoctor());
@@ -106,13 +144,13 @@ public class TableRightClick extends MouseAdapter {
         try {
             // Create a new empty entity based on table type with proper typing
             Object entity = switch (tableType.toLowerCase()) {
-                case "patient" -> new Patient();
-                case "doctor" -> new Doctor();
-                case "drug" -> new Drug();
-                case "prescription" -> new Prescription();
-                case "insurance" -> new InsuranceCom();
-                case "visit" -> new Visit();
-                default -> throw new IllegalArgumentException("Unknown table type: " + tableType);
+                case PATIENT -> new Patient();
+                case DOCTOR -> new Doctor();
+                case DRUG -> new Drug();
+                case PRESCRIPTION -> new Prescription();
+                case INSURANCE -> new InsuranceCom();
+                case VISIT -> new Visit();
+                default -> throw new IllegalArgumentException(UNKNOWN_TABLE_TYPE + tableType);
             };
 
             // Use FormFactory consistently with proper typing
@@ -128,32 +166,32 @@ public class TableRightClick extends MouseAdapter {
                 try {
                     BaseDAO<?> typedDao = DAOFactory.getDAO(tableType);
                     switch (tableType.toLowerCase()) {
-                        case "patient" -> ((BaseDAO<Patient>) typedDao).save((Patient) entity);
-                        case "doctor" -> ((BaseDAO<Doctor>) typedDao).save((Doctor) entity);
-                        case "drug" -> ((BaseDAO<Drug>) typedDao).save((Drug) entity);
-                        case "prescription" -> ((BaseDAO<Prescription>) typedDao).save((Prescription) entity);
-                        case "insurance" -> ((BaseDAO<InsuranceCom>) typedDao).save((InsuranceCom) entity);
-                        case "visit" -> ((BaseDAO<Visit>) typedDao).save((Visit) entity);
-                        default -> throw new IllegalArgumentException("Unknown table type: " + tableType);
+                        case PATIENT -> ((BaseDAO<Patient>) typedDao).save((Patient) entity);
+                        case DOCTOR -> ((BaseDAO<Doctor>) typedDao).save((Doctor) entity);
+                        case DRUG -> ((BaseDAO<Drug>) typedDao).save((Drug) entity);
+                        case PRESCRIPTION -> ((BaseDAO<Prescription>) typedDao).save((Prescription) entity);
+                        case INSURANCE -> ((BaseDAO<InsuranceCom>) typedDao).save((InsuranceCom) entity);
+                        case VISIT -> ((BaseDAO<Visit>) typedDao).save((Visit) entity);
+                        default -> throw new IllegalArgumentException(UNKNOWN_TABLE_TYPE + tableType);
                         }
                 
                         // Refresh table
                         table.setModel(new CustomTableModel(typedDao.getAll(), tableType));
-                        JOptionPane.showMessageDialog(table, "Record added successfully", "Success" ,
+                        JOptionPane.showMessageDialog(table, RECORD_ADDED, "Success" ,
                         JOptionPane.INFORMATION_MESSAGE);
                     } catch (DatabaseException ex) {
                     JOptionPane.showMessageDialog(
                         table,
-                        "Error adding record: " + ex.getMessage(),
-                        "Error",
+                        ERROR_ADDING + ex.getMessage(),
+                        ERROR,
                         JOptionPane.ERROR_MESSAGE
                     );}
                     }
             } catch (Exception ex) {
             JOptionPane.showMessageDialog(
                 table,
-                "Error adding record: " + ex.getMessage(),
-                "Error",
+                ERROR_ADDING + ex.getMessage(),
+                ERROR,
                 JOptionPane.ERROR_MESSAGE
             );
         }
@@ -169,7 +207,7 @@ public class TableRightClick extends MouseAdapter {
                 
                 // Get the ID(s) of the selected record
                 String[] ids;
-                if (tableType.equalsIgnoreCase("visit")) {
+                if (tableType.equalsIgnoreCase(VISIT)) {
                     ids = new String[]{
                         table.getModel().getValueAt(modelRow, 0).toString(),
                         table.getModel().getValueAt(modelRow, 1).toString(),
@@ -181,20 +219,20 @@ public class TableRightClick extends MouseAdapter {
 
                 // Get record with proper typing
                 switch (tableType.toLowerCase()) {
-                    case "patient" -> handleFormSubmission((Patient) dao.get(ids));
-                    case "doctor" -> handleFormSubmission((Doctor) dao.get(ids));
-                    case "drug" -> handleFormSubmission((Drug) dao.get(ids));
-                    case "prescription" -> handleFormSubmission((Prescription) dao.get(ids));
-                    case "insurance" -> handleFormSubmission((InsuranceCom) dao.get(ids));
-                    case "visit" -> handleFormSubmission((Visit) dao.get(ids));
-                    default -> throw new IllegalArgumentException("Unknown table type: " + tableType);
+                    case PATIENT -> handleFormSubmission((Patient) dao.get(ids));
+                    case DOCTOR -> handleFormSubmission((Doctor) dao.get(ids));
+                    case DRUG -> handleFormSubmission((Drug) dao.get(ids));
+                    case PRESCRIPTION -> handleFormSubmission((Prescription) dao.get(ids));
+                    case INSURANCE -> handleFormSubmission((InsuranceCom) dao.get(ids));
+                    case VISIT -> handleFormSubmission((Visit) dao.get(ids));
+                    default -> throw new IllegalArgumentException(UNKNOWN_TABLE_TYPE + tableType);
                 }
                 
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(
                     table,
-                    "Error editing record: " + ex.getMessage(),
-                    "Error",
+                    ERROR_EDITING + ex.getMessage(),
+                    ERROR,
                     JOptionPane.ERROR_MESSAGE
                 );
             }
@@ -228,13 +266,13 @@ public class TableRightClick extends MouseAdapter {
                 
                 // Refresh table
                 table.setModel(new CustomTableModel(typedDao.getAll(), tableType));
-                JOptionPane.showMessageDialog(table, "Record updated successfully");
+                JOptionPane.showMessageDialog(table, RECORD_UPDATED);
             }
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(
                 table,
-                "Error updating record: " + ex.getMessage(),
-                "Error",
+                ERROR_EDITING + ex.getMessage(),
+                ERROR,
                 JOptionPane.ERROR_MESSAGE
             );
         }
@@ -246,7 +284,7 @@ public class TableRightClick extends MouseAdapter {
         if (row != -1) {
             try {
                 String[] ids;
-                if (tableType.equalsIgnoreCase("visit")) {
+                if (tableType.equalsIgnoreCase(VISIT)) {
                 // For Visit table, we need three columns
                 ids = new String[]{
                     table.getValueAt(row, 0).toString(), // patientID
@@ -267,13 +305,13 @@ public class TableRightClick extends MouseAdapter {
                 
                 if (confirm == JOptionPane.YES_OPTION) {
                     dao.delete(ids);
-                    JOptionPane.showMessageDialog(table, "Record deleted successfully");
+                    JOptionPane.showMessageDialog(table, RECORD_DELETED);
                 }
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(
                     table,
-                    "Error deleting record: " + ex.getMessage(),
-                    "Error",
+                    ERROR_DELETING + ex.getMessage(),
+                    ERROR,
                     JOptionPane.ERROR_MESSAGE
                 );
             }
@@ -287,8 +325,8 @@ public class TableRightClick extends MouseAdapter {
         } catch (DatabaseException ex) {
             JOptionPane.showMessageDialog(
                 table,
-                "Error refreshing table: " + ex.getMessage(),
-                "Error",
+                ERROR_REFRESHING + ex.getMessage(),
+                ERROR,
                 JOptionPane.ERROR_MESSAGE
             );
         }
@@ -323,16 +361,16 @@ public class TableRightClick extends MouseAdapter {
                 JOptionPane.showMessageDialog(
                     table,
                     message,
-                    "Primary Doctor Information",
+                    PRIMARY_DOCTOR_INFO,
                     JOptionPane.INFORMATION_MESSAGE
                 );
             } else {
-                showWarning("No primary doctor found for this patient");
+                showWarning(NO_DOCTOR);
             }
         } catch (DatabaseException ex) {
-            showError("Database error: " + ex.getMessage());
+            showError("Database error: " + ex.getMessage() + ERROR_DOCTOR);
         } catch (Exception ex) {
-            showError("Unexpected error: " + ex.getMessage());
+            showError(UNEXPECTED_ERROR + ex.getMessage() + ERROR_DOCTOR);
         }
     }
     // Show insurance company information using regular factory method
@@ -344,8 +382,8 @@ public class TableRightClick extends MouseAdapter {
             String insuranceID = table.getValueAt(row, 7).toString();
 
             //Use the specific DAO getter
-            BaseDAO<InsuranceCom> dao = DAOFactory.getDAO("insurance");
-            InsuranceCom insuranceCom = dao.get(insuranceID);
+            BaseDAO<InsuranceCom> indao = DAOFactory.getDAO(INSURANCE);
+            InsuranceCom insuranceCom = indao.get(insuranceID);
 
             if (insuranceCom != null) {
                 String message = String.format("""
@@ -361,56 +399,17 @@ public class TableRightClick extends MouseAdapter {
                 JOptionPane.showMessageDialog(
                     table,
                     message,
-                    "Insurance Company Information",
+                    INSURANCE_COMPANY_INFO,
                     JOptionPane.INFORMATION_MESSAGE
                 );
             } else {
-                showWarning("No insurance company found for this patient");
+                showWarning(NO_INSURANCE);
             }
         } catch (Exception e) {
+            showError(ERROR_INSURANCE + e.getMessage());
         }
     }
 
-    //Get Insurance company info for the current patient
-    /*
-    private void showInsuranceCompany() {
-        int row = table.getSelectedRow();
-        if (row == -1) return;
-
-        try {
-            String patientId = table.getValueAt(row, 0).toString();
-            
-            // Use the specific DAO getter
-            PatientDAO patientDao = DAOFactory.getPatientDAO();
-            InsuranceCom insuranceCom = patientDao.getInsuranceComInfo(patientId);
-
-            if (insuranceCom != null) {
-                String message = String.format("""
-                    Insurance Company Information:
-                    Company Name: %s
-                    Address: %s
-                    Phone: %s
-                    """,
-                    insuranceCom.getCompanyName(),
-                    insuranceCom.getAddress(),
-                    insuranceCom.getPhone()
-                );
-                JOptionPane.showMessageDialog(
-                    table,
-                    message,
-                    "Insurance Company Information",
-                    JOptionPane.INFORMATION_MESSAGE
-                );
-            } else {
-                showWarning("No insurance company found for this patient");
-            }
-        } catch (DatabaseException ex) {
-            showError("Database error: " + ex.getMessage());
-        } catch (Exception ex) {
-            showError("Unexpected error: " + ex.getMessage());
-        }
-    } 
-    */
 
 
     // Helper methods to show messages
@@ -418,7 +417,7 @@ public class TableRightClick extends MouseAdapter {
         JOptionPane.showMessageDialog(
             table,
             message,
-            "Error",
+            ERROR,
             JOptionPane.ERROR_MESSAGE
         );
     }
@@ -427,7 +426,7 @@ public class TableRightClick extends MouseAdapter {
         JOptionPane.showMessageDialog(
             table,
             message,
-            "Warning",
+            WARNING,
             JOptionPane.WARNING_MESSAGE
         );
     }
